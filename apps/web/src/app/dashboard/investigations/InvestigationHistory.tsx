@@ -120,7 +120,7 @@ export default function InvestigationHistory() {
                 href={`/dashboard/investigations/${record._id}`}
                 className="ml-0! mr-4"
               >
-                <span>View</span>
+                <span>{record.status === "completed" && record.dossier ? "Open & download" : "View"}</span>
                 <ArrowUpRight size={14} />
               </Link>
             </article>

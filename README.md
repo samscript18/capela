@@ -45,6 +45,8 @@ See `.env.example` for the complete configuration contract. Privy is the authent
 
 Capela records only Privy sessions that have reached its authenticated API. Settings can list those observed devices, revoke one session, or revoke every session except the current one; the API rejects a revoked session even if its browser still holds an older access token. Capela's configured email login uses a Privy one-time code, so it creates no Capela password to change. Permanent account deletion removes the user's investigations, notifications, payment records, session registry, custom Cloudinary avatar, local profile, and Privy identity.
 
+Logout, full investigation-history deletion, and permanent account deletion are guarded by explicit confirmation dialogs. Each completed dossier also renders a self-contained evidence brief from the stored assessment, mechanism, literature, and evidence counts; the browser can download that exact card as a high-resolution PNG.
+
 ## Evidence philosophy
 
 Capela retrieves before it synthesizes. Citation and molecule metadata come only from external records, computational findings never become experimental evidence, and unsupported mechanisms resolve to an explicit insufficient-evidence state.
@@ -53,8 +55,8 @@ Capela retrieves before it synthesizes. Citation and molecule metadata come only
 
 Deploy the repository as two services:
 
-1. Create the persistent API from `render.yaml` (or an equivalent persistent Node host) and configure every variable marked `sync: false`.
-2. Deploy the Next.js frontend from `apps/web` on Vercel. Keep access to the monorepo root enabled so the `@capela/shared` workspace is installed.
+1. On Render, leave Root Directory blank so commands run at the repository root. Use `npm ci && npm run build:api` as the Build Command, `npm run start:prod --workspace @capela/api` as the Start Command, and `/health` as the Health Check Path. The repository root is required because the API uses the root lockfile and `packages/shared` workspace.
+2. On Vercel, set the Root Directory to `apps/web`, enable **Include source files outside of the Root Directory in the Build Step**, and use the Next.js Framework Preset. [`apps/web/vercel.json`](apps/web/vercel.json) deliberately uses `.next` as the Output Directory because Vercel resolves it relative to that Root Directory; do not configure `apps/web/.next`, which would resolve to `apps/web/apps/web/.next`.
 3. Configure `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_PRIVY_APP_ID`, and `NEXT_PUBLIC_PRIVY_CLIENT_ID` in the frontend host.
 4. Set the API's `WEB_ORIGIN` to the production frontend URL, then register that same origin in Privy.
 5. Verify `/health`, authentication, and a complete Loliolide investigation.

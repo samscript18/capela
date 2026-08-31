@@ -1,5 +1,6 @@
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Bell, FlaskConical, Home, Plus, Settings, Sparkles, X } from "lucide-react";
 import Link from "next/link";
@@ -308,31 +309,27 @@ export function AppShell({ children }: { children: ReactNode }) {
             pending={notifications.isPending}
           />
         )}
-        {logoutDialog && (
-          <div className={styles.dialogBackdrop}>
-            <section
-              aria-labelledby="logout-dialog-title"
-              aria-modal="true"
-              className={styles.logoutDialog}
-              role="dialog"
+        <Dialog.Root open={logoutDialog} onOpenChange={setLogoutDialog}>
+          <Dialog.Portal>
+            <Dialog.Overlay className={styles.dialogBackdrop} />
+            <Dialog.Content
+              className={`${styles.logoutDialog} fixed top-1/2 left-1/2 z-101 -translate-x-1/2 -translate-y-1/2`}
             >
               <span>Account action</span>
-              <h2 id="logout-dialog-title">Log out of this session?</h2>
-              <p>
+              <Dialog.Title>Log out of this session?</Dialog.Title>
+              <Dialog.Description>
                 This browser will disconnect from your private Capela workspace. Your investigations and dossiers remain
                 stored with your account.
-              </p>
+              </Dialog.Description>
               <footer>
-                <button onClick={() => setLogoutDialog(false)} type="button">
-                  Stay signed in
-                </button>
+                <Dialog.Close>Stay signed in</Dialog.Close>
                 <button onClick={() => void logout()} type="button">
                   Log out
                 </button>
               </footer>
-            </section>
-          </div>
-        )}
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
       </div>
     );
   }

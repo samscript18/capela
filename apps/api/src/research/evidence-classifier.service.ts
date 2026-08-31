@@ -87,7 +87,7 @@ export class EvidenceClassifierService {
 
   private paperClaims(paper: PaperEvidence): EvidenceClaim[] {
     const claims: EvidenceClaim[] = [];
-    paper.sourceContexts.forEach((item: any, index: number) => {
+    paper.sourceContexts.forEach((item, index) => {
       const source = item.source.trim();
       const finding = item.context.trim();
       if (!source || !finding) return;
@@ -103,7 +103,7 @@ export class EvidenceClassifierService {
         analyzedSource: paper.analyzedSource,
       });
     });
-    paper.activities.forEach((activity: any, index: number) => {
+    paper.activities.forEach((activity, index) => {
       const originalActivity = activity.activity.trim();
       const finding = activity.finding.trim();
       if (!originalActivity || !finding) return;
@@ -127,7 +127,7 @@ export class EvidenceClassifierService {
         measuredOutcome: activity.measuredOutcome?.trim() || undefined,
       });
     });
-    paper.targets.forEach((target: any, index: number) => {
+    paper.targets.forEach((target, index) => {
       const originalTarget = target.target.trim();
       const finding = target.finding.trim();
       if (!originalTarget || !finding) return;
@@ -147,7 +147,7 @@ export class EvidenceClassifierService {
         directExperimentalConfirmation: safe.directExperimentalConfirmation,
       });
     });
-    paper.mechanisms.forEach((mechanism: any, index: number) => {
+    paper.mechanisms.forEach((mechanism, index) => {
       const finding = mechanism.finding.trim();
       if (!finding) return;
       const context = `${finding} ${mechanism.pathway ?? ""} ${mechanism.molecularEvent ?? ""}`;
@@ -407,6 +407,7 @@ export class EvidenceClassifierService {
     return [...new Set(values)];
   }
   private strengthRank(value: EvidenceStrength): number {
-    return { Insufficient: 0, Limited: 1, Moderate: 2, Strong: 3 }[value as keyof typeof { Insufficient: 0; Limited: 1; Moderate: 2; Strong: 3 }];
+    const rank: Record<EvidenceStrength, number> = { Insufficient: 0, Limited: 1, Moderate: 2, Strong: 3 };
+    return rank[value];
   }
 }

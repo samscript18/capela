@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { DossierSummaryCard } from "@/components/dossier-summary-card";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import type { ApiInvestigation } from "@/lib/api";
 import { useMe } from "@/lib/api";
@@ -190,6 +191,8 @@ export function DossierView({ item }: { item: ApiInvestigation }) {
           compactEvidence ? "space-y-14" : "space-y-24",
         )}
       >
+        <DossierSummaryCard item={item} />
+
         <DossierSection id="overview" number="01" label="Molecule overview" title="Resolved chemical identity">
           <div className="premium-surface grid overflow-hidden lg:grid-cols-[200px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
             <div className="grid min-h-64 place-items-center border-b border-white/[.07] bg-[#f7f9ef] p-6 sm:min-h-72 sm:p-8 lg:border-b-0 lg:border-r">

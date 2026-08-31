@@ -9,6 +9,7 @@ These requirements supersede conflicting older requirements below until the user
 - The authenticated workspace must include Home (`/dashboard`), Try now (`/dashboard/investigate`), Investigations (`/dashboard/investigations`), Notifications (`/notifications`), Profile (`/profile`), and Settings (`/settings`).
 - Notifications are derived from real investigation activity; do not seed fake notifications.
 - Match Verith's authenticated-session loading treatment with Capela branding. Profile and account settings must include a server-validated Cloudinary avatar upload, API-observed Privy session inventory and revocation, an accurate passwordless state for Capela's email-OTP/Google/wallet login methods, and permanent deletion of both Capela data and the Privy identity.
+- Logout, investigation-history deletion, and account deletion must always open Verith-parity confirmation dialogs with explicit cancel and confirm actions. Every completed investigation must include a polished Capela dossier-summary card generated only from stored investigation data and downloadable as a high-resolution PNG.
 - Payments are disabled. `PAYMENTS_ENABLED` defaults to `false`, investigations remain free during preview, payment verification fails closed, and no payment prompt is shown. The prior three-per-day/Base-payment rules apply only if payments are explicitly re-enabled.
 
 ---

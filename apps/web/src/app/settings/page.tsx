@@ -422,7 +422,11 @@ export default function SettingsPage() {
                     : "Investigation history is already empty."}
                 </span>
               ) : (
-                <DeleteHistoryDialog pending={deleteHistory.isPending} onConfirm={() => deleteHistory.mutate()} />
+                <DeleteHistoryDialog
+                  error={deleteHistory.isError ? deleteHistory.error.message : undefined}
+                  pending={deleteHistory.isPending}
+                  onConfirm={(onSuccess) => deleteHistory.mutate(undefined, { onSuccess })}
+                />
               )}
             </div>
             <dl className={styles.privacyStatus}>
@@ -435,11 +439,6 @@ export default function SettingsPage() {
                 <dd>Investigations, generated dossiers, and related notifications</dd>
               </div>
             </dl>
-            {deleteHistory.isError && (
-              <p className={styles.profileFormError} role="alert">
-                {deleteHistory.error.message}
-              </p>
-            )}
           </section>
 
           <section className={styles.privacyPanel}>
@@ -546,9 +545,18 @@ function DeleteAccountDialog({ accountLabel }: { accountLabel: string }) {
   );
 }
 
-function DeleteHistoryDialog({ pending, onConfirm }: { pending: boolean; onConfirm: () => void }) {
+function DeleteHistoryDialog({
+  pending,
+  error,
+  onConfirm,
+}: {
+  pending: boolean;
+  error?: string;
+  onConfirm: (onSuccess: () => void) => void;
+}) {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open} onOpenChange={(next) => !pending && setOpen(next)}>
       <Dialog.Trigger asChild>
         <button className={styles.danger} disabled={pending} type="button">
           <ShieldAlert aria-hidden="true" size={15} />
@@ -569,13 +577,21 @@ function DeleteHistoryDialog({ pending, onConfirm }: { pending: boolean; onConfi
             This permanently removes every stored investigation and generated dossier from your Capela account. The
             action cannot be undone.
           </Dialog.Description>
+          {error && (
+            <p className={styles.profileFormError} role="alert">
+              {error}
+            </p>
+          )}
           <footer>
             <Dialog.Close disabled={pending}>Keep history</Dialog.Close>
-            <Dialog.Close asChild>
-              <button className={styles.danger} disabled={pending} onClick={onConfirm} type="button">
-                {pending ? "Deleting history…" : "Delete history"}
-              </button>
-            </Dialog.Close>
+            <button
+              className={styles.danger}
+              disabled={pending}
+              onClick={() => onConfirm(() => setOpen(false))}
+              type="button"
+            >
+              {pending ? "Deleting history…" : "Delete history"}
+            </button>
           </footer>
         </Dialog.Content>
       </Dialog.Portal>

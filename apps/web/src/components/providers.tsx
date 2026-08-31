@@ -44,10 +44,10 @@ export function Providers({ children }: { children: ReactNode }) {
   const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID?.trim();
   const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID?.trim();
   const defaultChain = Number(process.env.NEXT_PUBLIC_BASE_CHAIN_ID ?? 84532) === base.id ? base : baseSepolia;
-  
+
   // Only render PrivyProvider if we have valid credentials and not in build mode
-  const isValidConfig = appId && appId.length > 0 && typeof window !== 'undefined';
-  
+  const isValidConfig = appId && appId.length > 0 && typeof window !== "undefined";
+
   const content = isValidConfig ? (
     <PrivyProvider
       appId={appId}

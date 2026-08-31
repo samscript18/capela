@@ -23,7 +23,7 @@ export class ResearchAssessmentService {
     const indirectExperimentalPapers = papersByType("indirect_experimental");
     const computationalPapers = papersByType("computational_prediction");
     const literatureReportedPapers = papersByType("literature_reported");
-    const directlyConfirmedTargets = analysis.targets.filter((target: any) => target.directExperimentalConfirmation).length;
+    const directlyConfirmedTargets = analysis.targets.filter((target) => target.directExperimentalConfirmation).length;
     const abstractOnlyPapers = paperEvidence.filter((paper) => paper.analyzedSource === "abstract").length;
     let score = claims.length ? 5 : 0;
     score += Math.min(45, directExperimentalPapers * 15);
@@ -44,8 +44,8 @@ export class ResearchAssessmentService {
     score = Math.max(0, Math.min(100, score));
     if (claims.some((claim) => claim.evidenceType !== "insufficient") && score < 15) score = 15;
     const overallStrength = this.scoreStrength(score);
-    const biologicalActivityEvidence = this.strongest(analysis.activities.map((activity: any) => activity.strength));
-    const targetEvidence = this.strongest(analysis.targets.map((target: any) => target.strength));
+    const biologicalActivityEvidence = this.strongest(analysis.activities.map((activity) => activity.strength));
+    const targetEvidence = this.strongest(analysis.targets.map((target) => target.strength));
     const mechanisticEvidence = this.mechanismStrength(mechanism, claims);
     const consistency =
       claims.length === 0
