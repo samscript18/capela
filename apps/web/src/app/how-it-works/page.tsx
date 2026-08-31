@@ -1,5 +1,13 @@
 import { ArrowRight } from "lucide-react";
 import { FactGrid, NumberedBlock, PublicPage } from "@/components/public-page";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "How It Works",
+  description:
+    "See how Capela resolves a molecule, retrieves scientific literature, extracts and validates evidence, and builds a sourced eight-section dossier.",
+  path: "/how-it-works",
+});
 
 const steps = [
   {

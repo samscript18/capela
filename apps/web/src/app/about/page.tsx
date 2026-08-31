@@ -1,4 +1,12 @@
 import { FactGrid, NumberedBlock, PublicPage } from "@/components/public-page";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "About",
+  description:
+    "Learn why Capela investigates molecules through retrieval-first scientific analysis, visible uncertainty, and evidence-backed research dossiers.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

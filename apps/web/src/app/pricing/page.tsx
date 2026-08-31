@@ -2,6 +2,14 @@ import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { PublicPage } from "@/components/public-page";
 import { buttonVariants } from "@/components/ui/button";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Preview Access",
+  description:
+    "Run complete Capela molecule investigations free during preview, including sourced literature, evidence classification, and the full research dossier.",
+  path: "/pricing",
+});
 
 const features = [
   "Full molecule investigation",

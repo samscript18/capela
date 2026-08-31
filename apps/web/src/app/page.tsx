@@ -16,6 +16,40 @@ import { PublicHeader } from "@/components/public-header";
 import { PremiumBackground } from "@/components/premium-background";
 import { buttonVariants } from "@/components/ui/button";
 import { InvestigationEntry } from "@/components/investigation-entry";
+import { createPageMetadata, siteConfig } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: siteConfig.title,
+  description: siteConfig.description,
+  path: "/",
+  absoluteTitle: true,
+});
+
+const softwareApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Capela",
+  url: siteConfig.url.href,
+  description: siteConfig.description,
+  applicationCategory: "ScientificApplication",
+  operatingSystem: "Web",
+  isAccessibleForFree: true,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+  },
+  featureList: [
+    "Molecule identity resolution",
+    "Scientific literature retrieval",
+    "Evidence classification",
+    "Biological activity analysis",
+    "Molecular target analysis",
+    "Mechanism evidence assessment",
+    "Sourced research dossier",
+  ],
+};
 
 const pipeline = ["Resolve", "Search", "Read", "Extract", "Classify", "Assess", "Build"];
 const evidence = [
@@ -46,6 +80,10 @@ const problemCards = [
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd).replace(/</g, "\\u003c") }}
+      />
       <PublicHeader />
       <main className="page-enter relative overflow-hidden">
         <PremiumBackground />

@@ -1,72 +1,332 @@
 # Capela
 
-Capela is an evidence-first AI molecule investigation agent built for the Orion Agents Hackathon. Give it a molecule and it produces a sourced, evidence-graded scientific dossier that keeps experiments, predictions, literature reports, and Capela inferences visibly distinct.
+![Capela mark](apps/web/src/app/icon.svg)
 
-## Architecture
+> **Give Capela a molecule. Get a sourced, evidence-graded scientific investigation.**
+>
+> Capela resolves a molecule, searches scientific literature, extracts reported findings, separates experiments from predictions, and returns a structured research dossier that keeps uncertainty visible.
 
-Capela is a small npm-workspace monorepo:
+[![Orion Agents Hackathon](https://img.shields.io/badge/Orion-Agents_Hackathon-788f68?style=flat-square)](https://orionagents.org/hackathon) [![API docs](https://img.shields.io/badge/API-OpenAPI_3-788f68?style=flat-square)](#api-documentation) [![Source](https://img.shields.io/badge/Source-GitHub-222725?style=flat-square)](https://github.com/samscript18/capela)
 
-- `apps/web` — Next.js App Router frontend
-- `apps/api` — NestJS API and investigation runner
-- `packages/shared` — shared Zod schemas and DTO-friendly scientific types
+**Source code:** [github.com/samscript18/capela](https://github.com/samscript18/capela)
 
-The production research flow is retrieval first: PubChem molecule resolution, bounded Tavily searches over trusted scientific domains, structured Gemini evidence extraction on Google Cloud, deterministic validation, and only then synthesis. PUG REST is the primary chemical-data route, with the official NCBI Entrez `pccompound` interface as a validated outage fallback. Groq is the model fallback.
+## Why Capela exists
 
-## Stack
+Scientific knowledge about a molecule is rarely available in one coherent place. A researcher may need to resolve chemical identity in PubChem, search several literature indexes, compare study models, inspect targets and pathways, distinguish docking from direct binding, and trace every conclusion back to a publication.
 
-Next.js, React, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, Zustand, Privy, NestJS, MongoDB/Mongoose, Zod, Google Gen AI, Groq, Tavily, viem, and PubChem.
+That fragmentation creates a second problem: an answer can sound scientifically plausible while overstating what the retrieved evidence actually establishes. Computational predictions may be presented as experiments, pathway changes may be mistaken for direct binding, and a mechanism may be completed from model memory rather than demonstrated by the literature.
 
-## Local setup
+Capela is designed to close that gap. One molecule starts a bounded investigation that preserves the difference between retrieved facts, experimental findings, computational results, literature reports, and Capela's own synthesis.
 
-1. Install Node.js 22.4 or newer and MongoDB.
-2. Run `npm install` at the repository root.
-3. Copy `.env.example` to `.env.local` and configure the required services.
-4. Run `npm run dev`.
+## The submission in one sentence
 
-The web app uses `http://localhost:3000`; the API defaults to `http://localhost:4000`.
+Capela is an evidence-first AI molecule investigation agent that resolves chemical identity from authoritative data, retrieves scientific literature, extracts and validates paper-level findings, classifies the strength and type of evidence, and assembles a traceable eight-section research dossier.
 
-Capela's web scripts disable Node's experimental server-side Web Storage globals so browser-only libraries cannot accidentally share `localStorage` across requests. Restart an already-running web process after changing or pulling the package scripts.
+## What makes Capela an agent
 
-## Commands
+Capela is not a scientific chat box answering from model memory. It is a staged investigation with durable state, bounded provider use, deterministic validation, visible progress, retryable failures, and a strict retrieval-before-synthesis contract:
 
-- `npm run dev` — start web and API together
-- `npm run build` — build every workspace
-- `npm run format` — format maintained project files with Prettier
-- `npm run format:check` — verify project formatting without writing files
-- `npm run lint` — lint the monorepo
-- `npm run typecheck` — type-check every workspace
-- `npm test` — run workspace tests
+```text
+receive a molecule
+      ↓
+resolve authoritative chemical identity
+      ↓
+build focused scientific queries
+      ↓
+retrieve and deduplicate literature
+      ↓
+rank and select the strongest studies
+      ↓
+extract paper-level structured evidence
+      ↓
+validate attribution and evidence classes
+      ↓
+analyze activities, targets, and mechanisms
+      ↓
+assess strength, consistency, conflicts, and gaps
+      ↓
+build a sourced scientific dossier
+```
 
-## Environment and integrations
+Each stage is persisted. The interface can show what Capela is doing, how many papers have been discovered or analyzed, and whether a terminal failure can be retried. Provider output is never accepted as scientific truth merely because it matches a schema; Capela applies independent attribution and classification rules before synthesis.
 
-See `.env.example` for the complete configuration contract. Privy is the authentication authority. Configure `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` on the API before using custom profile-image uploads; uploads are validated and sent to Cloudinary only by the backend. Payments are currently disabled with `PAYMENTS_ENABLED=false`, so authenticated users receive free preview access. The dormant Base verifier remains fail-closed and is only activated when that flag is explicitly enabled. No real secrets belong in source control.
+## The end-to-end experience
 
-## Account security
+### 1. Give Capela a molecule
 
-Capela records only Privy sessions that have reached its authenticated API. Settings can list those observed devices, revoke one session, or revoke every session except the current one; the API rejects a revoked session even if its browser still holds an older access token. Capela's configured email login uses a Privy one-time code, so it creates no Capela password to change. Permanent account deletion removes the user's investigations, notifications, payment records, session registry, custom Cloudinary avatar, local profile, and Privy identity.
+The user enters a molecule name or identifier once. Authentication is handled by Privy through email OTP, Google, or wallet. After authentication, the user is routed directly into the Capela workspace and the investigation continues without requiring a sequence of separate prompts.
 
-Logout, full investigation-history deletion, and permanent account deletion are guarded by explicit confirmation dialogs. Each completed dossier also renders a self-contained evidence brief from the stored assessment, mechanism, literature, and evidence counts; the browser can download that exact card as a high-resolution PNG.
+### 2. Resolve chemical identity from authoritative records
 
-## Evidence philosophy
+Capela resolves the molecule through PubChem PUG REST. If that route is temporarily unavailable, it uses the official NCBI Entrez `pccompound` interface as a validated fallback. Names, CID, formula, molecular weight, SMILES, InChI, InChIKey, synonyms, description, and structure links come from retrieved chemical records—not an LLM.
 
-Capela retrieves before it synthesizes. Citation and molecule metadata come only from external records, computational findings never become experimental evidence, and unsupported mechanisms resolve to an explicit insufficient-evidence state.
+Ambiguous, missing, invalid, and temporarily unavailable molecule states remain distinct. A network outage is retryable; it is not misreported as “molecule not found.”
+
+### 3. Search scientific literature before asking a model to reason
+
+Capela builds focused activity, target, mechanism, and source-context queries. Tavily searches are restricted to trusted scientific publication domains, including PubMed, PubMed Central, and Europe PMC. Results are normalized, deduplicated, ranked, and bounded before any AI analysis begins.
+
+Publication titles, authors, journals, years, DOI values, PMID/PMCID values, and publication URLs are preserved only from retrieved records. Capela never asks a model to invent citation metadata.
+
+### 4. Extract evidence paper by paper
+
+Google Cloud Gemini is the primary structured evidence-analysis provider. Groq is the direct fallback when Gemini is unavailable. Responses must satisfy a strict JSON Schema and shared Zod contracts, then pass Capela's own validation for paper attribution, study type, directness, target relationship, and mechanism safety.
+
+The stored evidence remains attached to the paper from which it was extracted. A review cannot become direct experimental evidence. Docking, molecular dynamics, QSAR, target prediction, and network pharmacology remain computational.
+
+### 5. Separate what was measured from what was inferred
+
+Capela uses six evidence classes throughout the product:
+
+- **Direct experimental** — the relationship or effect was directly measured;
+- **Indirect experimental** — an effect was observed, but the proposed molecular relationship was not directly established;
+- **Computational prediction** — docking, molecular dynamics, QSAR, ML prediction, target prediction, or network pharmacology;
+- **Literature reported** — reported or discussed without direct primary experimental evidence in the analyzed material;
+- **Capela inference** — a visible synthesis across stored findings;
+- **Insufficient** — the available evidence does not justify a reliable conclusion.
+
+Pathway or expression changes do not automatically become direct molecular binding. Unsupported links stay unsupported.
+
+### 6. Build only the mechanism the evidence permits
+
+When the literature supports it, Capela constructs a traceable chain:
+
+```text
+molecule
+  ↓
+molecular event
+  ↓
+target or pathway
+  ↓
+cellular effect
+  ↓
+observed biological outcome
+```
+
+Every edge carries paper and evidence references. The mechanism status is one of `supported`, `partially_supported`, `insufficient_evidence`, or `conflicting_evidence`. If the chain cannot be established, the dossier says so rather than filling the gap with a plausible story.
+
+### 7. Deliver the complete research dossier
+
+Every completed investigation contains eight major sections:
+
+1. Molecule overview
+2. Common sources and context
+3. Biological activity
+4. Molecular targets
+5. Mechanism of action
+6. Literature evidence
+7. Evidence versus prediction
+8. Research assessment
+
+Activities and targets retain their supporting evidence and paper IDs. Literature entries show what Capela analyzed and extracted. The final assessment explains the strongest evidence, major gaps, conflicts, consistency, and overall strength as **Strong**, **Moderate**, **Limited**, or **Insufficient**.
+
+### 8. Reopen, retry, and export
+
+Investigations remain attached to the authenticated owner. Completed dossiers can be reopened from history and include a polished summary card that can be downloaded as a high-resolution PNG. Failed runs retain their original entitlement and can be retried without being counted as successful investigations.
+
+Notifications are generated only from real completed or failed investigation activity. Logout, history deletion, notification deletion, and permanent account deletion use explicit user confirmation where the action is consequential.
+
+## Competitive advantage
+
+### 1. Retrieval is structurally before synthesis
+
+Capela does not produce an answer and search for supporting citations afterward. Chemical identity and literature are retrieved first; models analyze bounded retrieved material; deterministic validation runs before aggregation and dossier generation.
+
+### 2. Evidence class is part of the data model
+
+Experimental, indirect, computational, reported, inferred, and insufficient findings are not visual labels added at the end. They are persisted types used by target normalization, mechanism construction, evidence distribution, and the final assessment.
+
+### 3. Every scientific conclusion remains traceable
+
+Evidence claims reference retrieved paper IDs. Activity summaries, target summaries, mechanism edges, conflicts, literature entries, and assessment sections carry their supporting evidence and publication references. Unknown references fail closed.
+
+### 4. Scientific restraint is a successful output
+
+Capela can complete an investigation with limited evidence, conflicting findings, no directly confirmed target, or no supported mechanism. It assesses the record instead of converting uncertainty into a therapeutic or drug-development recommendation.
+
+### 5. The system is agentic without being overbuilt
+
+The investigation is implemented as a small, inspectable pipeline inside one NestJS application. It does not require microservices, Redis, Kafka, a vector database, an agent swarm, a proprietary orchestration framework, or an internal docking engine.
+
+### 6. Provider failure is explicit and recoverable
+
+Gemini, Groq, Tavily, PubChem, and NCBI failures map to bounded error states. Failed investigations are retryable, do not consume a successful free allowance, and do not silently fall back to unsupported model memory.
+
+## Why this matters
+
+A list of claims is not the same thing as a scientific investigation. The useful question is not only “what has been said about this molecule?” but “what was actually measured, in which model, by which study, with what degree of directness, and what remains unknown?”
+
+Capela provides a calm operating layer for that question. It does not promise that a molecule is safe, effective, clinically useful, or commercially promising. It shows what the retrieved record supports and gives uncertainty a first-class place in the result.
+
+## Technical strategy
+
+```text
+Next.js web application
+        │
+        │ REST / JSON + Privy bearer token
+        ▼
+NestJS API ───────────────────────── MongoDB
+   │    │    │    │
+   │    │    │    └──────── Cloudinary: managed profile images
+   │    │    └───────────── Tavily: bounded scientific discovery
+   │    └────────────────── PubChem PUG REST → NCBI Entrez fallback
+   └─────────────────────── Google Cloud Gemini → Groq fallback
+```
+
+### AI and tool-use loop
+
+1. **Resolve before research.** Search queries are built from a molecule identity obtained from authoritative chemical APIs.
+2. **Retrieve before synthesis.** Models receive selected abstracts and stored metadata, not an invitation to answer from memory.
+3. **Require structured output.** Gemini and Groq return JSON Schema-constrained evidence that is parsed with shared Zod contracts.
+4. **Validate attribution independently.** Every extracted paper reference must exist in the retrieved set; invented references fail the batch.
+5. **Correct unsafe classifications deterministically.** Computational methods, reviews, expression changes, and pathway associations cannot retain direct-binding or direct-experimental labels when the method does not support them.
+6. **Aggregate conservatively.** Activities and targets are normalized while original terminology, conflicts, study models, and supporting IDs remain available.
+7. **Build only supported mechanism edges.** Missing links produce partial or insufficient status instead of model-completed biology.
+8. **Persist progress and terminal state.** The UI can poll a durable investigation record, reopen results, and retry failed provider runs.
+
+### Scientific safety and account security
+
+- Citation metadata comes only from retrieved literature records.
+- Molecule identifiers and chemical properties come only from chemical-data APIs.
+- Computational findings never become experimental findings automatically.
+- Capela-generated synthesis is explicitly labeled `capela_inference`.
+- Unsupported and conflicting mechanisms remain visible.
+- Protected endpoints verify the Privy access token server-side.
+- The API derives identity from the verified token and never accepts a client-supplied user ID.
+- Investigation, notification, payment, session, profile, and deletion operations are owner-scoped.
+- Profile images are signature- and size-validated by the API before server-side Cloudinary upload.
+- API-observed Privy sessions can be listed and revoked.
+- Permanent account deletion removes Capela data, the managed avatar, session records, and the Privy identity.
+- Base payment verification fails closed and remains disabled unless explicitly enabled by configuration.
+
+## Repository layout
+
+```text
+capela/
+├── apps/
+│   ├── api/                 # NestJS REST API, auth, users, investigations, research, payments
+│   └── web/                 # Next.js App Router public site and authenticated workspace
+├── packages/
+│   └── shared/              # Shared scientific types, enums, and Zod evidence contracts
+├── .env.example             # Blank environment contract; local secrets are never committed
+├── package.json             # npm workspace commands
+└── README.md
+```
+
+The runtime is intentionally direct: Next.js, NestJS, MongoDB, Privy, PubChem/NCBI, Tavily, Gemini, Groq, Cloudinary, and optional Base verification. It does not use queues, workers, Redis, vectors, embeddings, or microservices.
+
+## Run locally
+
+### Requirements
+
+- Node.js 24
+- npm
+- MongoDB Atlas or a compatible MongoDB instance
+- Privy application
+- Tavily API key
+- Google Cloud Gemini credentials
+- Groq API key for model fallback
+- Cloudinary account for custom profile images
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). The API runs at [http://localhost:4000](http://localhost:4000) by default.
+
+Production builds:
+
+```bash
+npm run build
+npm run start:api
+```
+
+## Environment
+
+| Variable                      | Purpose                                                           |
+| ----------------------------- | ----------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`        | Canonical public web origin used by search and social metadata    |
+| `NEXT_PUBLIC_API_URL`         | Browser-visible Nest API origin                                   |
+| `NEXT_PUBLIC_PRIVY_APP_ID`    | Public Privy application identifier                               |
+| `NEXT_PUBLIC_PRIVY_CLIENT_ID` | Public Privy client identifier                                    |
+| `MONGODB_URI`                 | Durable MongoDB connection string                                 |
+| `PRIVY_APP_ID`                | Server-side Privy application identifier                          |
+| `PRIVY_APP_SECRET`            | Server-only Privy application secret                              |
+| `PRIVY_JWT_VERIFICATION_KEY`  | Optional Privy SPKI key; managed JWKS is used when omitted        |
+| `TAVILY_API_KEY`              | Scientific literature discovery key                               |
+| `GOOGLE_CLOUD_API_KEY`        | Vertex AI Express Mode API-key path for Gemini                    |
+| `GOOGLE_CLOUD_PROJECT`        | Standard Vertex AI project path when not using Express Mode       |
+| `GOOGLE_CLOUD_LOCATION`       | Vertex AI location; defaults to `global`                          |
+| `GEMINI_MODEL`                | Primary structured evidence-analysis model                        |
+| `GROQ_API_KEY`                | Fallback evidence-analysis provider key                           |
+| `GROQ_MODEL`                  | First Groq fallback model                                         |
+| `GROQ_FALLBACK_MODEL`         | Second Groq fallback model                                        |
+| `CLOUDINARY_CLOUD_NAME`       | Cloudinary cloud name for managed avatars                         |
+| `CLOUDINARY_API_KEY`          | Server-side Cloudinary API key                                    |
+| `CLOUDINARY_API_SECRET`       | Server-only Cloudinary secret                                     |
+| `PAYMENTS_ENABLED`            | Enables the dormant Base payment gate only when explicitly `true` |
+| `PAYMENT_RECEIVER_ADDRESS`    | Configured Base recipient when payments are enabled               |
+| `INVESTIGATION_PRICE_WEI`     | Per-investigation native Base amount in wei                       |
+| `BASE_CHAIN_ID`               | Expected Base network chain ID                                    |
+| `BASE_RPC_URL`                | RPC used for server-side transaction verification                 |
+| `WEB_ORIGIN`                  | Exact frontend origin or comma-separated origins allowed by CORS  |
+| `PORT`                        | Nest API port; normally `4000`                                    |
+
+See [.env.example](.env.example) for the complete provider and tuning contract. Local `.env` files are ignored and their values must never be committed or printed.
+
+## API documentation
+
+The API publishes interactive Swagger documentation generated from its controllers and explicit request/response models:
+
+- Swagger UI: [http://localhost:4000/docs](http://localhost:4000/docs)
+- OpenAPI JSON: [http://localhost:4000/docs/openapi.json](http://localhost:4000/docs/openapi.json)
+- OpenAPI YAML: [http://localhost:4000/docs/openapi.yaml](http://localhost:4000/docs/openapi.yaml)
+
+The schema covers all backend operations and the complete nested dossier. In Swagger UI, select **Authorize** and paste a current Privy access token without the `Bearer` prefix; Swagger adds it automatically. `/health` is public. Account, session, investigation, notification, and payment operations require verified Privy authentication.
+
+## Verification
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build
+```
+
+The build validates the shared scientific contracts, NestJS backend, generated OpenAPI decorators, and Next.js application. Provider calls remain bounded and production configuration is validated at API startup.
 
 ## Deployment
 
 Deploy the repository as two services:
 
-1. On Render, leave Root Directory blank so commands run at the repository root. Use `npm ci && npm run build:api` as the Build Command, `npm run start:api` as the Start Command, and `/health` as the Health Check Path. The repository root is required because the API uses the root lockfile and `packages/shared` workspace. The root package pins Render to Node 24.x.
-2. On Vercel, set the Root Directory to `apps/web`, enable **Include source files outside of the Root Directory in the Build Step**, and use the Next.js Framework Preset. [`apps/web/vercel.json`](apps/web/vercel.json) deliberately uses `.next` as the Output Directory because Vercel resolves it relative to that Root Directory; do not configure `apps/web/.next`, which would resolve to `apps/web/apps/web/.next`.
-3. Configure `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_PRIVY_APP_ID`, and `NEXT_PUBLIC_PRIVY_CLIENT_ID` in the frontend host.
-4. Set the API's `WEB_ORIGIN` to the production frontend URL, then register that same origin in Privy.
-5. Verify `/health`, authentication, and a complete Loliolide investigation.
+1. **Render API:** keep the repository root as the service root, use `npm ci && npm run build:api` as the build command, `npm run start:api` as the start command, and `/health` as the health check.
+2. **Vercel web:** set the Root Directory to `apps/web`, enable source files outside the root during the build, and use the Next.js framework preset. The output directory is `.next` relative to `apps/web`.
+3. Configure the frontend origin in `NEXT_PUBLIC_SITE_URL`, the API origin in `NEXT_PUBLIC_API_URL`, and register the same frontend origin in Privy and the API's `WEB_ORIGIN`.
 
-Production API startup fails explicitly when a critical MongoDB, Privy, Cloudinary, Tavily, Gemini, Groq fallback, or CORS variable is absent or invalid. Base configuration is required only when `PAYMENTS_ENABLED=true`.
+Production API startup fails explicitly when required MongoDB, Privy, Cloudinary, Tavily, Gemini, Groq, or CORS configuration is missing. Base configuration is required only when payments are enabled.
 
-Tavily performs four bounded searches restricted to PubMed, PMC, and Europe PMC pages. Gemini Enterprise/Vertex AI (`GEMINI_MODEL`, default `gemini-2.5-flash`) is the primary evidence-extraction model; Groq is used automatically if a Gemini batch is unavailable. Both model paths use JSON Schema output and still pass responses through Capela's independent Zod, attribution, evidence-classification, and mechanism-safety validation.
+## Product boundaries
 
-For the simplest Google Cloud setup, create a Vertex AI Express Mode API key and set `GOOGLE_CLOUD_API_KEY`; no service-account file is needed in that mode. Standard Google Cloud projects remain supported through `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`, and Application Default Credentials. Never expose either credential path in the frontend.
+Capela is scientific evidence organization and assessment support. It is not a replacement for qualified scientific, medical, toxicological, regulatory, or clinical review.
 
-## Hackathon limitations
+It does not:
 
-The runner is intentionally process-local, literature and AI analysis are bounded for latency and cost, and a server restart may leave an active investigation stale. Capela does not perform docking, ADMET prediction, experiment recommendation, or clinical/drug-development assessment.
+- recommend treatment, dosage, or self-medication;
+- diagnose a condition;
+- claim that a molecule is safe or effective;
+- declare a molecule a good drug or investment candidate;
+- perform molecular docking, molecular dynamics, QSAR, ADMET prediction, or molecule generation;
+- recommend laboratory experiments;
+- convert pathway changes into direct binding;
+- convert computational evidence into experimental evidence;
+- invent sources, identifiers, measurements, targets, or mechanisms;
+- hide scientific uncertainty;
+- treat failed provider work as a successful investigation.
+
+Those boundaries are part of Capela's scientific contract and are enforced in the evidence pipeline, not left as marketing language.
+
+## Orion Agents Hackathon
+
+Capela was built for the [Orion Agents Hackathon](https://orionagents.org/hackathon). The project deliberately prioritizes a convincing end-to-end investigation, traceable evidence, scientific restraint, and a polished research workspace over startup-scale infrastructure.

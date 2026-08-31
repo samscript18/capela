@@ -148,7 +148,7 @@ export default function SettingsPage() {
                 </span>
                 <span>
                   <ShieldCheck aria-hidden="true" size={13} />
-                  Privy verified
+                  Verified
                 </span>
               </div>
             </div>
@@ -234,7 +234,7 @@ export default function SettingsPage() {
                 </div>
                 <div>
                   <dt>Authentication</dt>
-                  <dd>Privy verified</dd>
+                  <dd>Verified</dd>
                 </div>
                 <div>
                   <dt>Account scope</dt>
@@ -572,7 +572,7 @@ function DeleteHistoryDialog({
               <X aria-hidden="true" size={18} />
             </Dialog.Close>
           </header>
-          <Dialog.Title>Delete all investigation history?</Dialog.Title>
+          <Dialog.Title className="-mt-8!">Delete all investigation history?</Dialog.Title>
           <Dialog.Description>
             This permanently removes every stored investigation and generated dossier from your Capela account. The
             action cannot be undone.

@@ -82,7 +82,7 @@ export default function ProfilePage() {
     { icon: Mail, label: "Email address", value: email },
     { icon: AtSign, label: "Display name", value: record.displayName || "Not set" },
     { icon: CalendarDays, label: "Member since", value: formatDate(record.createdAt) },
-    { icon: ShieldCheck, label: "Authentication", value: "Privy verified" },
+    { icon: ShieldCheck, label: "Authentication", value: "Verified" },
     { icon: Wallet, label: "Connected wallet", value: shortenAddress(address) },
     {
       icon: FlaskConical,
@@ -151,7 +151,7 @@ export default function ProfilePage() {
           </span>
           <span>
             <ShieldCheck aria-hidden="true" size={14} />
-            Privy authenticated
+            Authenticated
           </span>
         </div>
       </section>

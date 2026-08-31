@@ -317,13 +317,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <span>Account action</span>
               <Dialog.Title>Log out of this session?</Dialog.Title>
-              <Dialog.Description>
+              <Dialog.Description className="mt-2 text-xs!">
                 This browser will disconnect from your private Capela workspace. Your investigations and dossiers remain
                 stored with your account.
               </Dialog.Description>
               <footer>
-                <Dialog.Close>Stay signed in</Dialog.Close>
-                <button onClick={() => void logout()} type="button">
+                <Dialog.Close className="text-xs!">Stay signed in</Dialog.Close>
+                <button onClick={() => void logout()} type="button" className="text-xs! text-red-600">
                   Log out
                 </button>
               </footer>

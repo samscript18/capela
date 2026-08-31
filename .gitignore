@@ -12,3 +12,14 @@ apps/web/next-env.d.ts
 apps/web/.next/
 apps/api/dist/
 packages/shared/dist/
+
+# Local agent context and implementation status
+AGENTS.md
+BUILD_STATUS.md
+
+# Keep verification suites local; do not publish them with the repository
+**/test/
+**/tests/
+**/__tests__/
+**/*.test.*
+**/*.spec.*

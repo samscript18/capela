@@ -1,4 +1,12 @@
 import { FactGrid, NumberedBlock, PublicPage } from "@/components/public-page";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Evidence Methodology",
+  description:
+    "Explore Capela's retrieval-first evidence framework for separating direct experiments, indirect findings, computational predictions, and scientific inference.",
+  path: "/methodology",
+});
 
 const sections = [
   {

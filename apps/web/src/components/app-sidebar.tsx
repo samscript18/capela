@@ -127,7 +127,7 @@ function Account({ mobile = false, onRequestLogout }: { mobile?: boolean; onRequ
         <strong>{displayName}</strong>
         <span>{secondary}</span>
       </div>
-      <button onClick={onRequestLogout} type="button">
+      <button onClick={onRequestLogout} type="button" className="text-xs!">
         {mobile && <LogOut aria-hidden="true" size={16} />}
         Log out
       </button>
