@@ -41,10 +41,14 @@ export function Providers({ children }: { children: ReactNode }) {
     () =>
       new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false, retry: 1 } } }),
   );
-  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
-  const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
+  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID?.trim();
+  const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID?.trim();
   const defaultChain = Number(process.env.NEXT_PUBLIC_BASE_CHAIN_ID ?? 84532) === base.id ? base : baseSepolia;
-  const content = appId ? (
+  
+  // Only render PrivyProvider if we have valid credentials and not in build mode
+  const isValidConfig = appId && appId.length > 0 && typeof window !== 'undefined';
+  
+  const content = isValidConfig ? (
     <PrivyProvider
       appId={appId}
       clientId={clientId}

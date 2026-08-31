@@ -87,7 +87,7 @@ export class MechanismService {
     const evidenceIds = this.unique(edges.flatMap((edge) => edge.evidenceIds));
     const paperIds = this.unique(edges.flatMap((edge) => edge.paperIds));
     const relevantConflict = analysis.conflicts.some(
-      (conflict) => conflict.scope === "target" && conflict.paperIds.some((paperId) => paperIds.includes(paperId)),
+      (conflict: any) => conflict.scope === "target" && conflict.paperIds.some((paperId: string) => paperIds.includes(paperId)),
     );
     if (relevantConflict)
       return {
@@ -123,8 +123,8 @@ export class MechanismService {
         (edge) =>
           !edge.evidenceIds.length ||
           !edge.paperIds.length ||
-          edge.evidenceIds.some((id) => !evidenceIds.has(id)) ||
-          edge.paperIds.some((id) => !paperIds.has(id)),
+          edge.evidenceIds.some((id: string) => !evidenceIds.has(id)) ||
+          edge.paperIds.some((id: string) => !paperIds.has(id)),
       )
     ) {
       throw new MechanismValidationError(
@@ -143,7 +143,7 @@ export class MechanismService {
       indirect_experimental: 4,
       direct_experimental: 5,
     };
-    return rank[right] > rank[left] ? right : left;
+    return (rank as any)[right] > (rank as any)[left] ? right : left;
   }
 
   private edgeId(from: string, to: string) {

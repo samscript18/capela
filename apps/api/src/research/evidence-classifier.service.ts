@@ -87,7 +87,7 @@ export class EvidenceClassifierService {
 
   private paperClaims(paper: PaperEvidence): EvidenceClaim[] {
     const claims: EvidenceClaim[] = [];
-    paper.sourceContexts.forEach((item, index) => {
+    paper.sourceContexts.forEach((item: any, index: number) => {
       const source = item.source.trim();
       const finding = item.context.trim();
       if (!source || !finding) return;
@@ -103,7 +103,7 @@ export class EvidenceClassifierService {
         analyzedSource: paper.analyzedSource,
       });
     });
-    paper.activities.forEach((activity, index) => {
+    paper.activities.forEach((activity: any, index: number) => {
       const originalActivity = activity.activity.trim();
       const finding = activity.finding.trim();
       if (!originalActivity || !finding) return;
@@ -127,7 +127,7 @@ export class EvidenceClassifierService {
         measuredOutcome: activity.measuredOutcome?.trim() || undefined,
       });
     });
-    paper.targets.forEach((target, index) => {
+    paper.targets.forEach((target: any, index: number) => {
       const originalTarget = target.target.trim();
       const finding = target.finding.trim();
       if (!originalTarget || !finding) return;
@@ -147,7 +147,7 @@ export class EvidenceClassifierService {
         directExperimentalConfirmation: safe.directExperimentalConfirmation,
       });
     });
-    paper.mechanisms.forEach((mechanism, index) => {
+    paper.mechanisms.forEach((mechanism: any, index: number) => {
       const finding = mechanism.finding.trim();
       if (!finding) return;
       const context = `${finding} ${mechanism.pathway ?? ""} ${mechanism.molecularEvent ?? ""}`;
@@ -406,7 +406,7 @@ export class EvidenceClassifierService {
   private unique<T>(values: T[]): T[] {
     return [...new Set(values)];
   }
-  private strengthRank(value: EvidenceStrength) {
-    return { Insufficient: 0, Limited: 1, Moderate: 2, Strong: 3 }[value];
+  private strengthRank(value: EvidenceStrength): number {
+    return { Insufficient: 0, Limited: 1, Moderate: 2, Strong: 3 }[value as keyof typeof { Insufficient: 0; Limited: 1; Moderate: 2; Strong: 3 }];
   }
 }
