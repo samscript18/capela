@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import { DossierSummaryCard } from "@/components/dossier-summary-card";
+import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import type { ApiInvestigation } from "@/lib/api";
 import { useMe } from "@/lib/api";
@@ -125,13 +126,16 @@ export function DossierView({ item }: { item: ApiInvestigation }) {
     <div className={cn("min-w-0 pb-24", compactEvidence && "compact-dossier")}>
       <header className="border-b border-white/[.07]">
         <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8 sm:py-10 xl:px-10">
-          <Link
-            href="/dashboard/investigations"
-            className="inline-flex min-h-9 items-center rounded-full border border-white/[.08] bg-white/[.025] px-3 text-[10px] text-[#a9b0a4] transition hover:border-[#9fad7c]/20 hover:text-white"
-          >
-            <ArrowLeft size={14} className="mr-1 inline" />
-            Investigations
-          </Link>
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              href="/dashboard/investigations"
+              className="inline-flex min-h-9 items-center rounded-full border border-white/[.08] bg-white/[.025] px-3 text-[10px] text-[#a9b0a4] transition hover:border-[#9fad7c]/20 hover:text-white"
+            >
+              <ArrowLeft size={14} className="mr-1 inline" />
+              Investigations
+            </Link>
+            <DeleteInvestigationButton id={item._id} name={molecule.preferredName} />
+          </div>
           <div className="luminous-panel relative mt-7 overflow-hidden p-6 sm:p-9 lg:p-11">
             <div className="pointer-events-none absolute -right-28 -top-36 size-[28rem] rounded-full bg-[#9fad7c]/[.075] blur-3xl" />
             <div className="relative flex flex-col justify-between gap-8 lg:flex-row lg:items-end">

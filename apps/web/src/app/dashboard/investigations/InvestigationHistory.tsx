@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useInvestigations, type ApiInvestigation } from "@/lib/api";
+import { formatInvestigationStatus } from "@/lib/investigation-record";
 import NewInvestigationButton from "./NewInvestigationButton";
 import { investigationHistoryStyles as styles } from "./investigations.styles";
 
@@ -112,7 +113,7 @@ export default function InvestigationHistory() {
                 <strong>{record.molecule?.preferredName || record.originalInput || "Untitled investigation"}</strong>
               </div>
               <span>{moleculeSource(record)}</span>
-              <span data-status={record.status}>{record.status.replaceAll("_", " ")}</span>
+              <span data-status={record.status}>{formatInvestigationStatus(record.status)}</span>
               <span>{record.evidence?.length ?? 0}</span>
               <span>{formatDate(record.updatedAt)}</span>
               <Link

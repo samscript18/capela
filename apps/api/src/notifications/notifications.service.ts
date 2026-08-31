@@ -152,6 +152,19 @@ export class NotificationsService {
     return { deletedCount: result.modifiedCount };
   }
 
+  async deleteForInvestigation(privyUserId: string, investigationId: string) {
+    const user = await this.users.ensureUser(privyUserId);
+    const result = await this.notifications.updateMany(
+      {
+        userId: user._id,
+        "metadata.investigationId": investigationId,
+        deletedAt: { $exists: false },
+      },
+      { $set: { deletedAt: new Date() } },
+    );
+    return { deletedCount: result.modifiedCount };
+  }
+
   private async syncTerminalInvestigations(userId: Types.ObjectId) {
     const terminal = await this.investigations
       .find({ userId, status: { $in: ["completed", "failed"] } })

@@ -254,6 +254,27 @@ export function useRetryInvestigation(id: string) {
   });
 }
 
+export function useDeleteInvestigation(id: string) {
+  const { getAccessToken } = useApiEnabled();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      apiFetch<{ deleted: true; investigationId: string; notificationsDeletedCount: number }>(
+        `/investigations/${id}`,
+        getAccessToken,
+        { method: "DELETE" },
+      ),
+    onSuccess: async () => {
+      queryClient.removeQueries({ queryKey: ["investigations", id], exact: true });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["investigations"] }),
+        queryClient.invalidateQueries({ queryKey: ["access"] }),
+        queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+      ]);
+    },
+  });
+}
+
 export function useVerifyPayment() {
   const { getAccessToken } = useApiEnabled();
   const queryClient = useQueryClient();

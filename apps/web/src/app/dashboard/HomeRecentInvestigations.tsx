@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useInvestigations } from "@/lib/api";
 import { formatDate } from "@/lib/format";
+import { formatInvestigationStatus } from "@/lib/investigation-record";
 import { homeStyles as styles } from "./home.styles";
 
 export function HomeRecentInvestigations() {
@@ -61,7 +62,7 @@ export function HomeRecentInvestigations() {
               </div>
               <div>
                 <dt>Status</dt>
-                <dd data-status={record.status}>{record.status.replaceAll("_", " ")}</dd>
+                <dd data-status={record.status}>{formatInvestigationStatus(record.status)}</dd>
               </div>
               <div>
                 <dt>Evidence</dt>

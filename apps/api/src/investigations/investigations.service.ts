@@ -142,6 +142,18 @@ export class InvestigationsService {
     return investigation;
   }
 
+  async remove(privyUserId: string, id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException("Invalid investigation ID");
+    const user = await this.users.ensureUser(privyUserId);
+    const investigation = await this.investigations.findOneAndDelete({ _id: id, userId: user._id }).lean().exec();
+    if (!investigation) throw new NotFoundException("Investigation not found");
+
+    if (investigation.status !== "completed" && investigation.access.type === "paid" && investigation.access.paymentId)
+      await this.payments.release(investigation.access.paymentId.toString(), investigation._id);
+
+    return { deleted: true as const, investigationId: id };
+  }
+
   async retry(privyUserId: string, id: string) {
     if (!Types.ObjectId.isValid(id)) throw new BadRequestException("Invalid investigation ID");
     const user = await this.users.ensureUser(privyUserId);

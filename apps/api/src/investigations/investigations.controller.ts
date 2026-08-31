@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import type { AuthenticatedIdentity } from "../auth/auth.types";
 import { CurrentAuth } from "../auth/current-auth.decorator";
 import { PrivyAuthGuard } from "../auth/privy-auth.guard";
 import { CreateInvestigationDto } from "./dto/create-investigation.dto";
 import { ListInvestigationsDto } from "./dto/list-investigations.dto";
 import { InvestigationsService } from "./investigations.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -18,7 +19,11 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import { ApiErrorResponseDto, InvestigationResponseDto } from "../openapi/openapi.models";
+import {
+  ApiErrorResponseDto,
+  DeleteInvestigationResponseDto,
+  InvestigationResponseDto,
+} from "../openapi/openapi.models";
 
 @Controller("investigations")
 @UseGuards(PrivyAuthGuard)
@@ -29,7 +34,10 @@ import { ApiErrorResponseDto, InvestigationResponseDto } from "../openapi/openap
   description: "Missing, invalid, expired, or revoked Privy access token.",
 })
 export class InvestigationsController {
-  constructor(private readonly investigations: InvestigationsService) {}
+  constructor(
+    private readonly investigations: InvestigationsService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -77,6 +85,23 @@ export class InvestigationsController {
   get(@CurrentAuth() auth: AuthenticatedIdentity, @Param("id") id: string) {
     return this.investigations.get(auth.privyUserId, id);
   }
+
+  @Delete(":id")
+  @ApiOperation({
+    summary: "Delete an investigation",
+    description:
+      "Permanently deletes one owner-scoped investigation and removes its related activity notifications. An unfinished paid entitlement is released.",
+  })
+  @ApiParam({ name: "id", description: "MongoDB investigation ID", example: "66d2e2b59d8f09f1c2a7b431" })
+  @ApiOkResponse({ type: DeleteInvestigationResponseDto })
+  @ApiBadRequestResponse({ type: ApiErrorResponseDto, description: "Invalid investigation ID." })
+  @ApiNotFoundResponse({ type: ApiErrorResponseDto, description: "Investigation not found for this user." })
+  async remove(@CurrentAuth() auth: AuthenticatedIdentity, @Param("id") id: string) {
+    const investigation = await this.investigations.remove(auth.privyUserId, id);
+    const notifications = await this.notifications.deleteForInvestigation(auth.privyUserId, id);
+    return { ...investigation, notificationsDeletedCount: notifications.deletedCount };
+  }
+
   @Post(":id/retry")
   @ApiOperation({
     summary: "Retry a failed investigation",

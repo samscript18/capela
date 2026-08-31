@@ -21,6 +21,7 @@ Scientific safety rules:
 - Do not use capela_inference during single-paper extraction.
 - Use insufficient when the material does not justify a reliable classification.
 - Return empty arrays when a category is unsupported.
+- Keep every finding concise. Return at most 8 items in each evidence category.
 - Preserve each supplied paperId exactly and return exactly one result per supplied paper.
 - analyzedSource is abstract because only retrieved publication abstracts are supplied in this phase.
 
@@ -69,6 +70,7 @@ export class AiEvidenceService {
   private readonly groqBatchSize: number;
   private readonly maxPaperTextChars: number;
   private readonly maxOutputTokens: number;
+  private readonly geminiThinkingBudget: number;
   private readonly groqMaxOutputTokens: number;
   private readonly geminiTimeoutMs: number;
   private readonly groqTimeoutMs: number;
@@ -89,10 +91,14 @@ export class AiEvidenceService {
       /\/$/,
       "",
     );
-    this.batchSize = this.boundedNumber(config.get<string>("AI_EVIDENCE_BATCH_SIZE"), 3, 1, 4);
+    // Multi-paper structured responses are substantially more likely to be
+    // truncated or lose exact paper attribution. Reliability matters more
+    // than saving a request here, so Gemini always analyzes one paper at a time.
+    this.batchSize = 1;
     this.groqBatchSize = this.boundedNumber(config.get<string>("GROQ_EVIDENCE_BATCH_SIZE"), 1, 1, 2);
     this.maxPaperTextChars = this.boundedNumber(config.get<string>("MAX_PAPER_TEXT_CHARS"), 12_000, 2_000, 20_000);
-    this.maxOutputTokens = this.boundedNumber(config.get<string>("GEMINI_MAX_OUTPUT_TOKENS"), 8_000, 2_000, 16_000);
+    this.maxOutputTokens = this.boundedNumber(config.get<string>("GEMINI_MAX_OUTPUT_TOKENS"), 12_000, 2_000, 16_000);
+    this.geminiThinkingBudget = this.boundedNumber(config.get<string>("GEMINI_THINKING_BUDGET"), 0, -1, 4_096);
     this.groqMaxOutputTokens = this.boundedNumber(config.get<string>("GROQ_MAX_OUTPUT_TOKENS"), 4_000, 1_000, 8_000);
     this.geminiTimeoutMs = this.boundedNumber(config.get<string>("GEMINI_TIMEOUT_MS"), 90_000, 10_000, 180_000);
     this.groqTimeoutMs = this.boundedNumber(config.get<string>("GROQ_TIMEOUT_MS"), 90_000, 10_000, 180_000);
@@ -228,9 +234,18 @@ export class AiEvidenceService {
           responseJsonSchema: PROVIDER_JSON_SCHEMA,
           temperature: 0,
           maxOutputTokens: this.maxOutputTokens,
+          ...(this.geminiModel!.startsWith("gemini-2.5-")
+            ? { thinkingConfig: { thinkingBudget: this.geminiThinkingBudget } }
+            : {}),
           abortSignal: controller.signal,
         },
       });
+      const finishReason = response.candidates?.[0]?.finishReason;
+      if (finishReason && finishReason !== "STOP")
+        throw new AiEvidenceError(
+          "AI_INVALID_RESPONSE",
+          `Gemini stopped before completing structured evidence (finish reason: ${finishReason}).`,
+        );
       return this.validateOutput(papers, this.parseJson(response.text));
     } catch (error) {
       this.logProviderFailure("Gemini", this.geminiModel!, error);
@@ -316,8 +331,16 @@ export class AiEvidenceService {
 
   private validateOutput(papers: PaperSnapshot[], output: unknown) {
     const validated = PaperEvidenceBatchSchema.safeParse(output);
-    if (!validated.success)
-      throw new AiEvidenceError("AI_INVALID_RESPONSE", "The evidence model returned data Capela could not validate.");
+    if (!validated.success) {
+      const issues = validated.error.issues
+        .slice(0, 3)
+        .map((issue) => `${issue.path.join(".") || "response"}: ${issue.message}`)
+        .join("; ");
+      throw new AiEvidenceError(
+        "AI_INVALID_RESPONSE",
+        `The evidence model returned data Capela could not validate${issues ? ` (${issues})` : ""}.`,
+      );
+    }
     this.validatePaperIds(papers, validated.data.papers);
     return validated.data.papers.map((paper) => this.enforceScientificSafety(paper));
   }
@@ -330,12 +353,19 @@ export class AiEvidenceService {
   }
 
   private logProviderFailure(provider: string, model: string, error: unknown) {
-    const details = error as { status?: unknown; code?: unknown; name?: unknown };
+    const details = error as { status?: unknown; code?: unknown; name?: unknown; message?: unknown };
     const status = typeof details?.status === "number" ? details.status : undefined;
     const code = typeof details?.code === "string" ? details.code.slice(0, 64) : undefined;
     const name = typeof details?.name === "string" ? details.name.slice(0, 64) : "UnknownError";
+    const message =
+      typeof details?.message === "string"
+        ? `; ${details.message
+            .replace(/key=[^&\s]+/gi, "key=[redacted]")
+            .replace(/\s+/g, " ")
+            .slice(0, 300)}`
+        : "";
     this.logger.warn(
-      `${provider} evidence request failed (${model}; ${status ? `HTTP ${status}` : name}${code ? `; ${code}` : ""})`,
+      `${provider} evidence request failed (${model}; ${status ? `HTTP ${status}` : name}${code ? `; ${code}` : ""}${message})`,
     );
   }
 
@@ -460,7 +490,9 @@ function normalizeJsonSchema(value: unknown): unknown {
   if (!value || typeof value !== "object") return value;
   const output: Record<string, unknown> = {};
   for (const [key, nested] of Object.entries(value)) {
-    if (key === "$schema") continue;
+    // Gemini structured output only accepts a documented JSON Schema subset.
+    // Keep stricter string limits in Capela's post-response validation.
+    if (key === "$schema" || key === "maxLength" || key === "maxItems") continue;
     if (key === "const") {
       output.enum = [nested];
       continue;

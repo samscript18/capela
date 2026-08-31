@@ -119,6 +119,8 @@ export type PaperSnapshot = {
 };
 
 const ConfidenceSchema = z.enum(["high", "medium", "low"]);
+const EvidenceTextSchema = z.string().max(1_500);
+const EvidenceListSchema = z.array(z.string().max(1_000)).max(8);
 
 export const PaperEvidenceSchema = z
   .object({
@@ -134,45 +136,51 @@ export const PaperEvidenceSchema = z
       "observational",
       "other",
     ]),
-    sourceContexts: z.array(z.object({ source: z.string(), context: z.string() }).strict()),
-    activities: z.array(
-      z
-        .object({
-          activity: z.string(),
-          finding: z.string(),
-          model: z.string().nullable(),
-          measuredOutcome: z.string().nullable(),
-          evidenceType: EvidenceTypeSchema,
-          confidence: ConfidenceSchema,
-        })
-        .strict(),
-    ),
-    targets: z.array(
-      z
-        .object({
-          target: z.string(),
-          relationship: TargetRelationshipSchema,
-          finding: z.string(),
-          directExperimentalConfirmation: z.boolean(),
-          evidenceType: EvidenceTypeSchema,
-          confidence: ConfidenceSchema,
-        })
-        .strict(),
-    ),
-    mechanisms: z.array(
-      z
-        .object({
-          finding: z.string(),
-          pathway: z.string().nullable(),
-          molecularEvent: z.string().nullable(),
-          cellularEffect: z.string().nullable(),
-          biologicalOutcome: z.string().nullable(),
-          evidenceType: EvidenceTypeSchema,
-          confidence: ConfidenceSchema,
-        })
-        .strict(),
-    ),
-    limitations: z.array(z.string()),
+    sourceContexts: z.array(z.object({ source: EvidenceTextSchema, context: EvidenceTextSchema }).strict()).max(8),
+    activities: z
+      .array(
+        z
+          .object({
+            activity: EvidenceTextSchema,
+            finding: EvidenceTextSchema,
+            model: EvidenceTextSchema.nullable(),
+            measuredOutcome: EvidenceTextSchema.nullable(),
+            evidenceType: EvidenceTypeSchema,
+            confidence: ConfidenceSchema,
+          })
+          .strict(),
+      )
+      .max(8),
+    targets: z
+      .array(
+        z
+          .object({
+            target: EvidenceTextSchema,
+            relationship: TargetRelationshipSchema,
+            finding: EvidenceTextSchema,
+            directExperimentalConfirmation: z.boolean(),
+            evidenceType: EvidenceTypeSchema,
+            confidence: ConfidenceSchema,
+          })
+          .strict(),
+      )
+      .max(8),
+    mechanisms: z
+      .array(
+        z
+          .object({
+            finding: EvidenceTextSchema,
+            pathway: EvidenceTextSchema.nullable(),
+            molecularEvent: EvidenceTextSchema.nullable(),
+            cellularEffect: EvidenceTextSchema.nullable(),
+            biologicalOutcome: EvidenceTextSchema.nullable(),
+            evidenceType: EvidenceTypeSchema,
+            confidence: ConfidenceSchema,
+          })
+          .strict(),
+      )
+      .max(8),
+    limitations: EvidenceListSchema,
   })
   .strict();
 

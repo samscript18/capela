@@ -479,6 +479,12 @@ export class DeleteHistoryResponseDto {
   @ApiProperty({ minimum: 0 }) notificationsDeletedCount!: number;
 }
 
+export class DeleteInvestigationResponseDto {
+  @ApiProperty({ enum: [true] }) deleted!: true;
+  @ApiProperty({ example: objectIdExample }) investigationId!: string;
+  @ApiProperty({ minimum: 0 }) notificationsDeletedCount!: number;
+}
+
 export class PaymentVerificationResponseDto {
   @ApiProperty({ example: objectIdExample }) id!: string;
   @ApiProperty({ pattern: "^0x[0-9a-fA-F]{64}$" }) transactionHash!: string;

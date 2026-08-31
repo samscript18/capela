@@ -7,8 +7,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { DossierView } from "@/components/dossier-view";
+import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
 import { ApiError, useInvestigation, useRetryInvestigation } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
+import { formatAccessType, formatInvestigationStatus } from "@/lib/investigation-record";
 
 const stages: { status: InvestigationStatus; label: string }[] = [
   { status: "resolving_molecule", label: "Resolving molecule identity" },
@@ -63,12 +65,15 @@ export default function InvestigationPage() {
           <ArrowLeft size={14} className="mr-1 inline" />
           Investigations
         </Link>
-        {!failed && (
-          <span className="mono inline-flex items-center gap-2 rounded-full border border-[#63e6a1]/15 bg-[#63e6a1]/[.04] px-3 py-2 text-[8px] uppercase tracking-[.14em] text-[#63e6a1]">
-            <span className="size-1.5 rounded-full bg-[#63e6a1] shadow-[0_0_10px_#63e6a1]" />
-            Live · updates every 2s
-          </span>
-        )}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {!failed && (
+            <span className="mono inline-flex items-center gap-2 rounded-full border border-[#63e6a1]/15 bg-[#63e6a1]/[.04] px-3 py-2 text-[8px] text-[#63e6a1]">
+              <span className="size-1.5 rounded-full bg-[#63e6a1] shadow-[0_0_10px_#63e6a1]" />
+              Live · updates every 2s
+            </span>
+          )}
+          <DeleteInvestigationButton id={item._id} name={item.molecule?.preferredName ?? item.originalInput} />
+        </div>
       </div>
       <header className="relative mt-8 overflow-hidden border-b border-white/[.07] pb-9">
         <div className="pointer-events-none absolute -right-12 -top-20 size-72 rounded-full bg-[#9fad7c]/[.055] blur-3xl" />
@@ -81,11 +86,13 @@ export default function InvestigationPage() {
             <p className="mt-3 text-sm text-[#a9b0a4]">Resolved from “{item.originalInput}”</p>
           )}
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <span className="mono rounded-full border border-[#9fad7c]/20 bg-[#9fad7c]/[.06] px-3 py-1.5 text-[8px] uppercase tracking-[.12em] text-[#9fad7c]">
-            {item.status.replaceAll("_", " ")}
+          <span
+            className={`mono rounded-full px-3 py-1.5 text-[8px] ${failed ? "border border-[#ff7474]/30 bg-[#ff7474]/[.07] !text-[#ff7474]" : "border border-[#9fad7c]/20 bg-[#9fad7c]/[.06] !text-[#9fad7c]"}`}
+          >
+            {formatInvestigationStatus(item.status)}
           </span>
           <span className="mono rounded-full border border-white/[.09] bg-white/[.025] px-3 py-1.5 text-[8px] uppercase tracking-[.12em] text-[#a9b0a4]">
-            {item.access.type} access
+            {formatAccessType(item.access.type)}
           </span>
           {item.molecule && (
             <a

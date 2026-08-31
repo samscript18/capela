@@ -64,6 +64,13 @@ const entrezSummaryResponseSchema = z.object({
     .catchall(z.unknown()),
 });
 
+// PubChem exposes the bentonite record under its montmorillonite lookup name.
+// Keep this deliberately narrow: broad fuzzy matching can silently select a different molecule.
+const PUBCHEM_QUERY_ALIASES: Readonly<Record<string, string>> = {
+  bentonite: "montmorillonite",
+  benitonite: "montmorillonite",
+};
+
 export class PubChemResolutionError extends Error {
   constructor(
     readonly code: "MOLECULE_NOT_FOUND" | "MOLECULE_AMBIGUOUS" | "PUBCHEM_UNAVAILABLE" | "PUBCHEM_INVALID_RESPONSE",
@@ -104,8 +111,9 @@ export class PubChemService {
     const input = originalInput.trim();
     if (!input)
       throw new PubChemResolutionError("MOLECULE_NOT_FOUND", "Capela could not confidently identify this molecule.");
+    const queryInput = PUBCHEM_QUERY_ALIASES[this.normalizeName(input)] ?? input;
     try {
-      return await this.resolveWithPugRest(input);
+      return await this.resolveWithPugRest(queryInput);
     } catch (error) {
       if (
         !(error instanceof PubChemResolutionError) ||
@@ -114,7 +122,7 @@ export class PubChemService {
         throw error;
       this.logger.warn(`PubChem PUG REST resolution failed (${error.code}); trying the official NCBI Entrez fallback`);
       try {
-        return await this.resolveWithEntrez(input);
+        return await this.resolveWithEntrez(queryInput);
       } catch (fallbackError) {
         if (
           fallbackError instanceof PubChemResolutionError &&

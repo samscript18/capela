@@ -58,3 +58,14 @@ export function normalizeApiInvestigation(record: ApiInvestigationPayload): ApiI
     evidence: Array.isArray(record.evidence) ? record.evidence : [],
   };
 }
+
+export function formatInvestigationStatus(status: InvestigationStatus) {
+  return status
+    .split("_")
+    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+    .join(" ");
+}
+
+export function formatAccessType(type: ApiInvestigation["access"]["type"]) {
+  return `${type.charAt(0).toUpperCase()}${type.slice(1)} access`;
+}
