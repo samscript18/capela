@@ -1,0 +1,19 @@
+import { vectraStyles } from "@/lib/vectra-styles";
+
+export const notificationStyles = {
+  page: `${vectraStyles.pageMedium} pb-12`,
+  header:
+    "mb-10 py-2 [&>span]:inline-flex [&>span]:items-center [&>span]:gap-2 [&>span]:text-[10px] [&>span]:font-semibold [&>span]:uppercase [&>span]:tracking-[0.16em] [&>span]:text-[#a7b587] [&>span]:before:size-1.5 [&>span]:before:rounded-full [&>span]:before:bg-[#9fad7c] [&>span]:before:shadow-[0_0_16px_rgba(159,173,124,0.85)] [&>span]:before:content-[''] [&_h1]:mt-4 [&_h1]:mb-0 [&_h1]:max-w-[20ch] [&_h1]:text-3xl [&_h1]:leading-[1.08] [&_h1]:font-semibold [&_h1]:tracking-tighter md:[&_h1]:text-4xl [&>div]:mt-5 [&>div]:grid [&>div]:grid-cols-[minmax(0,1fr)_auto] [&>div]:items-end [&>div]:gap-6 max-[700px]:[&>div]:grid-cols-1 max-[700px]:[&>div]:items-start [&_p]:m-0 [&_p]:max-w-2xl [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-white/50 [&_button]:rounded-full [&_button]:border [&_button]:border-white/10 [&_button]:bg-white/[0.04] [&_button]:px-5 [&_button]:py-3 [&_button]:text-sm [&_button]:font-medium [&_button]:transition-all [&_button:not(:disabled):hover]:border-[#9fad7c]/25 [&_button:not(:disabled):hover]:bg-[#9fad7c]/10 [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-40",
+  mutationError:
+    "mb-4 rounded-2xl border border-danger/25 bg-danger/[0.07] px-5 py-4 text-sm text-red-200 shadow-[0_16px_40px_-26px_rgba(239,68,68,0.5)]",
+  loading:
+    "grid gap-3 [&>span]:mb-1 [&>span]:text-[10px] [&>span]:font-semibold [&>span]:uppercase [&>span]:tracking-[0.14em] [&>span]:text-white/35 [&_div]:h-28 [&_div]:animate-pulse [&_div]:rounded-3xl [&_div]:border [&_div]:border-white/[0.04] [&_div]:bg-gradient-to-r [&_div]:from-white/[0.025] [&_div]:via-white/[0.055] [&_div]:to-white/[0.025]",
+  error: `${vectraStyles.state} flex min-h-80 flex-col items-start justify-center [&_h2]:text-2xl! [&_button]:mt-2 [&_button]:rounded-full [&_button]:border-0 [&_button]:bg-gradient-to-r [&_button]:from-[#a7b587] [&_button]:to-[#71805d] [&_button]:px-5 [&_button]:py-3 [&_button]:text-sm [&_button]:font-medium [&_button]:text-white`,
+  empty: `${vectraStyles.state} flex min-h-80 flex-col items-start justify-center [&_h2]:text-2xl!`,
+  ledger:
+    "m-0 grid list-none gap-3 p-0 [&_li]:relative [&_li]:grid [&_li]:grid-cols-[0.5rem_minmax(0,1fr)_auto] [&_li]:items-start [&_li]:gap-5 [&_li]:overflow-hidden [&_li]:rounded-3xl [&_li]:border [&_li]:border-white/[0.06] [&_li]:bg-card/60 [&_li]:p-5 [&_li]:shadow-[0_24px_55px_-34px_rgba(0,0,0,0.9)] [&_li]:transition-all [&_li:hover]:border-white/10 [&_li:hover]:bg-white/[0.025] max-[700px]:[&_li]:grid-cols-[0.5rem_1fr] [&_li[data-read=true]]:opacity-55 [&_li[data-read=true]]:saturate-50 [&_span]:text-[10px] [&_span]:font-semibold [&_span]:uppercase [&_span]:tracking-[0.12em] [&_span]:text-[#b8c493]/80 [&_small]:text-xs [&_small]:text-white/30 [&_h2]:mt-2 [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:tracking-tight [&_p]:mt-0 [&_p]:mb-3 [&_p]:text-sm [&_p]:leading-relaxed [&_p]:text-white/50",
+  marker: "mt-1 size-1.5 rounded-full bg-[#9fad7c] shadow-[0_0_14px_rgba(159,173,124,0.95)]",
+  recordActions:
+    "flex flex-wrap justify-end gap-2 max-[700px]:col-start-2 max-[700px]:justify-start [&_a]:rounded-full [&_a]:border [&_a]:border-[#9fad7c]/20 [&_a]:bg-[#9fad7c]/10 [&_a]:px-3.5 [&_a]:py-2 [&_a]:text-xs [&_a]:font-medium [&_a]:text-[#c8d1aa] [&_a]:transition-colors [&_a:hover]:bg-[#9fad7c]/20 [&_button]:rounded-full [&_button]:border [&_button]:border-white/[0.07] [&_button]:bg-white/[0.03] [&_button]:px-3.5 [&_button]:py-2 [&_button]:text-xs [&_button]:font-medium [&_button]:text-white/55 [&_button]:transition-colors [&_button:not(:disabled):hover]:bg-white/[0.07] [&_button:not(:disabled):hover]:text-white [&_button:disabled]:opacity-40",
+  loadMore: `${vectraStyles.secondaryAction} mx-auto my-8 flex w-fit`,
+} as const;
