@@ -296,37 +296,3 @@ npm run build
 ```
 
 The build validates the shared scientific contracts, NestJS backend, generated OpenAPI decorators, and Next.js application. Provider calls remain bounded and production configuration is validated at API startup.
-
-## Deployment
-
-Deploy the repository as two services:
-
-1. **Render API:** keep the repository root as the service root, use `npm ci && npm run build:api` as the build command, `npm run start:api` as the start command, and `/health` as the health check.
-2. **Vercel web:** set the Root Directory to `apps/web`, enable source files outside the root during the build, and use the Next.js framework preset. The output directory is `.next` relative to `apps/web`.
-3. Configure the frontend origin in `NEXT_PUBLIC_SITE_URL`, the API origin in `NEXT_PUBLIC_API_URL`, and register the same frontend origin in Privy and the API's `WEB_ORIGIN`.
-
-Production API startup fails explicitly when required MongoDB, Privy, Cloudinary, Tavily, Gemini, Groq, or CORS configuration is missing. Base configuration is required only when payments are enabled.
-
-## Product boundaries
-
-Capela is scientific evidence organization and assessment support. It is not a replacement for qualified scientific, medical, toxicological, regulatory, or clinical review.
-
-It does not:
-
-- recommend treatment, dosage, or self-medication;
-- diagnose a condition;
-- claim that a molecule is safe or effective;
-- declare a molecule a good drug or investment candidate;
-- perform molecular docking, molecular dynamics, QSAR, ADMET prediction, or molecule generation;
-- recommend laboratory experiments;
-- convert pathway changes into direct binding;
-- convert computational evidence into experimental evidence;
-- invent sources, identifiers, measurements, targets, or mechanisms;
-- hide scientific uncertainty;
-- treat failed provider work as a successful investigation.
-
-Those boundaries are part of Capela's scientific contract and are enforced in the evidence pipeline, not left as marketing language.
-
-## Orion Agents Hackathon
-
-Capela was built for the [Orion Agents Hackathon](https://orionagents.org/hackathon). The project deliberately prioritizes a convincing end-to-end investigation, traceable evidence, scientific restraint, and a polished research workspace over startup-scale infrastructure.
