@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm run build --workspace @capela/web",
+  "outputDirectory": "apps/web/.next"
+}
