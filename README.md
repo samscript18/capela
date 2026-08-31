@@ -55,7 +55,7 @@ Capela retrieves before it synthesizes. Citation and molecule metadata come only
 
 Deploy the repository as two services:
 
-1. On Render, leave Root Directory blank so commands run at the repository root. Use `npm ci && npm run build:api` as the Build Command, `npm run start:prod --workspace @capela/api` as the Start Command, and `/health` as the Health Check Path. The repository root is required because the API uses the root lockfile and `packages/shared` workspace.
+1. On Render, leave Root Directory blank so commands run at the repository root. Use `npm ci && npm run build:api` as the Build Command, `npm run start:api` as the Start Command, and `/health` as the Health Check Path. The repository root is required because the API uses the root lockfile and `packages/shared` workspace. The root package pins Render to Node 24.x.
 2. On Vercel, set the Root Directory to `apps/web`, enable **Include source files outside of the Root Directory in the Build Step**, and use the Next.js Framework Preset. [`apps/web/vercel.json`](apps/web/vercel.json) deliberately uses `.next` as the Output Directory because Vercel resolves it relative to that Root Directory; do not configure `apps/web/.next`, which would resolve to `apps/web/apps/web/.next`.
 3. Configure `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_PRIVY_APP_ID`, and `NEXT_PUBLIC_PRIVY_CLIENT_ID` in the frontend host.
 4. Set the API's `WEB_ORIGIN` to the production frontend URL, then register that same origin in Privy.

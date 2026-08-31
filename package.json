@@ -13,6 +13,7 @@
     "build": "npm run build --workspace @capela/shared && npm run build --workspace @capela/api && npm run build --workspace @capela/web",
     "build:web": "npm run build --workspace @capela/web",
     "build:api": "npm run build --workspace @capela/api",
+    "start:api": "npm run start:prod --workspace @capela/api",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
@@ -35,6 +36,6 @@
     }
   },
   "engines": {
-    "node": ">=22.4.0"
+    "node": "24.x"
   }
 }
