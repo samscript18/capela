@@ -59,7 +59,7 @@ export function DeleteInvestigationButton({ id, name, className }: { id: string;
           <footer className="mt-8 flex flex-wrap justify-end gap-2">
             <Dialog.Close
               disabled={remove.isPending}
-              className="min-h-11 rounded-full border border-white/10 bg-white/[.04] px-5 text-sm font-medium text-white/70"
+              className="min-h-11 rounded-full border border-white/10 bg-white/[.04] px-5 text-xs! font-medium text-white/70"
             >
               Keep investigation
             </Dialog.Close>
@@ -74,7 +74,7 @@ export function DeleteInvestigationButton({ id, name, className }: { id: string;
                   },
                 })
               }
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#ff7474]/30 bg-[#ff7474]/10 px-5 text-sm font-semibold text-red-200 transition hover:bg-[#ff7474]/15 disabled:opacity-40"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#ff7474]/30 bg-[#ff7474]/10 px-5 text-xs! font-semibold text-red-200 transition hover:bg-[#ff7474]/15 disabled:opacity-40"
             >
               {remove.isPending ? (
                 <LoaderCircle aria-hidden="true" size={15} className="animate-spin" />

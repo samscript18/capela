@@ -41,7 +41,7 @@ export class TavilyLiteratureService {
     if (apiKey) this.client = tavily({ apiKey, clientName: "capela" });
     this.timeoutMs = this.boundedNumber(config.get<string>("TAVILY_TIMEOUT_MS"), 20_000, 2_000, 60_000);
     this.maxDiscovered = this.boundedNumber(config.get<string>("MAX_DISCOVERED_PAPERS"), 35, 1, 40);
-    this.maxSelected = this.boundedNumber(config.get<string>("MAX_ANALYZED_PAPERS"), 12, 1, 12);
+    this.maxSelected = this.boundedNumber(config.get<string>("MAX_ANALYZED_PAPERS"), 5, 1, 5);
     this.searchDepth =
       config.get<string>("TAVILY_SEARCH_DEPTH")?.trim().toLowerCase() === "basic" ? "basic" : "advanced";
   }

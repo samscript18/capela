@@ -144,7 +144,7 @@ export default function SecuritySettings() {
                         ? "Signing out this session returns this browser to the landing page."
                         : "Remove access if you do not recognize this browser or device."}
                     </span>
-                    <button onClick={() => setSelectedSession(session)} type="button">
+                    <button onClick={() => setSelectedSession(session)} type="button" className="text-xs!">
                       <LogOut aria-hidden="true" size={14} />
                       {session.current ? "Sign out this device" : "Revoke access"}
                     </button>
@@ -160,6 +160,7 @@ export default function SecuritySettings() {
             disabled={sessions.isPending || otherSessions.length === 0}
             onClick={() => setOtherSessionsDialog(true)}
             type="button"
+            className="text-xs!"
           >
             <LogOut aria-hidden="true" size={14} />
             Sign out other sessions
@@ -196,11 +197,12 @@ export default function SecuritySettings() {
               </p>
             )}
             <footer>
-              <button disabled={pending} onClick={closeDialog} type="button">
+              <button disabled={pending} className="text-xs!" onClick={closeDialog} type="button">
                 Keep sessions
               </button>
               <button
                 className={styles.danger}
+                style={{ fontSize: 12 }}
                 disabled={pending}
                 onClick={() => {
                   if (otherSessionsDialog) {
