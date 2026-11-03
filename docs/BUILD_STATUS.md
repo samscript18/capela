@@ -1,5 +1,7 @@
 # Build status — 2026-11-03
 
+21:28 WAT failure diagnosis: read-only inspection of the saved run shows `scientific_search_tool` completed (HTTP 200), followed by `mcp_discovery` failing (HTTP 502, request `req_cef3bcb0b85a4b26bbe0c0655546c755`). The registration/authentication/reachability cause behind that 502 is not established. Local diagnostics now distinguish transient MCP discovery 502/503/504 as `OTARI_MCP_UNAVAILABLE` and include safe event metadata in runner warnings. No paid replay, configuration change or remote fix is claimed. Started this fix at `71237125ff39690a73da54b437145c7485cd74f2` on `feat/otari-live-verification`, preserving existing uncommitted work.
+
 Current verification branch: `feat/otari-live-verification`, starting clean at `45bba94ba0f9e06813362849c395752bd58a1aba`. Earlier implementation started from `ffab39f117aa4d07cf40417ac75b30919c500583`; first actual Otari integration commit remains `9085c3f30003e5edab5e6dc05674052831f38c48`. No user changes discarded; ignored credentials remain local.
 
 A–E implementation remains in place: hosted-only research gateway, immutable abstract snapshots, exact UTF-16 spans, distinct role review, deterministic acceptance/downgrades, authenticated remote MCP, fixed sandbox audit, conservative reservations, fenced Mongo leases/cancellation, inspectable evidence and legacy dossiers. Paid checkpoints do not automatically resume; an interrupted external call may have been charged.

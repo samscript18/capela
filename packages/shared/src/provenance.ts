@@ -115,6 +115,7 @@ export type RunEvent = {
   durationMs?: number;
   httpStatus?: number;
   upstreamCode?: string;
+  toolCallId?: string;
   code?: string;
 };
 export type ResearchRun = {
@@ -186,6 +187,7 @@ export const ResearchRunSchema = z
             durationMs: z.number().optional(),
             httpStatus: z.number().int().min(100).max(599).optional(),
             upstreamCode: Id.optional(),
+            toolCallId: Id.optional(),
             code: Id.optional(),
           })
           .strict(),

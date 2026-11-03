@@ -205,9 +205,18 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
         const pathname = new URL(url).pathname.replace("/api/v1", "");
         requests.push(pathname);
         if (denied) return new Response("{}", { status: 403, headers: { "Otari-Error-Code": "budget_exceeded" } });
-        if (pathname === "/search")
+        if (pathname === "/chat/completions" && JSON.parse(init.body).tools?.[0]?.type === "otari_web_search")
           return Response.json({
-            results: [{ title: "Fixture publication", url: source.canonicalUrl, snippet: "Fixture search result" }],
+            choices: [{ finish_reason: "stop", message: { content: "Fixture only" } }],
+            otari_tool_calls: [
+              {
+                id: "otari_ws_fixture",
+                type: "web_search",
+                status: "completed",
+                query: "aspirin biological activity mechanism study",
+                sources: [{ title: "Fixture publication", url: source.canonicalUrl, published_date: null }],
+              },
+            ],
           });
         if (pathname.includes("/tools"))
           return Response.json({
@@ -302,7 +311,7 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
       assert.equal(partial.status, "failed");
       assert.equal(partial.error.code, "OTARI_BUDGET_DENIED");
       assert.equal(partial.research.budget.terminal, true);
-      assert.deepEqual(requests, ["/search"]);
+      assert.deepEqual(requests, ["/chat/completions"]);
       assert.equal(partial.dossier, undefined);
     },
   );

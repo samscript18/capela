@@ -80,10 +80,13 @@ export class OtariGatewayService {
     operation: string,
     run: ResearchRun,
     save: SaveRun,
+    reservationMicrousd?: number,
   ) {
     this.assertConfigured();
     const paid = body !== undefined;
-    const amount = this.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000);
+    const amount = reservationMicrousd ?? this.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000);
+    if (!Number.isSafeInteger(amount) || amount <= 0 || amount > 100000000)
+      throw new ResearchError("OTARI_CONFIGURATION", "Invalid dispatch reservation.");
     if (paid) reserve(run, amount);
     if (run.budget.terminal) throw new ResearchError("RUN_BUDGET_EXHAUSTED", "No further spending is allowed.");
     if (run.events.length >= 100) throw new ResearchError("RUN_EVENT_LIMIT", "Run event bound reached.");
@@ -137,7 +140,9 @@ export class OtariGatewayService {
                   ? "OTARI_SPENDING_DENIED"
                   : upstreamCode === "guardrail_blocked"
                     ? "OTARI_GUARDRAIL_BLOCKED"
-                    : "OTARI_PROVIDER_ERROR";
+                    : operation === "mcp_discovery" && [502, 503, 504].includes(response.status)
+                      ? "OTARI_MCP_UNAVAILABLE"
+                      : "OTARI_PROVIDER_ERROR";
         throw new ResearchError(
           code,
           code === "OTARI_INSUFFICIENT_FUNDS"
@@ -146,7 +151,9 @@ export class OtariGatewayService {
               ? "Otari requires configured pricing before this request can run."
               : run.budget.terminal
                 ? "Otari refused spending. No provider bypass or automatic retry is allowed."
-                : `Otari ${operation} failed (HTTP ${response.status}).`,
+                : code === "OTARI_MCP_UNAVAILABLE"
+                  ? `Otari could not discover the publication MCP server (HTTP ${response.status}). Check the registered remote URL, authentication header and server availability in Otari. Saved search remains partial; no automatic replay was attempted.`
+                  : `Otari ${operation} failed (HTTP ${response.status}).`,
         );
       }
 

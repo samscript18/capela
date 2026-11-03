@@ -246,7 +246,22 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
           ? error.code
           : "RESEARCH_FAILED";
       const safe = error instanceof ResearchError || error instanceof PubChemResolutionError;
-      this.logger.warn(`Run stopped: ${code}`);
+      const failedEvent = research?.events
+        .slice()
+        .reverse()
+        .find((event) => event.status === "failed");
+      this.logger.warn(
+        `Run stopped: ${code}` +
+          (failedEvent
+            ? ` ${JSON.stringify({
+                operation: failedEvent.operation,
+                httpStatus: failedEvent.httpStatus,
+                upstreamCode: failedEvent.upstreamCode,
+                requestId: failedEvent.requestId,
+                correlationId: failedEvent.correlationId,
+              })}`
+            : ""),
+      );
       await this.investigations
         .updateOne(filter(), {
           $set: {

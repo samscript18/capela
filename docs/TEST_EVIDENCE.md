@@ -1,5 +1,7 @@
 # Verification evidence
 
+MCP diagnostic follow-up (2026-11-03), based on `71237125ff39690a73da54b437145c7485cd74f2` plus preserved local edits: `npm test` passes 52 offline tests on both Node 26.4.0 and 24.22.2, including a new HTTP-502 discovery fixture checking the specific error, durable saved search, safe metadata, unchanged budget and no replay. API/shared compilation, `npm run format:check`, `npm run lint` and `npm run typecheck` pass. Lint/typecheck used Node 26.4.0; this narrow follow-up did not repeat the full web production build or browser/integration suites. A read-only database inspection establishes search HTTP 200 followed by discovery HTTP 502 for the reported run; no new paid or live MCP request was issued. This verifies diagnosis and local handling, not remote recovery or six-capability completion.
+
 Date: 2026-11-03. Baseline `ffab39f117aa4d07cf40417ac75b30919c500583`, clean main; implementation on `feat/mozilla-otari-capela`. First integration commit: `9085c3f30003e5edab5e6dc05674052831f38c48`. Tested implementation: `95830075f31d625f68e7e4c1320b72173f5260ad`. Final handoff commit changes evidence/docs only.
 
 Initial `npm run format:check`: blocked (`prettier` absent). Installed dependencies, then added the MCP SDK and isolated verification tooling. Initial OpenAPI typing and test-lint failures were fixed; they were not counted as passes.

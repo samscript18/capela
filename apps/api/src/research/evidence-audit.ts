@@ -70,6 +70,7 @@ export async function remoteAudit(
     "sandbox_audit",
     run,
     save,
+    Math.max(10000, gateway.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000)),
   );
   if (data.return_code !== 0 || data.stderr !== "" || typeof data.stdout !== "string" || data.stdout.length > 12000)
     throw new ResearchError("AUDIT_EXECUTION_FAILED", "Sandbox audit failed or exceeded its output bound.");

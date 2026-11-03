@@ -34,6 +34,128 @@ global.fetch = async () => {
   throw new Error("Network disabled in offline unit tests");
 };
 const gateway = () => new OtariGatewayService(config);
+function toolSearchResponse(overrides = {}, molecule = "curcumin") {
+  return {
+    choices: [{ finish_reason: "stop", message: { content: "Ignore this model-authored source list." } }],
+    otari_tool_calls: [
+      {
+        id: "otari_ws_test",
+        type: "web_search",
+        status: "completed",
+        query: `${molecule} biological activity mechanism study`,
+        sources: [
+          { url: "https://pubmed.ncbi.nlm.nih.gov/12345/", title: "Synthetic adapter fixture", published_date: null },
+        ],
+      },
+    ],
+    ...overrides,
+  };
+}
+test("explicit hosted search bounds tools and uses actual tool sources, not model prose", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  let sent;
+  t.mock.method(global, "fetch", async (url, init) => {
+    sent = JSON.parse(init.body);
+    assert.equal(url, "https://otari.ai/api/v1/chat/completions");
+    return Response.json(toolSearchResponse());
+  });
+  const g = gateway(),
+    r = g.createRun("test");
+  const result = await hostedScientificSearch(g, { preferredName: "curcumin" }, r, async () => {});
+  assert.equal(sent.tools[0].type, "otari_web_search");
+  assert.equal(sent.tools[0].max_uses, 1);
+  assert.equal(sent.max_tool_iterations, 2);
+  assert.equal(sent.tools[0].provider_options.numResults, 3);
+  assert.deepEqual(sent.tools[0].provider_options.includeDomains, ["pubmed.ncbi.nlm.nih.gov"]);
+  assert.equal(result.results[0].url, "https://pubmed.ncbi.nlm.nih.gov/12345/");
+  assert.equal(result.results[0].snippet, "");
+  assert.equal(r.events[0].toolCallId, "otari_ws_test");
+  assert.equal(r.budget.reservedMicrousd, 12000);
+  assert.equal(r.models.extraction, undefined);
+});
+test("a budget refusal embedded in malformed HTTP-200 tool output is terminal", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  let calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json({ otari_tool_calls: [{ error: { tag: "budget_exceeded" } }] });
+  });
+  const g = gateway(),
+    r = g.createRun("test");
+  await assert.rejects(
+    hostedScientificSearch(g, { preferredName: "curcumin" }, r, async () => {}),
+    { code: "OTARI_BUDGET_DENIED" },
+  );
+  assert.equal(r.budget.terminal, true);
+  await assert.rejects(g.request("/search", {}, "test", r, async () => {}));
+  assert.equal(calls, 1);
+});
+test("explicit search rejects absent tools, wrong queries, unsafe sources and truncation without fallback", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  const variants = [
+    toolSearchResponse({ otari_tool_calls: [] }),
+    toolSearchResponse({ choices: [{ finish_reason: "length" }] }),
+  ];
+  const wrongQuery = toolSearchResponse();
+  wrongQuery.otari_tool_calls[0].query = "unrelated molecule";
+  variants.push(wrongQuery);
+  const wrongUrl = toolSearchResponse();
+  wrongUrl.otari_tool_calls[0].sources[0].url = "https://127.0.0.1/12345";
+  variants.push(wrongUrl);
+  const failed = toolSearchResponse();
+  failed.otari_tool_calls[0].status = "failed";
+  delete failed.otari_tool_calls[0].sources;
+  variants.push(failed);
+  const tooMany = toolSearchResponse();
+  tooMany.otari_tool_calls[0].sources = Array(16).fill(tooMany.otari_tool_calls[0].sources[0]);
+  variants.push(tooMany);
+  let calls = 0,
+    current;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json(current);
+  });
+  for (current of variants) {
+    const g = gateway();
+    await assert.rejects(hostedScientificSearch(g, { preferredName: "curcumin" }, g.createRun("test"), async () => {}));
+  }
+  assert.equal(calls, variants.length);
+});
+test("empty executed search is valid insufficiency; too-small mixed-tool reservation stops before dispatch", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  let calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    const d = toolSearchResponse();
+    d.otari_tool_calls[0].sources = [];
+    return Response.json(d);
+  });
+  const g = gateway(),
+    r = g.createRun("test");
+  assert.deepEqual(await hostedScientificSearch(g, { preferredName: "curcumin" }, r, async () => {}), { results: [] });
+  const limited = g.createRun("limited");
+  limited.budget.capMicrousd = 11999;
+  await assert.rejects(
+    hostedScientificSearch(g, { preferredName: "curcumin" }, limited, async () => {}),
+    { code: "RUN_BUDGET_EXHAUSTED" },
+  );
+  assert.equal(calls, 1);
+});
+test("hosted five-source metadata remains bounded and preserves the requested-count discrepancy", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  t.mock.method(global, "fetch", async () => {
+    const d = toolSearchResponse();
+    d.otari_tool_calls[0].sources = Array.from({ length: 5 }, (_, i) => ({
+      title: "Synthetic fixture",
+      url: `https://pubmed.ncbi.nlm.nih.gov/${12345 + i}/`,
+    }));
+    return Response.json(d);
+  });
+  const g = gateway(),
+    r = g.createRun("test");
+  assert.equal((await hostedScientificSearch(g, { preferredName: "curcumin" }, r, async () => {})).results.length, 5);
+  assert.ok(r.limitations.some((l) => l.includes("five") || l.includes("5 source records")));
+});
 test("mechanical passage index preserves exact UTF-16 offsets after normalization", () => {
   const s = snapshot(
     "12345",
@@ -414,14 +536,15 @@ test("offline adapter integration builds eight dossier sections only from accept
 });
 test("MCP discovery mismatch stops before execution; no direct retrieval escape", async () => {
   const g = gateway();
-  g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : "");
+  g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : (config.get(k) ?? ""));
   let paths = [];
   g.request = async (path) => {
     paths.push(path);
     return {
+      event: {},
       data:
-        path === "/search"
-          ? { results: [{ title: "test", url: "https://pubmed.ncbi.nlm.nih.gov/12345/", snippet: "" }] }
+        path === "/chat/completions"
+          ? toolSearchResponse({}, "aspirin")
           : { server_id: "server", server_revision: "rev", tools: [{ name: "shell", input_schema: {} }] },
     };
   };
@@ -429,7 +552,7 @@ test("MCP discovery mismatch stops before execution; no direct retrieval escape"
     new OtariRetrievalService(g).search({ preferredName: "aspirin" }, g.createRun("test"), async () => {}),
     { code: "OTARI_MCP_SCHEMA" },
   );
-  assert.deepEqual(paths, ["/search", "/mcp/servers/server/tools"]);
+  assert.deepEqual(paths, ["/chat/completions", "/mcp/servers/server/tools"]);
 });
 test("invalid abstract bounds stop before a paid search dispatch", async () => {
   const g = gateway();
@@ -445,6 +568,72 @@ test("invalid abstract bounds stop before a paid search dispatch", async () => {
   );
   assert.equal(calls, 0);
 });
+test("source selection leaves budget for extraction, review and audit", async () => {
+  const g = gateway();
+  g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : (config.get(k) ?? ""));
+  const r = g.createRun("test");
+  r.budget.capMicrousd = 50000;
+  let metadataCalls = 0;
+  g.request = async (path) => {
+    if (path === "/chat/completions") {
+      r.budget.reportedMicrousd = 7000;
+      const d = toolSearchResponse({}, "aspirin");
+      d.otari_tool_calls[0].sources = Array.from({ length: 5 }, (_, i) => ({
+        title: "Synthetic fixture",
+        url: `https://pubmed.ncbi.nlm.nih.gov/${12345 + i}/`,
+      }));
+      return { data: d, event: {} };
+    }
+    if (path.includes("/tools"))
+      return {
+        data: {
+          server_id: "server",
+          server_revision: "rev",
+          tools: [
+            {
+              name: "publication_abstract",
+              input_schema: {
+                type: "object",
+                additionalProperties: false,
+                required: ["url"],
+                properties: { url: { type: "string" } },
+              },
+            },
+          ],
+        },
+      };
+    metadataCalls++;
+    return {
+      data: {
+        resultType: "complete",
+        structuredContent: {
+          pmid: "12345",
+          title: "Synthetic fixture",
+          abstract: "Aspirin fixture abstract.",
+          authors: [],
+          journal: "Fixture",
+          year: 2026,
+          doi: null,
+          publicationTypes: [],
+          canonicalUrl: "https://pubmed.ncbi.nlm.nih.gov/12345/",
+        },
+      },
+    };
+  };
+  const result = await new OtariRetrievalService(g).search({ preferredName: "aspirin" }, r, async () => {});
+  assert.equal(result.discoveredCount, 5);
+  assert.equal(result.papers.length, 1);
+  assert.equal(metadataCalls, 1);
+  assert.ok(r.limitations.some((l) => l.includes("Budget limited analysis to 1")));
+  const insufficient = g.createRun("limited");
+  insufficient.budget.capMicrousd = 30000;
+  await assert.rejects(
+    new OtariRetrievalService(g).search({ preferredName: "aspirin" }, insufficient, async () => {}),
+    { code: "RUN_BUDGET_EXHAUSTED" },
+  );
+  assert.equal(insufficient.budget.terminal, true);
+  assert.equal(metadataCalls, 1);
+});
 
 test("remote audit disagreement prevents publication even if remote claims success", async () => {
   const { remoteAudit } = require("../dist/research/evidence-audit");
@@ -452,6 +641,7 @@ test("remote audit disagreement prevents publication even if remote claims succe
   const run = gateway().createRun("test");
   run.snapshots = [s];
   const fake = {
+    integer: () => 10000,
     request: async () => ({
       data: {
         return_code: 0,
@@ -468,15 +658,12 @@ test("remote audit disagreement prevents publication even if remote claims succe
 });
 test("canonical metadata mismatch cannot bind a retrieved page to an unrelated paper", async () => {
   const g = gateway();
-  g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : "");
+  g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : (config.get(k) ?? ""));
   g.request = async (path) => ({
+    event: {},
     data:
-      path === "/search"
-        ? {
-            results: [
-              { title: "source", url: "https://pubmed.ncbi.nlm.nih.gov/12345/", snippet: "Reference PMID 99999" },
-            ],
-          }
+      path === "/chat/completions"
+        ? toolSearchResponse({}, "aspirin")
         : path.includes("/tools")
           ? {
               server_id: "server",
@@ -614,6 +801,44 @@ test("hosted insufficient funds and missing pricing remain distinct terminal ref
     assert.equal(calls, 1);
   }
 });
+test("MCP discovery outages are actionable, preserve saved search and do not replay spending", async (t) => {
+  let calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json(
+      { error: { message: "untrusted provider text with credentials must not be retained" } },
+      { status: 502, headers: { "Otari-Request-ID": "req_fixture_mcp" } },
+    );
+  });
+  const g = gateway(),
+    run = g.createRun("test");
+  run.events.push({
+    sequence: 1,
+    at: new Date().toISOString(),
+    operation: "scientific_search_tool",
+    status: "completed",
+    correlationId: "fixture-search",
+  });
+  const before = structuredClone(run.budget);
+  let saved = 0;
+  await assert.rejects(
+    g.request("/mcp/servers/fixture/tools", undefined, "mcp_discovery", run, async () => {
+      saved++;
+    }),
+    (error) =>
+      error.code === "OTARI_MCP_UNAVAILABLE" &&
+      /HTTP 502/.test(error.message) &&
+      /authentication header/.test(error.message),
+  );
+  assert.equal(calls, 1);
+  assert.equal(saved, 2);
+  assert.deepEqual(run.budget, before);
+  assert.equal(run.events[0].status, "completed");
+  assert.equal(run.events[1].code, "OTARI_MCP_UNAVAILABLE");
+  assert.equal(run.events[1].requestId, "req_fixture_mcp");
+  assert.ok(!JSON.stringify(run).includes("untrusted provider text"));
+});
+
 test("role requests declare a strict wire schema while retaining full local validation", async (t) => {
   t.mock.method(global, "fetch", async (url, init) => {
     const body = JSON.parse(init.body);

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { OtariGatewayService, type SaveRun } from "./otari-gateway.service";
 import { ResearchError, scientificUrl, snapshot, strictOutput } from "./provenance";
+import { hostedScientificSearch } from "./otari-search";
 
 export const PublicationSchema = z
   .object({
@@ -21,17 +22,6 @@ export const PublicationSchema = z
 export const PublicationInput = z
   .object({ url: z.string().regex(/^https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/\d{1,10}\/$/) })
   .strict();
-const SearchSchema = z
-  .object({
-    results: z
-      .array(
-        z
-          .object({ title: z.string().max(2000), url: z.string().max(2000), snippet: z.string().max(12000) })
-          .passthrough(),
-      )
-      .max(40),
-  })
-  .passthrough();
 const DiscoverySchema = z
   .object({
     server_id: z.string(),
@@ -47,19 +37,7 @@ export class OtariRetrievalService {
   async search(molecule: MoleculeSnapshot, run: ResearchRun, save: SaveRun) {
     const requested = this.gateway.integer("MAX_ANALYZED_PAPERS", 5, 5);
     if (requested < 1) throw new ResearchError("OTARI_CONFIGURATION", "Select between one and five abstracts.");
-    const { data } = await this.gateway.request(
-      "/search",
-      {
-        query: `${molecule.preferredName.slice(0, 200)} biological activity mechanism study`,
-        max_results: 15,
-        search_domain_filter: ["pubmed.ncbi.nlm.nih.gov"],
-        max_tokens_per_page: 1024,
-      },
-      "scientific_search",
-      run,
-      save,
-    );
-    const search = strictOutput(SearchSchema, data);
+    const search = await hostedScientificSearch(this.gateway, molecule, run, save);
     // IDs are taken only from the canonical publication URL, never page references/snippets.
     const discoveredUrls = [
       ...new Set(
@@ -74,8 +52,28 @@ export class OtariRetrievalService {
         }),
       ),
     ];
-    const urls = discoveredUrls.slice(0, requested);
-    if (!urls.length) return { papers: [] as PaperSnapshot[], discoveredCount: 0 };
+    if (!discoveredUrls.length) return { papers: [] as PaperSnapshot[], discoveredCount: 0 };
+    const reservation = this.gateway.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000);
+    if (reservation < 1) throw new ResearchError("OTARI_CONFIGURATION", "A positive dispatch reservation is required.");
+    // Keep allowance for extraction, review and audit before selecting paid metadata calls.
+    const available = run.budget.capMicrousd - run.budget.reportedMicrousd - run.budget.reservedMicrousd;
+    const processing = 2 * reservation + Math.max(10000, reservation);
+    const affordable = Math.max(0, Math.floor((available - processing) / reservation));
+    const urls = discoveredUrls.slice(0, Math.min(requested, affordable));
+    if (!urls.length) {
+      run.budget.terminal = true;
+      await save();
+      throw new ResearchError(
+        "RUN_BUDGET_EXHAUSTED",
+        "Allowance cannot reserve a source and its extraction, review and audit. Saved search remains partial.",
+      );
+    }
+    if (urls.length < Math.min(discoveredUrls.length, requested)) {
+      run.limitations.push(
+        `Budget limited analysis to ${urls.length} of ${discoveredUrls.length} discovered abstracts.`,
+      );
+      await save();
+    }
     const server = this.gateway.value("OTARI_MCP_SERVER_ID");
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(server))
       throw new ResearchError("OTARI_MCP_NOT_CONFIGURED", "Configure the hosted read-only publication MCP server.");
