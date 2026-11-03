@@ -20,13 +20,7 @@ export function assertProductionEnvironment(environment: NodeJS.ProcessEnv) {
     for (const key of ["TAVILY_API_KEY", "GROQ_API_KEY", "GEMINI_MODEL"])
       if (!environment[key]?.trim()) throw new Error(`Missing legacy provider configuration: ${key}`);
   } else {
-    for (const key of [
-      "OTARI_API_KEY",
-      "OTARI_BUDGET_REFERENCE",
-      "OTARI_EXTRACTION_POLICY",
-      "OTARI_REVIEW_POLICY",
-      "OTARI_MCP_SERVER_ID",
-    ])
+    for (const key of ["OTARI_API_KEY", "OTARI_EXTRACTION_POLICY", "OTARI_REVIEW_POLICY", "OTARI_MCP_SERVER_ID"])
       if (!environment[key]?.trim()) throw new Error(`Missing Otari configuration: ${key}`);
     const cap = Number(environment.OTARI_RUN_BUDGET_MICROUSD);
     if (!Number.isSafeInteger(cap) || cap <= 0)

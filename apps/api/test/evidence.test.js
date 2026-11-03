@@ -24,7 +24,6 @@ const config = {
   get: (k) =>
     ({
       OTARI_API_KEY: "test-only-placeholder",
-      OTARI_BUDGET_REFERENCE: "offline-ceiling",
       OTARI_RUN_BUDGET_MICROUSD: "200000",
       OTARI_EXTRACTION_POLICY: "extract-policy",
       OTARI_REVIEW_POLICY: "review-policy",
@@ -495,11 +494,11 @@ test("abstract-only assessment retains the deterministic coverage penalty and wa
   assert.equal(decide(c, r, [s]).status, "accepted");
 });
 
-test("live evaluation and catalog smoke remain disabled at zero budget", () => {
+test("paid evaluation needs a live cap; catalog discovery needs a runtime key", () => {
   for (const script of ["scripts/otari-smoke.cjs", "scripts/compare-models.cjs"]) {
     const result = spawnSync(process.execPath, [script], {
       encoding: "utf8",
-      env: { ...process.env, OTARI_LIVE_TEST_BUDGET_MICROUSD: "0" },
+      env: { ...process.env, OTARI_API_KEY: "", OTARI_LIVE_TEST_BUDGET_MICROUSD: "0" },
     });
     assert.equal(result.status, 2, result.stderr);
     assert.match(result.stdout, /No requests sent/i);

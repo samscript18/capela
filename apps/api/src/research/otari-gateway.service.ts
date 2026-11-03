@@ -67,20 +67,10 @@ export class OtariGatewayService {
     };
   }
   assertConfigured() {
-    const url = new URL(this.value("OTARI_BASE_URL") || "https://otari.ai/api/v1");
-    if (
-      url.origin !== "https://otari.ai" ||
-      url.pathname !== "/api/v1" ||
-      url.search ||
-      url.hash ||
-      url.username ||
-      url.password
-    )
-      throw new ResearchError("OTARI_CONFIGURATION", "The hackathon path requires https://otari.ai/api/v1.");
-    if (!this.value("OTARI_API_KEY") || !this.value("OTARI_BUDGET_REFERENCE"))
+    if (!this.value("OTARI_API_KEY"))
       throw new ResearchError(
         "OTARI_NOT_CONFIGURED",
-        "Configure a server-only Otari runtime key and finite hosted key ceiling locally.",
+        "Configure a server-only Otari runtime key locally; set its finite ceiling in hosted Otari.",
       );
   }
   async request(

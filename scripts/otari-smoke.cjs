@@ -1,20 +1,13 @@
 const fs = require("node:fs");
-const required = [
-  "OTARI_API_KEY",
-  "OTARI_BUDGET_REFERENCE",
-  "OTARI_EXTRACTION_POLICY",
-  "OTARI_REVIEW_POLICY",
-  "OTARI_MCP_SERVER_ID",
-];
-const cap = Number(process.env.OTARI_LIVE_TEST_BUDGET_MICROUSD ?? 0);
+const required = ["OTARI_API_KEY"];
 const missing = required.filter((k) => !process.env[k]?.trim());
 async function main() {
-  if (missing.length || !Number.isSafeInteger(cap) || cap <= 0) {
+  if (missing.length) {
     console.log(
       JSON.stringify({
         status: "blocked",
         missingKeys: missing,
-        reason: "Set a finite positive local live-test cap and runtime configuration. No requests sent.",
+        reason: "Set the local Otari runtime key for read-only catalog discovery. No requests sent.",
       }),
     );
     process.exitCode = 2;

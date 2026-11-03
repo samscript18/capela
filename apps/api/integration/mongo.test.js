@@ -149,7 +149,6 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
         get: (k) =>
           ({
             OTARI_API_KEY: "fixture-only-key",
-            OTARI_BUDGET_REFERENCE: "fixture-ceiling",
             OTARI_RUN_BUDGET_MICROUSD: "200000",
             OTARI_MCP_SERVER_ID: "server",
             OTARI_EXTRACTION_POLICY: "extract-policy",

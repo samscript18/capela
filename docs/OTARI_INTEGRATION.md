@@ -34,17 +34,29 @@ Snapshots store NFC normalization and CRLF/CR→LF once, preserving other whites
 
 The fixed `span-audit-v1` Python program has a recorded program hash. It validates references/content hashes, UTF-16 quote offsets, class distributions and unique source counts. It imports only standard-library JSON/hash routines, uses no files, network or generated executable instructions. JSON strings become data only. Remote output gates dossier publication and must match the local validator. The owner must enforce sandbox network/file/resource restrictions and pin the sandbox image in hosted workspace policy; application code cannot prove those settings.
 
-Application budget amounts are integer USD micro-dollars. Every dispatch persists a conservative reservation and call count before HTTP. Reported costs replace reservations; unknown/unreported costs keep reservations. An estimate underrun stops future spending. This is **not a monetary zero-overshoot guarantee**: hosted settlement, free-model tools and unknown rates have documented exposure. Owner must configure a finite, non-exempt hosted runtime-key ceiling and appropriate priced tools. The `OTARI_BUDGET_REFERENCE` records setup intent, not verified enforcement. 402 or budget denial is terminal; no ceiling increase or direct-provider escape occurs. Failed calls may already have been charged.
+Application budget amounts are integer USD micro-dollars. Every dispatch persists a conservative reservation and call count before HTTP. Reported costs replace reservations; unknown/unreported costs keep reservations. An estimate underrun stops future spending. This is **not a monetary zero-overshoot guarantee**: hosted settlement, free-model tools and unknown rates have documented exposure. Owner must configure a finite, non-exempt hosted runtime-key ceiling and appropriate priced tools. No environment label can establish hosted enforcement; verify the actual key ceiling and a real denial. 402 or budget denial is terminal; no ceiling increase or direct-provider escape occurs. Failed calls may already have been charged.
 
 Mongo leases use atomic claim, 120-second expiry, 15-second heartbeat and token/expiry/status-fenced writes. A 30-second recovery sweep marks stale runs interrupted, retains durable checkpoints and never replays paid work. Cancellation/deletion revoke the fence and stop future dispatch. An already in-flight request can still cost money. **Selective resume is not implemented**: retries after any paid dispatch are blocked; a separately budgeted new investigation is required. Do not present this as exactly-once execution.
 
 ## Minimum owner setup (once, locally; never paste secrets in chat)
 
 1. Use Node 24, MongoDB, existing Privy configuration; copy `.env.example` to ignored `.env.local`.
-2. Set a non-exempt server-only hosted Otari runtime key with a finite key ceiling; record its safe reference in `OTARI_BUDGET_REFERENCE`. No administrative key in the API process.
-3. Set finite positive `OTARI_RUN_BUDGET_MICROUSD` and a conservative per-call reservation (default 10000 micro-USD). Keep live-test cap zero until ready; then authorize a finite `OTARI_LIVE_TEST_BUDGET_MICROUSD`.
-4. Run `npm run smoke:otari`. It currently performs read-only catalog discovery only, never consumes the cap, and saves safe catalog fields. Confirm exact hosted endpoint contracts against that workspace's OpenAPI. Stop on unsupported features.
+2. Set a non-exempt server-only hosted Otari runtime key with a finite key ceiling in hosted Otari. No administrative key in the API process.
+3. Set finite positive `OTARI_RUN_BUDGET_MICROUSD`. The per-call reservation defaults to 10000 micro-USD; overriding it is optional. Paid evaluation separately requires a finite `OTARI_LIVE_TEST_BUDGET_MICROUSD` (absent defaults to zero).
+4. Run `npm run smoke:otari` with the runtime key. Catalog-only discovery needs no role policy, MCP registration or paid-test cap; it performs no inference/tool execution and saves safe catalog fields. Confirm exact hosted endpoint contracts against that workspace's OpenAPI. Stop on unsupported features.
 5. Choose two actually available open-weight models, inspect upstream model cards/licenses and structured-output performance, then configure separate extraction/review policies and safe role-preserving fallbacks. No model is preselected or license asserted here.
 6. Configure the reachable MCP endpoint and token header, server ID, scientific domain policy, priced search, sandbox policy/image/resource limits and key tool scope. Verify through hosted discovery, not a local SDK call alone.
 7. Run a bounded authenticated investigation. Capture sanitized run events and owner-visible traces; verify source/quote/review results. Separately exercise a controlled routing failure and real budget denial within the authorized cap. Do not spend additional funds or raise limits implicitly.
 8. Human-review the evaluation pilot and execute paired baseline/two-role runs on its same fixed snapshots before any quality or submission-readiness claim.
+
+## Minimal application environment
+
+The Otari section of `.env.example` contains only `OTARI_API_KEY`, `OTARI_EXTRACTION_POLICY`, `OTARI_REVIEW_POLICY`, `OTARI_MCP_SERVER_ID`, `OTARI_RUN_BUDGET_MICROUSD` and `CAPELA_MCP_TOKEN`. The last is required when serving Capela's own remote MCP endpoint. Runtime credentials remain server-only. The hosted endpoint is fixed in code; Otari is the default provider.
+
+Optional settings belong to the operation that needs them:
+
+- Legacy compatibility only: `RESEARCH_PROVIDER=legacy` plus the legacy provider credentials.
+- Reservation tuning only: `OTARI_CALL_RESERVATION_MICROUSD` (default 10000).
+- Paid evaluation only: `OTARI_LIVE_TEST_BUDGET_MICROUSD`, `EVAL_SOURCE_ID` and `EVAL_MOLECULE_NAME`, described in EVALUATION. They are not needed to run the application or inspect the catalog.
+
+`OTARI_BASE_URL` and `OTARI_BUDGET_REFERENCE` are no longer consumed. A budget reference never enforced spending; removing that label does not remove the application run cap, hosted denial handling or the requirement to configure an actual finite hosted ceiling. Existing ignored secret files are left untouched.
