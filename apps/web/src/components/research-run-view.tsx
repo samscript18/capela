@@ -190,6 +190,8 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
                 </>
               )}
               {e.fallback === true && <> · fallback observed</>}
+              {e.httpStatus && <> · HTTP {e.httpStatus}</>}
+              {e.upstreamCode && <> · {e.upstreamCode}</>}
               {e.code && <> · {e.code}</>}
             </li>
           ))}

@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { randomUUID } from "node:crypto";
-import type { ResearchRun, RunEvent } from "@capela/shared";
+import { ExtractionSchema, ReviewSchema, type ResearchRun, type RunEvent } from "@capela/shared";
+import { z } from "zod";
 import { ResearchError } from "./provenance";
 
 export type SaveRun = () => Promise<void>;
@@ -105,26 +106,50 @@ export class OtariGatewayService {
         headers: { Authorization: `Bearer ${this.value("OTARI_API_KEY")}`, "Content-Type": "application/json" },
         ...(paid ? { body: JSON.stringify(body) } : {}),
       });
+      event.httpStatus = response.status;
       event.requestId = safeHeader(response, "Otari-Request-ID");
       event.provider = safeHeader(response, "Otari-Provider");
       event.model = safeHeader(response, "Otari-Model");
       const fallback = response.headers.get("Otari-Fallback");
       if (fallback === "true" || fallback === "false") event.fallback = fallback === "true";
       if (!response.ok) {
-        const upstreamCode = safeHeader(response, "Otari-Error-Code");
+        let upstreamCode = knownErrorCode(response.headers.get("Otari-Error-Code"));
+        if (!upstreamCode) {
+          try {
+            const failure = await boundedJson(response, 8192);
+            upstreamCode =
+              knownErrorCode(failure.code) ?? knownErrorCode((failure.error as { code?: unknown } | undefined)?.code);
+          } catch {
+            /* Error bodies are untrusted; never retain raw provider messages. */
+          }
+        }
+        event.upstreamCode = upstreamCode;
         if (response.status === 402 || upstreamCode === "budget_exceeded" || upstreamCode === "insufficient_funds")
           run.budget.terminal = true;
+        const code =
+          upstreamCode === "insufficient_funds"
+            ? "OTARI_INSUFFICIENT_FUNDS"
+            : upstreamCode === "pricing_required"
+              ? "OTARI_PRICING_REQUIRED"
+              : upstreamCode === "budget_exceeded"
+                ? "OTARI_BUDGET_DENIED"
+                : response.status === 402
+                  ? "OTARI_SPENDING_DENIED"
+                  : upstreamCode === "guardrail_blocked"
+                    ? "OTARI_GUARDRAIL_BLOCKED"
+                    : "OTARI_PROVIDER_ERROR";
         throw new ResearchError(
-          run.budget.terminal
-            ? "OTARI_BUDGET_DENIED"
-            : upstreamCode === "guardrail_blocked"
-              ? "OTARI_GUARDRAIL_BLOCKED"
-              : "OTARI_PROVIDER_ERROR",
-          run.budget.terminal
-            ? "Otari denied spending. No provider bypass or automatic retry is allowed."
-            : `Otari ${operation} failed (HTTP ${response.status}).`,
+          code,
+          code === "OTARI_INSUFFICIENT_FUNDS"
+            ? "Otari reported insufficient funds. No automatic retry or provider bypass is allowed."
+            : code === "OTARI_PRICING_REQUIRED"
+              ? "Otari requires configured pricing before this request can run."
+              : run.budget.terminal
+                ? "Otari refused spending. No provider bypass or automatic retry is allowed."
+                : `Otari ${operation} failed (HTTP ${response.status}).`,
         );
       }
+
       const data = await boundedJson(response, 300000);
       const cost = usdMicros((data as { usage?: { cost_usd?: unknown } }).usage?.cost_usd);
       if (paid && cost !== undefined) {
@@ -153,7 +178,19 @@ export class OtariGatewayService {
           );
     }
   }
-  async complete(role: "extraction" | "review", system: string, input: unknown, run: ResearchRun, save: SaveRun) {
+  async complete(
+    role: "extraction" | "review",
+    system: string,
+    input: unknown,
+    run: ResearchRun,
+    save: SaveRun,
+    bounds?: { maxOutputTokens: number; reasoningEffort: "low" | "medium" | "high" },
+  ) {
+    if (
+      bounds &&
+      (!Number.isSafeInteger(bounds.maxOutputTokens) || bounds.maxOutputTokens < 256 || bounds.maxOutputTokens > 8000)
+    )
+      throw new ResearchError("OTARI_CONFIGURATION", "Role output bounds are invalid.");
     const policy = this.value(role === "extraction" ? "OTARI_EXTRACTION_POLICY" : "OTARI_REVIEW_POLICY");
     if (!policy)
       throw new ResearchError("OTARI_CONFIGURATION", `Configure the ${role} policy from the hosted catalog.`);
@@ -162,7 +199,16 @@ export class OtariGatewayService {
       {
         model: policy,
         stream: false,
-        max_tokens: 8000,
+        max_tokens: bounds?.maxOutputTokens ?? 8000,
+        reasoning_effort: bounds?.reasoningEffort ?? "low",
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: role === "extraction" ? "capela_extraction_v1" : "capela_review_v1",
+            strict: true,
+            schema: roleWireSchema(role),
+          },
+        },
         messages: [
           { role: "system", content: system },
           { role: "user", content: JSON.stringify(input) },
@@ -223,4 +269,50 @@ export async function boundedJson(response: Response, max: number): Promise<Reco
   } catch {
     throw new ResearchError("INVALID_RESPONSE", "Provider returned invalid JSON.");
   }
+}
+
+function knownErrorCode(value: unknown): string | undefined {
+  return typeof value === "string" &&
+    [
+      "budget_exceeded",
+      "insufficient_funds",
+      "pricing_required",
+      "guardrail_blocked",
+      "invalid_request",
+      "provider_not_configured",
+      "provider_credential_rejected",
+      "model_not_allowed",
+    ].includes(value)
+    ? value
+    : undefined;
+}
+
+// Constrain shape on the provider; enforce bounds/patterns again with the full local Zod schema.
+export function roleWireSchema(role: "extraction" | "review") {
+  const full = z.toJSONSchema(role === "extraction" ? ExtractionSchema : ReviewSchema);
+  const strip = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(strip);
+    if (!value || typeof value !== "object") return value;
+    const out: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value)) {
+      if (
+        [
+          "$schema",
+          "minLength",
+          "maxLength",
+          "pattern",
+          "format",
+          "minimum",
+          "maximum",
+          "minItems",
+          "maxItems",
+        ].includes(key)
+      )
+        continue;
+      if (key === "const") out.enum = [item];
+      else out[key] = strip(item);
+    }
+    return out;
+  };
+  return strip(full);
 }

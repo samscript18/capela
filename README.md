@@ -16,7 +16,7 @@ New investigations default to **hosted Otari**. They resolve chemical identity, 
 
 Inspect original claims, review decisions/rejections, exact UTF-16 passages, source hashes, actual observed models and cost uncertainty in the workspace. Legacy dossiers remain readable and explicitly say passage verification was not performed. Existing Privy ownership, history, account operations, exports and payment settings remain in place.
 
-**Hosted verification is blocked:** this checkout had no Otari credentials, configured model policies, reachable hosted MCP registration or finite live-test cap. No hosted capability or open-weight model usage is claimed as demonstrated. See [build status](docs/BUILD_STATUS.md), [setup and exact contracts](docs/OTARI_INTEGRATION.md) and [capability evidence](docs/RUBRIC_EVIDENCE.md). The existing direct-provider path is available only with explicit `RESEARCH_PROVIDER=legacy`; it is outside the hackathon integration.
+**Hosted verification is partial:** distinct open-weight extraction/review calls, authenticated remote MCP invocation and a fixed nonempty sandbox audit have real isolated evidence. Search is blocked by missing hosted search-tool configuration; a complete signed-in dossier, controlled fallback, hosted ceiling denial and reviewed evaluation remain outstanding. See [build status](docs/BUILD_STATUS.md), [setup and exact contracts](docs/OTARI_INTEGRATION.md) and [capability evidence](docs/RUBRIC_EVIDENCE.md). Direct-provider compatibility requires explicit `RESEARCH_PROVIDER=legacy` and is outside the hackathon integration.
 
 ### Local setup
 

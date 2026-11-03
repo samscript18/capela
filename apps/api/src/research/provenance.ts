@@ -19,6 +19,22 @@ export class ResearchError extends Error {
   }
 }
 export const digest = (text: string) => createHash("sha256").update(text, "utf8").digest("hex");
+// Mechanical sentence boundaries are source data, never suggested scientific claims.
+export function sourcePassages(source: SourceSnapshot): SupportSpan[] {
+  return [...new Intl.Segmenter("en", { granularity: "sentence" }).segment(source.text)]
+    .map(({ segment, index }): SupportSpan => {
+      const quote = segment.trim();
+      const start = index + segment.indexOf(quote);
+      return {
+        blockId: "abstract",
+        quote,
+        start,
+        end: start + quote.length,
+        convention: "utf16-zero-based-end-exclusive",
+      };
+    })
+    .filter((span) => span.quote.length > 0 && span.quote.length <= 1500);
+}
 export function scientificUrl(value: string): string {
   const url = new URL(value);
   if (

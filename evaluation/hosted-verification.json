@@ -1,0 +1,383 @@
+{
+  "version": "hosted-verification-v1",
+  "date": "2026-11-03",
+  "baseCommit": "45bba94ba0f9e06813362849c395752bd58a1aba",
+  "branch": "feat/otari-live-verification",
+  "codeHashes": {
+    "apps/api/src/research/otari-gateway.service.ts": "d15a1fd971eff28e386550360672b02536f5140a14de8a538bf7783f251bcaba",
+    "apps/api/src/research/otari-evidence.service.ts": "92f18b1455e70df722446030822c64d59695c51eebfa01ec3ad9882fbfd6e39c",
+    "apps/api/src/research/provenance.ts": "fe58257a5ae0fbb346ca76143f1272770b1386dc096d90ea4241a5d349ca38e8",
+    "scripts/smoke-roles.cjs": "5babd6edb0995b034499dbfd39e6fb93a31f4618b2d097e50f48bff69077a589",
+    "scripts/verify-hosted-tools.cjs": "4d178f0da14ee58625923402e760154719ddc1dbfa499594af014d5c48887a6c",
+    "scripts/verify-investigation.cjs": "5654a51506f5c8593098f40258ebc779e16025782321e928348016d65cb37259"
+  },
+  "codeNote": "Working-tree verification; role check executed before mechanical passage helper was shared with application. Identical helper logic, final regression checks recorded separately.",
+  "hostedOpenApiVersion": "0.36.0+b0f74a1",
+  "authorization": {
+    "capMicrousd": 50000,
+    "currency": "USD",
+    "hostedCeiling": "owner attestation; management API unauthorized"
+  },
+  "source": {
+    "paperId": "42505335",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42505335/",
+    "hash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+    "scope": "abstract-only",
+    "retrievedAt": "2026-11-03T17:38:03.077Z"
+  },
+  "modelAttempts": [
+    {
+      "status": "failed",
+      "errorCode": "OTARI_BUDGET_DENIED",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T17:39:05.140Z",
+          "operation": "extraction",
+          "status": "failed",
+          "correlationId": "b83e14b8-ef8d-4d1e-b7a7-30a45415a8f9",
+          "requestId": "f2273c05-77f4-421d-8138-6ef69f88d331",
+          "code": "OTARI_BUDGET_DENIED",
+          "durationMs": 1058
+        }
+      ]
+    },
+    {
+      "status": "failed",
+      "errorCode": "OTARI_INVALID_JSON",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T18:51:15.754Z",
+          "operation": "extraction",
+          "status": "completed",
+          "correlationId": "c07e0a1f-c3a4-4044-b86d-baa19d83dded",
+          "requestId": "97d5feb7-94ae-4654-8cc5-7502ecaaa41c",
+          "provider": "deepinfra",
+          "model": "openai/gpt-oss-20b",
+          "fallback": false,
+          "costMicrousd": 326,
+          "durationMs": 22945
+        }
+      ]
+    },
+    {
+      "status": "failed",
+      "errorCode": "OTARI_PROVIDER_ERROR",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T18:56:04.400Z",
+          "operation": "extraction",
+          "status": "failed",
+          "correlationId": "ab3f5b9c-2cda-466d-b7a0-7c8b62ac2b1c",
+          "httpStatus": 504,
+          "code": "OTARI_PROVIDER_ERROR",
+          "durationMs": 30994
+        }
+      ]
+    },
+    {
+      "status": "failed",
+      "errorCode": "OTARI_INVALID_JSON",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T19:02:02.611Z",
+          "operation": "extraction",
+          "status": "completed",
+          "correlationId": "03f0308f-1efb-483e-a0b9-cfad8b60ef1a",
+          "httpStatus": 200,
+          "requestId": "1b998d6b-a0ab-452a-8954-3e6919baa0a3",
+          "provider": "deepinfra",
+          "model": "openai/gpt-oss-20b",
+          "fallback": false,
+          "costMicrousd": 134,
+          "durationMs": 13252
+        }
+      ]
+    },
+    {
+      "status": "failed",
+      "errorCode": "OTARI_INVALID_JSON",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T19:06:13.504Z",
+          "operation": "extraction",
+          "status": "completed",
+          "correlationId": "04c7fbef-8e4d-4d10-861c-4f33a0de9641",
+          "httpStatus": 200,
+          "requestId": "7b159448-57c1-436d-9683-a59c7aa57ffb",
+          "provider": "deepinfra",
+          "model": "openai/gpt-oss-20b",
+          "fallback": false,
+          "costMicrousd": 109,
+          "durationMs": 8219
+        }
+      ]
+    },
+    {
+      "status": "passed",
+      "events": [
+        {
+          "sequence": 1,
+          "at": "2026-11-03T19:13:28.521Z",
+          "operation": "extraction",
+          "status": "completed",
+          "correlationId": "b2518e46-9c6c-4253-9c71-a458bd5890bb",
+          "httpStatus": 200,
+          "requestId": "1377ca68-cc51-410c-ae61-ea2f17209c5f",
+          "provider": "deepinfra",
+          "model": "openai/gpt-oss-20b",
+          "fallback": false,
+          "costMicrousd": 102,
+          "durationMs": 5938
+        },
+        {
+          "sequence": 2,
+          "at": "2026-11-03T19:13:34.464Z",
+          "operation": "review",
+          "status": "completed",
+          "correlationId": "5902f7ff-8d36-4917-aca1-9715bed96555",
+          "httpStatus": 200,
+          "requestId": "24ff5a0b-7aa6-477f-978d-3857046a65e9",
+          "provider": "deepinfra",
+          "model": "openai/gpt-oss-120b",
+          "fallback": false,
+          "costMicrousd": 134,
+          "durationMs": 10673
+        }
+      ]
+    }
+  ],
+  "roleCheck": {
+    "status": "passed",
+    "models": {
+      "distinct": true,
+      "extraction": "openai/gpt-oss-20b",
+      "review": "openai/gpt-oss-120b"
+    },
+    "extraction": {
+      "papers": [
+        {
+          "paperId": "42505335",
+          "claims": [
+            {
+              "id": "42505335-0",
+              "paperId": "42505335",
+              "snapshotId": "src_bff9cc3a22a09439c31d2a8990e98ee4",
+              "snapshotHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+              "analyzedSource": "abstract",
+              "finding": "Curcumin showed unsatisfactory release in both polymeric systems, attributed to its low aqueous solubility.",
+              "proposedClass": "direct_experimental",
+              "kind": "activity",
+              "studyType": "experimental_in_vitro",
+              "model": null,
+              "measuredOutcome": null,
+              "label": "unsatisfactory release of curcumin",
+              "relationship": "unknown",
+              "spans": [
+                {
+                  "blockId": "abstract",
+                  "quote": "Also showed unsatisfactory release in both systems, attributed to its low aqueous solubility.",
+                  "start": 985,
+                  "end": 1078,
+                  "convention": "utf16-zero-based-end-exclusive"
+                }
+              ]
+            }
+          ],
+          "limitations": []
+        }
+      ]
+    },
+    "review": {
+      "reviews": [
+        {
+          "claimId": "42505335-0",
+          "verdict": "supported",
+          "reason": "The abstract explicitly reports that curcumin showed unsatisfactory release in both polymeric systems and attributes this to its low aqueous solubility, which directly supports the claim.",
+          "evidenceType": "direct_experimental",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Also showed unsatisfactory release in both systems, attributed to its low aqueous solubility.",
+              "start": 985,
+              "end": 1078,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "checks": {
+            "molecule": true,
+            "negation": false,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": false
+          }
+        }
+      ]
+    },
+    "decisions": [
+      {
+        "candidate": {
+          "id": "42505335-0",
+          "paperId": "42505335",
+          "snapshotId": "src_bff9cc3a22a09439c31d2a8990e98ee4",
+          "snapshotHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin showed unsatisfactory release in both polymeric systems, attributed to its low aqueous solubility.",
+          "proposedClass": "direct_experimental",
+          "kind": "activity",
+          "studyType": "experimental_in_vitro",
+          "model": null,
+          "measuredOutcome": null,
+          "label": "unsatisfactory release of curcumin",
+          "relationship": "unknown",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Also showed unsatisfactory release in both systems, attributed to its low aqueous solubility.",
+              "start": 985,
+              "end": 1078,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ]
+        },
+        "review": {
+          "claimId": "42505335-0",
+          "verdict": "supported",
+          "reason": "The abstract explicitly reports that curcumin showed unsatisfactory release in both polymeric systems and attributes this to its low aqueous solubility, which directly supports the claim.",
+          "evidenceType": "direct_experimental",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Also showed unsatisfactory release in both systems, attributed to its low aqueous solubility.",
+              "start": 985,
+              "end": 1078,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "checks": {
+            "molecule": true,
+            "negation": false,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": false
+          }
+        },
+        "status": "unresolved",
+        "reason": "The abstract explicitly reports that curcumin showed unsatisfactory release in both polymeric systems and attributes this to its low aqueous solubility, which directly supports the claim."
+      }
+    ]
+  },
+  "investigation": {
+    "status": "failed",
+    "errorCode": "OTARI_PROVIDER_ERROR",
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-03T19:16:33.264Z",
+        "operation": "scientific_search",
+        "status": "failed",
+        "correlationId": "8bd238d4-68db-483e-9961-f2ab49542a8a",
+        "httpStatus": 400,
+        "requestId": "188a5046-68d1-48dd-9f0f-1d0e13fd8d15",
+        "code": "OTARI_PROVIDER_ERROR",
+        "durationMs": 996
+      }
+    ],
+    "ownerProvidedDashboard": {
+      "httpStatus": 400,
+      "errorSummary": "No search tools are configured",
+      "dashboardRequestId": "bc484327-7171-4b60-8b6a-7ffc2386e496",
+      "note": "Participant screenshot, corresponding local time 2026-11-03 20:16:34 Africa/Lagos. This is a dashboard row ID, separate from the response Otari-Request-ID."
+    }
+  },
+  "mcp": {
+    "status": "passed",
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-03T19:26:48.283Z",
+        "operation": "mcp_discovery",
+        "status": "completed",
+        "correlationId": "11352361-de51-40d7-a9ef-8b188e0d3db9",
+        "httpStatus": 200,
+        "requestId": "req_381d25f6c580420a8767149d25597b83",
+        "durationMs": 2856
+      },
+      {
+        "sequence": 2,
+        "at": "2026-11-03T19:26:51.142Z",
+        "operation": "publication_metadata",
+        "status": "completed",
+        "correlationId": "d8815e5a-8948-46ea-835d-2cab9407f08f",
+        "httpStatus": 200,
+        "requestId": "req_c76cdb417d724654a836fee1c8483cbe",
+        "durationMs": 2487
+      }
+    ],
+    "priorFailedDiscovery": [
+      {
+        "sequence": 1,
+        "at": "2026-11-03T19:19:11.603Z",
+        "operation": "mcp_discovery",
+        "status": "failed",
+        "correlationId": "f35157d3-53b9-46cc-8cc8-b43b4b160de4",
+        "httpStatus": 502,
+        "requestId": "req_de2b1214e0814660b4f9adab664b15ab",
+        "code": "OTARI_PROVIDER_ERROR",
+        "durationMs": 5990
+      }
+    ],
+    "snapshotHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+    "priorAuditRequestId": "91d5f6dc-36e0-4db8-97b3-4eb460159083",
+    "note": "Hosted read-only publication invocation succeeded; canonical PMID and hash match the model-role source. Prior intermittent discovery failure retained."
+  },
+  "audit": {
+    "status": "passed",
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-03T19:20:42.165Z",
+        "operation": "sandbox_audit",
+        "status": "completed",
+        "correlationId": "42beaaf1-3aaa-49f3-82b7-6ff5ef9deb35",
+        "httpStatus": 200,
+        "requestId": "91d5f6dc-36e0-4db8-97b3-4eb460159083",
+        "durationMs": 2416
+      }
+    ],
+    "result": {
+      "valid": true,
+      "accepted": 1,
+      "sources": 1,
+      "distribution": {
+        "direct_experimental": 1
+      },
+      "invalidIds": [],
+      "version": "span-audit-v1",
+      "programHash": "0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249",
+      "remote": true,
+      "requestId": "91d5f6dc-36e0-4db8-97b3-4eb460159083"
+    },
+    "note": "Nonempty real candidate audit, not accepted scientific evidence; accepted field counts mechanically valid records only.",
+    "publishedClaims": 0
+  },
+  "budget": {
+    "currency": "USD",
+    "capMicrousd": 50000,
+    "reservedMicrousd": 37000,
+    "reportedMicrousd": 805,
+    "unknownCostCalls": 5,
+    "calls": 10,
+    "maxCalls": 16,
+    "terminal": false
+  },
+  "scientificPrecision": null,
+  "humanReview": "pending",
+  "sixCapabilitiesDemonstrated": false
+}

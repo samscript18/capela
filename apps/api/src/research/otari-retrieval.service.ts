@@ -45,6 +45,8 @@ const DiscoverySchema = z
 export class OtariRetrievalService {
   constructor(private readonly gateway: OtariGatewayService) {}
   async search(molecule: MoleculeSnapshot, run: ResearchRun, save: SaveRun) {
+    const requested = this.gateway.integer("MAX_ANALYZED_PAPERS", 5, 5);
+    if (requested < 1) throw new ResearchError("OTARI_CONFIGURATION", "Select between one and five abstracts.");
     const { data } = await this.gateway.request(
       "/search",
       {
@@ -72,7 +74,7 @@ export class OtariRetrievalService {
         }),
       ),
     ];
-    const urls = discoveredUrls.slice(0, 5);
+    const urls = discoveredUrls.slice(0, requested);
     if (!urls.length) return { papers: [] as PaperSnapshot[], discoveredCount: 0 };
     const server = this.gateway.value("OTARI_MCP_SERVER_ID");
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(server))

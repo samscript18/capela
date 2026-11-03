@@ -14,3 +14,5 @@ Suggested factual 3–5 minute sequence:
 - End: actual limits and implementation versus live-verification status. No awarded-score claim.
 
 Feedback, separately: onboarding permits 3–5 minute screen recording, written responses or both. If video, same participant screen/audio/no-AI rule. Participant should describe what worked, friction/reproduction, missing features, temptation to bypass Otari, what they built themselves and whether they would keep using it. These are participant experiences, not an AI-scripted testimonial.
+
+Current recording gate: isolated real model-role, remote MCP and sandbox traces exist in `evaluation/hosted-verification.json`; full investigation/search/fallback/ceiling denial and signed-in journeys remain pending. Do not film the isolated audit as a completed dossier or describe the unresolved claim as accepted.

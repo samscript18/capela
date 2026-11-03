@@ -18,6 +18,13 @@ async function main() {
     process.exitCode = 2;
     return;
   }
+  if (fs.existsSync(".local-evaluation/live-verification.json")) {
+    console.log(
+      "Blocked: an active verification ledger already accounts for this task's allowance. Do not create a separate spending pool.",
+    );
+    process.exitCode = 2;
+    return;
+  }
   const dataset = JSON.parse(fs.readFileSync("evaluation/pilot.json", "utf8"));
   const record = dataset.sources.find((s) => s.id === process.env.EVAL_SOURCE_ID);
   if (!record || !dataset.cases.some((c) => c.sourceId === record.id && c.split === "held-out"))

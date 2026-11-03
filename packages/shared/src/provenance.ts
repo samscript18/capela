@@ -113,6 +113,8 @@ export type RunEvent = {
   fallback?: boolean;
   costMicrousd?: number;
   durationMs?: number;
+  httpStatus?: number;
+  upstreamCode?: string;
   code?: string;
 };
 export type ResearchRun = {
@@ -182,6 +184,8 @@ export const ResearchRunSchema = z
             fallback: z.boolean().optional(),
             costMicrousd: z.number().int().optional(),
             durationMs: z.number().optional(),
+            httpStatus: z.number().int().min(100).max(599).optional(),
+            upstreamCode: Id.optional(),
             code: Id.optional(),
           })
           .strict(),

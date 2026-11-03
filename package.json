@@ -24,7 +24,8 @@
     "smoke:otari": "dotenv -e .env.local -- node scripts/otari-smoke.cjs",
     "test:browser": "playwright test --config playwright.config.ts",
     "test:integration": "npm run build:api && node --test apps/api/integration/*.test.js",
-    "evaluate:live": "npm run build:api && dotenv -e .env.local -- node scripts/compare-models.cjs"
+    "evaluate:live": "npm run build:api && dotenv -e .env.local -- node scripts/compare-models.cjs",
+    "smoke:roles": "npm run build:api && dotenv -e .env.local -- node scripts/smoke-roles.cjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

@@ -9,6 +9,7 @@ const {
   exactIds,
   scientificUrl,
   canDowngrade,
+  sourcePassages,
 } = require("../dist/research/provenance");
 const { auditCode, localAudit } = require("../dist/research/evidence-audit");
 const { ExtractionSchema, ReviewSchema, ResearchRunSchema } = require("@capela/shared");
@@ -33,6 +34,42 @@ global.fetch = async () => {
   throw new Error("Network disabled in offline unit tests");
 };
 const gateway = () => new OtariGatewayService(config);
+test("mechanical passage index preserves exact UTF-16 offsets after normalization", () => {
+  const s = snapshot(
+    "12345",
+    "https://pubmed.ncbi.nlm.nih.gov/12345/",
+    "  Cafe\u0301 🧪 failed.\r\n  No benefit was seen. ",
+  );
+  const passages = sourcePassages(s);
+  assert.equal(passages.length, 2);
+  for (const p of passages) assert.equal(s.text.slice(p.start, p.end), p.quote);
+  assert.equal(passages[1].quote, "No benefit was seen.");
+});
+test("paired evaluator cannot create a second budget pool beside an existing task ledger", () => {
+  const fs = require("node:fs"),
+    path = require("node:path"),
+    os = require("node:os");
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "capela-ledger-test-"));
+  try {
+    fs.mkdirSync(path.join(dir, ".local-evaluation"));
+    fs.writeFileSync(path.join(dir, ".local-evaluation/live-verification.json"), "{}");
+    const p = spawnSync(process.execPath, [path.resolve(__dirname, "../../../scripts/compare-models.cjs")], {
+      cwd: dir,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        OTARI_API_KEY: "",
+        OTARI_LIVE_TEST_BUDGET_MICROUSD: "10000",
+        EVAL_SOURCE_ID: "source",
+        EVAL_MOLECULE_NAME: "aspirin",
+      },
+    });
+    assert.equal(p.status, 2);
+    assert.match(p.stdout, /active verification ledger/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 function fixture(text = "Aspirin did not increase binding in mice. 🧪") {
   const s = snapshot("12345", "https://pubmed.ncbi.nlm.nih.gov/12345/", text, "2026-11-03T00:00:00.000Z");
   const c = {
@@ -394,6 +431,20 @@ test("MCP discovery mismatch stops before execution; no direct retrieval escape"
   );
   assert.deepEqual(paths, ["/search", "/mcp/servers/server/tools"]);
 });
+test("invalid abstract bounds stop before a paid search dispatch", async () => {
+  const g = gateway();
+  g.value = (key) => (key === "MAX_ANALYZED_PAPERS" ? "0" : "");
+  let calls = 0;
+  g.request = async () => {
+    calls++;
+    throw new Error("Must not dispatch");
+  };
+  await assert.rejects(
+    new OtariRetrievalService(g).search({ preferredName: "aspirin" }, g.createRun("test"), async () => {}),
+    { code: "OTARI_CONFIGURATION" },
+  );
+  assert.equal(calls, 0);
+});
 
 test("remote audit disagreement prevents publication even if remote claims success", async () => {
   const { remoteAudit } = require("../dist/research/evidence-audit");
@@ -511,4 +562,108 @@ test("deterministic computational classification cannot upgrade an insufficient 
   const candidate = { ...c, proposedClass: "insufficient", studyType: "computational" };
   const result = service.toClaim(candidate, [{ id: c.paperId }]);
   assert.equal(result.evidenceType, "insufficient");
+});
+
+test("owner-authorized funding retry preserves prior refusal and all reservations", () => {
+  const { prepareFundingRetry } = require("../../../scripts/smoke-roles.cjs");
+  const g = gateway(),
+    run = g.createRun("previous");
+  run.budget.capMicrousd = 10000;
+  run.budget.reservedMicrousd = 5000;
+  run.budget.calls = 1;
+  run.budget.unknownCostCalls = 1;
+  run.budget.terminal = true;
+  const old = structuredClone(run);
+  const report = { run, roleCheck: { status: "failed", errorCode: "OTARI_BUDGET_DENIED" } };
+  prepareFundingRetry(report);
+  assert.deepEqual(report.previousAttempts[0].run, old);
+  assert.equal(report.previousAttempts[0].run.budget.terminal, true);
+  assert.equal(report.run.budget.reservedMicrousd, 5000);
+  assert.equal(report.run.budget.unknownCostCalls, 1);
+  assert.equal(report.run.budget.calls, 1);
+  assert.equal(report.run.budget.capMicrousd, 10000);
+  assert.notEqual(report.run.runId, "previous");
+  const tooSmall = {
+    run: { ...run, budget: { ...run.budget, reservedMicrousd: 7000 } },
+    roleCheck: { status: "failed", errorCode: "OTARI_BUDGET_DENIED" },
+  };
+  assert.throws(() => prepareFundingRetry(tooSmall), /Remaining shared allowance/);
+  assert.throws(() => prepareFundingRetry({ run, roleCheck: { status: "passed" } }));
+});
+
+test("hosted insufficient funds and missing pricing remain distinct terminal refusals", async (t) => {
+  for (const [upstream, expected] of [
+    ["insufficient_funds", "OTARI_INSUFFICIENT_FUNDS"],
+    ["pricing_required", "OTARI_PRICING_REQUIRED"],
+  ]) {
+    let calls = 0;
+    t.mock.method(global, "fetch", async () => {
+      calls++;
+      return Response.json({ code: upstream }, { status: 402 });
+    });
+    const g = gateway(),
+      run = g.createRun("test");
+    await assert.rejects(
+      g.request("/chat/completions", {}, "extraction", run, async () => {}),
+      { code: expected },
+    );
+    assert.equal(run.events[0].httpStatus, 402);
+    assert.equal(run.events[0].upstreamCode, upstream);
+    assert.ok(run.budget.terminal);
+    await assert.rejects(g.request("/chat/completions", {}, "extraction", run, async () => {}));
+    assert.equal(calls, 1);
+  }
+});
+test("role requests declare a strict wire schema while retaining full local validation", async (t) => {
+  t.mock.method(global, "fetch", async (url, init) => {
+    const body = JSON.parse(init.body);
+    assert.equal(body.response_format.type, "json_schema");
+    assert.equal(body.response_format.json_schema.strict, true);
+    assert.equal(body.response_format.json_schema.schema.additionalProperties, false);
+    return Response.json(
+      { choices: [{ finish_reason: "stop", message: { content: "{}" } }] },
+      { headers: { "Otari-Model": "test-model" } },
+    );
+  });
+  await gateway().complete("extraction", "Return JSON", {}, gateway().createRun("test"), async () => {});
+});
+test("native-format validation retry is bounded and preserves all prior costs", () => {
+  const { prepareFormatRetry } = require("../../../scripts/smoke-roles.cjs");
+  const run = gateway().createRun("test");
+  run.budget.capMicrousd = 10000;
+  run.budget.reservedMicrousd = 5000;
+  run.budget.reportedMicrousd = 326;
+  run.budget.calls = 2;
+  const report = { run, roleCheck: { status: "failed", errorCode: "OTARI_INVALID_JSON" } };
+  prepareFormatRetry(report);
+  assert.equal(report.run.budget.reportedMicrousd, 326);
+  assert.equal(report.run.budget.reservedMicrousd, 5000);
+  assert.equal(report.previousAttempts[0].run.budget.calls, 2);
+  report.previousAttempts.push(structuredClone({ run: report.run, roleCheck: report.roleCheck }));
+  report.roleCheck = { status: "failed", errorCode: "OTARI_INVALID_JSON" };
+  assert.throws(() => prepareFormatRetry(report), /already been used/);
+});
+
+test("minimal role bounds are explicit and invalid bounds cannot dispatch", async (t) => {
+  let calls = 0;
+  t.mock.method(global, "fetch", async (url, init) => {
+    calls++;
+    const b = JSON.parse(init.body);
+    assert.equal(b.max_tokens, 2000);
+    assert.equal(b.reasoning_effort, "low");
+    return Response.json({ choices: [{ finish_reason: "stop", message: { content: "{}" } }] });
+  });
+  const g = gateway();
+  await g.complete("extraction", "JSON", {}, g.createRun("test"), async () => {}, {
+    maxOutputTokens: 2000,
+    reasoningEffort: "low",
+  });
+  await assert.rejects(
+    g.complete("extraction", "JSON", {}, g.createRun("test"), async () => {}, {
+      maxOutputTokens: 100000,
+      reasoningEffort: "low",
+    }),
+    { code: "OTARI_CONFIGURATION" },
+  );
+  assert.equal(calls, 1);
 });
