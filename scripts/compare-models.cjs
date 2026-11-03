@@ -76,7 +76,13 @@ async function main() {
         await gateway.complete(
           "extraction",
           EXTRACTION_PROMPT,
-          { schema: z.toJSONSchema(ExtractionSchema), molecule, papers: [paper], snapshots: [source] },
+          {
+            schema: z.toJSONSchema(ExtractionSchema),
+            expectedPaperIds: [paper.id],
+            molecule,
+            papers: [paper],
+            snapshots: [source],
+          },
           run,
           save,
         ),

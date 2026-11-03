@@ -1,14 +1,18 @@
 import { Injectable, Logger, type OnModuleInit, type OnModuleDestroy } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { ZodError } from "zod";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { randomUUID } from "node:crypto";
 import {
   ACTIVE_INVESTIGATION_STATUSES,
+  canRetryExtraction,
   ResearchRunSchema,
+  parseStoredResearchRun,
   type ResearchRun,
   type InvestigationStatus,
   type MoleculeSnapshot,
+  type PaperSnapshot,
 } from "@capela/shared";
 import { Investigation, type InvestigationDocument } from "../investigations/schemas/investigation.schema";
 import { AiEvidenceService } from "./ai-evidence.service";
@@ -152,8 +156,19 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
       write({ status, "progress.message": message, ...extra });
     try {
       const legacy = this.config.get<string>("RESEARCH_PROVIDER") === "legacy";
+      const resume = !!item.research?.budget.calls;
+      if (
+        resume &&
+        (legacy ||
+          !item.molecule ||
+          !canRetryExtraction(
+            item.research,
+            item.papers.map((p) => String(p.id)),
+          ))
+      )
+        throw new ResearchError("PAID_REPLAY_BLOCKED", "Saved run is not eligible for extraction retry.");
       if (!legacy) {
-        research = this.gateway.createRun(randomUUID());
+        research = resume ? parseStoredResearchRun(item.research) : this.gateway.createRun(randomUUID());
         await save();
         this.gateway.assertConfigured();
         if (research.budget.capMicrousd <= 0)
@@ -162,15 +177,19 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
             "Otari spending is disabled. Configure a finite local run cap and hosted key ceiling.",
           );
       }
-      const molecule: MoleculeSnapshot = await this.pubChem.resolve(item.originalInput);
+      const molecule: MoleculeSnapshot = resume
+        ? (item.molecule as unknown as MoleculeSnapshot)
+        : await this.pubChem.resolve(item.originalInput);
       await stage(
         "searching_literature",
         legacy ? "Searching scientific literature (legacy)" : "Searching scientific literature through Otari",
         { molecule },
       );
-      const literature = legacy
-        ? await this.literature.search(molecule, item.originalInput)
-        : await this.retrieval.search(molecule, research!, save);
+      const literature = resume
+        ? { papers: item.papers as unknown as PaperSnapshot[], discoveredCount: item.progress.papersDiscovered }
+        : legacy
+          ? await this.literature.search(molecule, item.originalInput)
+          : await this.retrieval.search(molecule, research!, save);
       await stage("ranking_studies", `${literature.papers.length} canonical abstracts selected`, {
         papers: literature.papers,
         "progress.papersDiscovered": literature.discoveredCount,
@@ -242,9 +261,11 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
           .catch(() => this.logger.warn("Completion notification unavailable"));
     } catch (error) {
       const code =
-        error && typeof error === "object" && "code" in error && typeof error.code === "string"
-          ? error.code
-          : "RESEARCH_FAILED";
+        error instanceof ZodError
+          ? "INVALID_STORED_RUN"
+          : error && typeof error === "object" && "code" in error && typeof error.code === "string"
+            ? error.code
+            : "RESEARCH_FAILED";
       const safe = error instanceof ResearchError || error instanceof PubChemResolutionError;
       const failedEvent = research?.events
         .slice()
@@ -269,7 +290,12 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
             ...(research ? { research } : {}),
             error: {
               code,
-              message: safe ? error.message : "Research could not be validated. Saved work remains partial.",
+              message:
+                error instanceof ZodError
+                  ? "Stored run data failed validation. No automatic replay was attempted; saved work remains available."
+                  : safe
+                    ? error.message
+                    : "Research could not be validated. Saved work remains partial.",
             },
             "progress.message": "Investigation stopped; saved work is partial",
           },

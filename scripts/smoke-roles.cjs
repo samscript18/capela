@@ -280,6 +280,7 @@ async function main() {
           `${EXTRACTION_PROMPT} For this minimal check extract at most one explicit measured finding about curcumin. The passage index supplies exact quote boundaries; it is source data, not a set of proposed claims.`,
           {
             schema: z.toJSONSchema(ExtractionSchema),
+            expectedPaperIds: [report.paper.id],
             molecule,
             papers: [report.paper],
             snapshots: run.snapshots,

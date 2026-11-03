@@ -84,6 +84,52 @@ test("paid attempts cannot reset budget or snapshots on retry", async () => {
   await assert.rejects(s.retry("verified-owner", new Types.ObjectId().toString()), /dispatched paid work/);
   assert.equal(writes, 0);
 });
+test("explicit extraction retry retains sources and budget, is owner-scoped and atomically queues", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { canRetryExtraction } = require("@capela/shared");
+  const run = new OtariGatewayService({ get: () => undefined }).createRun("retained-run");
+  run.budget.capMicrousd = 100000;
+  run.budget.reservedMicrousd = 10000;
+  run.budget.calls = 4;
+  run.snapshots = [{ paperId: "123" }];
+  run.events = [{ operation: "extraction", status: "completed" }];
+  assert.equal(canRetryExtraction(run, ["123"]), true);
+  for (const altered of [
+    { ...run, dispatchUncertain: true },
+    { ...run, budget: { ...run.budget, terminal: true } },
+    { ...run, checkpoint: "extracted" },
+    { ...run, events: [{ operation: "review", status: "completed" }] },
+    { ...run, snapshots: [] },
+  ])
+    assert.equal(canRetryExtraction(altered, ["123"]), false);
+  const record = {
+    _id: new Types.ObjectId(),
+    status: "failed",
+    access: { type: "free" },
+    molecule: {},
+    papers: [{ id: "123" }],
+    research: run,
+  };
+  let update, filter;
+  const s = service({
+    findOne: () => query(record),
+    exists: async () => false,
+    findOneAndUpdate: (f, u) => {
+      filter = f;
+      update = u;
+      return query({ ...record, id: record._id.toString() });
+    },
+  });
+  await s.retry("verified-owner", record._id.toString());
+  assert.equal(filter.status, "failed");
+  assert.deepEqual(filter.userId, user._id);
+  for (const field of ["research", "molecule", "papers"]) assert.equal(update.$unset[field], undefined);
+  assert.equal(update.$set.research, undefined);
+  assert.equal(run.budget.calls, 4);
+  assert.equal(run.budget.reservedMicrousd, 10000);
+  run.budget.reservedMicrousd = 95000;
+  await assert.rejects(s.retry("verified-owner", record._id.toString()), /remaining allowance/);
+});
 test("restart expires only stale active runs and never replays paid work", async () => {
   let stale;
   const ids = [];
@@ -145,6 +191,70 @@ test("atomic claim permits one worker; stale/deleted writer cannot publish", asy
   assert.ok(writeFilter.leaseExpiresAt.$gt instanceof Date);
   assert.ok(writeFilter.status.$in.includes("generating_dossier"));
 });
+test("resumed extraction reuses the original run and budget without repeating retrieval", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { snapshot, ResearchError } = require("../dist/research/provenance");
+  const g = new OtariGatewayService({ get: (k) => (k === "OTARI_API_KEY" ? "fixture-only" : undefined) });
+  const run = g.createRun("original-run");
+  run.budget.capMicrousd = 100000;
+  run.budget.calls = 4;
+  run.budget.reservedMicrousd = 10000;
+  run.snapshots = [snapshot("123", "https://pubmed.ncbi.nlm.nih.gov/123/", "Synthetic abstract.")];
+  run.events = [
+    {
+      sequence: 1,
+      at: new Date().toISOString(),
+      operation: "extraction",
+      status: "completed",
+      correlationId: "fixture",
+      provider: null,
+      model: null,
+      upstreamCode: null,
+    },
+  ];
+  const paper = { id: "123", abstract: run.snapshots[0].text };
+  const molecule = { preferredName: "fixture" };
+  const item = { research: run, molecule, papers: [paper], progress: { papersDiscovered: 1 } };
+  let extracted = 0;
+  const model = {
+    findOneAndUpdate: () => query(item),
+    updateOne: () => query({ matchedCount: 1 }),
+  };
+  const forbidden = async () => {
+    throw new Error("Retrieval must not repeat");
+  };
+  const runner = new InvestigationRunnerService(
+    model,
+    { resolve: forbidden },
+    { search: forbidden },
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    g,
+    { search: forbidden },
+    {
+      extract: async (papers, resolved, retained) => {
+        extracted++;
+        assert.deepEqual(papers, [paper]);
+        assert.deepEqual(resolved, molecule);
+        assert.equal(retained.runId, "original-run");
+        assert.equal(retained.events[0].provider, undefined);
+        assert.equal(retained.events[0].model, undefined);
+        assert.equal(retained.events[0].upstreamCode, undefined);
+        assert.equal(retained.budget.calls, 4);
+        assert.equal(retained.budget.reservedMicrousd, 10000);
+        throw new ResearchError("FIXTURE_STOP", "Stop before new spending.");
+      },
+    },
+    { get: () => undefined },
+  );
+  await runner.run("fixture-investigation");
+  assert.equal(extracted, 1);
+});
+
 test("legacy record arrays need no synthetic provenance or review history", () => {
   const legacy = { evidence: [{ id: "old", finding: "Historical record" }], dossier: { generatedAt: "2020-01-01" } };
   assert.equal(legacy.research, undefined);

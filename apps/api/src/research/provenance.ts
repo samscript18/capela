@@ -94,14 +94,17 @@ export function referenceValid(c: CandidateClaim, sources: SourceSnapshot[]): bo
   const source = sources.find((s) => s.id === c.snapshotId && s.paperId === c.paperId && s.hash === c.snapshotHash);
   return !!source && digest(source.text) === source.hash && spansValid(c.spans, source);
 }
-export function exactIds(expected: string[], actual: string[]) {
+export function exactIds(expected: string[], actual: string[], context = "Output") {
   if (
     new Set(expected).size !== expected.length ||
     new Set(actual).size !== actual.length ||
     expected.length !== actual.length ||
     actual.some((id) => !expected.includes(id))
   )
-    throw new ResearchError("INVALID_IDS", "Output has missing, duplicate or unknown references.");
+    throw new ResearchError(
+      "INVALID_IDS",
+      `${context} references failed validation: expected ${expected.length}, received ${actual.length}; missing ${new Set(expected.filter((id) => !actual.includes(id))).size}, duplicate expected ${expected.length - new Set(expected).size}, duplicate received ${actual.length - new Set(actual).size}, unknown ${new Set(actual.filter((id) => !expected.includes(id))).size}. No references were guessed or repaired.`,
+    );
 }
 // A partial order: computational and reported evidence cannot become experiments or each other.
 export function canDowngrade(from: EvidenceType, to: EvidenceType): boolean {

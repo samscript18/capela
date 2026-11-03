@@ -51,7 +51,8 @@ const report = {
   scientificQualityClaim: "withheld",
   rows,
 };
-fs.writeFileSync("evaluation/results.json", JSON.stringify(report, null, 2) + "\n");
+if (!process.argv.includes("--stdout-only"))
+  fs.writeFileSync("evaluation/results.json", JSON.stringify(report, null, 2) + "\n");
 console.log(
   JSON.stringify(
     {

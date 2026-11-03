@@ -28,7 +28,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Web: http://localhost:3000. API: http://localhost:4000. Swagger/OpenAPI: `/docs`, `/docs/openapi.json`, `/docs/openapi.yaml` on the API. All investigation reads/actions require verified owner authentication. `POST /investigations/:id/cancel` fences late writes. After any paid dispatch, automatic retry is blocked to avoid duplicate charges; partial checkpoints remain inspectable. Recovery marks expired leases interrupted rather than replaying paid stages. Selective paid-stage resume is not implemented.
+Web: http://localhost:3000. API: http://localhost:4000. Swagger/OpenAPI: `/docs`, `/docs/openapi.json`, `/docs/openapi.yaml` on the API. All investigation reads/actions require verified owner authentication. `POST /investigations/:id/cancel` fences late writes. Owner-triggered extraction retries reuse saved sources and the original remaining allowance after a completed extraction response fails validation. Earlier costs and reservations remain counted; search/MCP are not repeated. Interrupted calls, terminal budgets and later checkpoints cannot be replayed. Recovery marks expired leases interrupted rather than replaying paid stages.
 
 ### Verification
 

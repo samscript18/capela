@@ -34,6 +34,25 @@ const DiscoverySchema = z
 @Injectable()
 export class OtariRetrievalService {
   constructor(private readonly gateway: OtariGatewayService) {}
+  private async discover(server: string, run: ResearchRun, save: SaveRun) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return (await this.gateway.request(`/mcp/servers/${server}/tools`, undefined, "mcp_discovery", run, save)).data;
+      } catch (error) {
+        const status = run.events.at(-1)?.httpStatus;
+        const transient =
+          error instanceof ResearchError &&
+          (error.code === "OTARI_TRANSPORT_UNCERTAIN" ||
+            (["OTARI_PROVIDER_ERROR", "OTARI_MCP_UNAVAILABLE"].includes(error.code) &&
+              status !== undefined &&
+              [502, 503, 504].includes(status)));
+        if (attempt > 0 || !transient || run.budget.terminal) throw error;
+        // Retry this read-only discovery only; never replay search, MCP execution or inference.
+        await new Promise((resolve) => setTimeout(resolve, 125 + Math.floor(Math.random() * 250)));
+      }
+    }
+    throw new ResearchError("OTARI_MCP_DISCOVERY", "Hosted MCP discovery did not complete.");
+  }
   async search(molecule: MoleculeSnapshot, run: ResearchRun, save: SaveRun) {
     const requested = this.gateway.integer("MAX_ANALYZED_PAPERS", 5, 5);
     if (requested < 1) throw new ResearchError("OTARI_CONFIGURATION", "Select between one and five abstracts.");
@@ -57,8 +76,14 @@ export class OtariRetrievalService {
     if (reservation < 1) throw new ResearchError("OTARI_CONFIGURATION", "A positive dispatch reservation is required.");
     // Keep allowance for extraction, review and audit before selecting paid metadata calls.
     const available = run.budget.capMicrousd - run.budget.reportedMicrousd - run.budget.reservedMicrousd;
-    const processing = 2 * reservation + Math.max(10000, reservation);
-    const affordable = Math.max(0, Math.floor((available - processing) / reservation));
+    const processing = reservation + Math.max(10000, reservation); // One review plus audit.
+    const affordable = Math.max(
+      0,
+      Math.min(
+        Math.floor((available - processing) / (2 * reservation)), // Metadata + extraction per source.
+        Math.floor((run.budget.maxCalls - run.budget.calls - 2) / 2),
+      ),
+    );
     const urls = discoveredUrls.slice(0, Math.min(requested, affordable));
     if (!urls.length) {
       run.budget.terminal = true;
@@ -77,10 +102,7 @@ export class OtariRetrievalService {
     const server = this.gateway.value("OTARI_MCP_SERVER_ID");
     if (!/^[a-zA-Z0-9_-]{1,100}$/.test(server))
       throw new ResearchError("OTARI_MCP_NOT_CONFIGURED", "Configure the hosted read-only publication MCP server.");
-    const discovery = strictOutput(
-      DiscoverySchema,
-      (await this.gateway.request(`/mcp/servers/${server}/tools`, undefined, "mcp_discovery", run, save)).data,
-    );
+    const discovery = strictOutput(DiscoverySchema, await this.discover(server, run, save));
     const tool = discovery.tools.find((t) => t.name === "publication_abstract");
     const schema = tool?.input_schema;
     const properties = schema?.properties as Record<string, { type?: unknown }> | undefined;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ACTIVE_INVESTIGATION_STATUSES, type InvestigationStatus } from "@capela/shared";
+import { ACTIVE_INVESTIGATION_STATUSES, canRetryExtraction, type InvestigationStatus } from "@capela/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Check, Circle, ExternalLink, LoaderCircle, RotateCcw, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -43,6 +43,10 @@ export default function InvestigationPage() {
   if (investigation.isLoading) return <LoadingState />;
   if (investigation.isError || !investigation.data) return <LoadError />;
   const item = investigation.data;
+  const extractionRetry = canRetryExtraction(
+    item.research,
+    item.papers.map((p) => p.id),
+  );
   if (item.status === "completed" && item.dossier) return <DossierView item={item} />;
   if (item.status === "completed") return <MissingDossierState />;
   const activeIndex = stages.findIndex((stage) => stage.status === item.status);
@@ -340,9 +344,11 @@ export default function InvestigationPage() {
             {item.error?.message ?? "The investigation workflow could not be completed."}
           </p>
           <p className="mt-3 max-w-2xl text-xs leading-5 text-[#788274]">
-            {item.research?.budget.calls
-              ? "Paid work was dispatched. Its checkpoints remain available; automatic retry is disabled to avoid duplicate charges. Review the partial record before starting a separately budgeted investigation."
-              : "This run did not complete. You can retry after resolving its configuration or provider error."}
+            {extractionRetry
+              ? "Retry extraction using the saved abstracts and remaining original allowance. This makes new model calls; earlier charges and unknown-cost reservations remain counted."
+              : item.research?.budget.calls
+                ? "Paid work was dispatched. Its checkpoints remain available; automatic retry is disabled to avoid duplicate charges. Review the partial record before starting a separately budgeted investigation."
+                : "This run did not complete. You can retry after resolving its configuration or provider error."}
           </p>
           {item.error?.code && (
             <span className="mono mt-5 inline-flex rounded-full border border-[#ff7474]/20 px-2.5 py-1 text-[8px] uppercase tracking-[.1em] text-[#ff8b8b]">
@@ -353,11 +359,15 @@ export default function InvestigationPage() {
             <button
               type="button"
               onClick={() => retry.mutate()}
-              disabled={retry.isPending || !!item.research?.budget.calls}
+              disabled={retry.isPending || (!!item.research?.budget.calls && !extractionRetry)}
               className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#9fad7c]/35 bg-[#9fad7c] px-5 text-sm font-bold text-[#10140d] shadow-[0_10px_30px_rgba(109,126,76,.16)] transition hover:-translate-y-0.5 hover:bg-[#b4c18f] disabled:pointer-events-none disabled:opacity-50"
             >
               {retry.isPending ? <LoaderCircle size={15} className="animate-spin" /> : <RotateCcw size={15} />}
-              {retry.isPending ? "Restarting investigation…" : "Retry this investigation"}
+              {retry.isPending
+                ? "Restarting investigation…"
+                : extractionRetry
+                  ? "Retry extraction from saved sources"
+                  : "Retry this investigation"}
             </button>
             <Link
               href="/dashboard/investigate"

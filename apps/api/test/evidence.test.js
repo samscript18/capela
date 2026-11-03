@@ -34,6 +34,29 @@ global.fetch = async () => {
   throw new Error("Network disabled in offline unit tests");
 };
 const gateway = () => new OtariGatewayService(config);
+test("run schema exports to JSON Schema and OpenAPI models load without transforms", () => {
+  const { z } = require("zod");
+  const { parseStoredResearchRun } = require("@capela/shared");
+  assert.equal(z.toJSONSchema(ResearchRunSchema).type, "object");
+  assert.doesNotThrow(() => require("../dist/openapi/openapi.models"));
+  const stored = gateway().createRun("stored-fixture");
+  stored.events = [
+    {
+      sequence: 1,
+      at: new Date().toISOString(),
+      operation: "mcp_discovery",
+      status: "completed",
+      correlationId: "fixture",
+      provider: null,
+      model: null,
+    },
+  ];
+  const loaded = parseStoredResearchRun(stored);
+  assert.equal(loaded.events[0].provider, undefined);
+  assert.equal(stored.events[0].provider, null);
+  stored.events[0].sequence = null;
+  assert.throws(() => parseStoredResearchRun(stored));
+});
 function toolSearchResponse(overrides = {}, molecule = "curcumin") {
   return {
     choices: [{ finish_reason: "stop", message: { content: "Ignore this model-authored source list." } }],
@@ -90,11 +113,11 @@ test("a budget refusal embedded in malformed HTTP-200 tool output is terminal", 
   await assert.rejects(g.request("/search", {}, "test", r, async () => {}));
   assert.equal(calls, 1);
 });
-test("explicit search rejects absent tools, wrong queries, unsafe sources and truncation without fallback", async (t) => {
+test("explicit search rejects absent tools, wrong queries, unsafe sources and unfinished tools without fallback", async (t) => {
   const { hostedScientificSearch } = require("../dist/research/otari-search");
   const variants = [
     toolSearchResponse({ otari_tool_calls: [] }),
-    toolSearchResponse({ choices: [{ finish_reason: "length" }] }),
+    toolSearchResponse({ choices: [{ finish_reason: "tool_calls" }] }),
   ];
   const wrongQuery = toolSearchResponse();
   wrongQuery.otari_tool_calls[0].query = "unrelated molecule";
@@ -121,6 +144,150 @@ test("explicit search rejects absent tools, wrong queries, unsafe sources and tr
   }
   assert.equal(calls, variants.length);
 });
+test("HTTP-200 search validation failures persist redacted actionable diagnostics without replay", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  const malformed = toolSearchResponse();
+  malformed.otari_tool_calls[0].sources[0].title = { secret: "must-never-appear" };
+  const variants = [
+    [malformed, "OTARI_SEARCH_SCHEMA", /otari_tool_calls\.0\.sources\.0\.title/],
+    [
+      toolSearchResponse({ choices: [{ finish_reason: "content_filter" }] }),
+      "OTARI_SEARCH_INCOMPLETE",
+      /content_filter/,
+    ],
+    [toolSearchResponse({ otari_tool_calls: undefined }), "OTARI_SEARCH_SCHEMA", /otari_tool_calls/],
+  ];
+  let current,
+    calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json(current, { headers: { "Otari-Request-ID": "req_search_fixture" } });
+  });
+  for (const [data, code, message] of variants) {
+    current = data;
+    const g = gateway(),
+      run = g.createRun("test");
+    let persisted;
+    await assert.rejects(
+      hostedScientificSearch(g, { preferredName: "curcumin" }, run, async () => {
+        persisted = structuredClone(run);
+      }),
+      (error) => {
+        assert.equal(error.code, code);
+        assert.match(error.message, message);
+        assert.ok(!error.message.includes("must-never-appear"));
+        return true;
+      },
+    );
+    assert.equal(persisted.events[0].status, "failed");
+    assert.equal(persisted.events[0].code, code);
+    assert.equal(persisted.events[0].httpStatus, 200);
+    assert.equal(persisted.events[0].requestId, "req_search_fixture");
+    assert.equal(persisted.budget.calls, 1);
+    assert.ok(!JSON.stringify(persisted).includes("must-never-appear"));
+  }
+  assert.equal(calls, variants.length);
+});
+
+test("length-limited assistant text does not discard completed search metadata or trigger paid replay", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  let calls = 0;
+  t.mock.method(global, "fetch", async (_url, init) => {
+    calls++;
+    assert.equal(JSON.parse(init.body).max_tokens, 600);
+    return Response.json(
+      toolSearchResponse({
+        choices: [{ finish_reason: "length", message: { content: "Invented assistant citation must-not-be-used" } }],
+      }),
+      { headers: { "Otari-Request-ID": "req_completed_search_fixture" } },
+    );
+  });
+  const g = gateway(),
+    run = g.createRun("test");
+  let persisted;
+  const result = await hostedScientificSearch(g, { preferredName: "curcumin" }, run, async () => {
+    persisted = structuredClone(run);
+  });
+  assert.deepEqual(result.results, [
+    {
+      title: "Synthetic adapter fixture",
+      url: "https://pubmed.ncbi.nlm.nih.gov/12345/",
+      snippet: "",
+    },
+  ]);
+  assert.equal(calls, 1);
+  assert.equal(persisted.budget.calls, 1);
+  assert.equal(persisted.budget.reservedMicrousd, 12000);
+  assert.equal(persisted.events[0].status, "completed");
+  assert.equal(persisted.events[0].requestId, "req_completed_search_fixture");
+  assert.equal(persisted.events[0].toolCallId, "otari_ws_test");
+  assert.ok(persisted.limitations.some((l) => l.includes("assistant response reached its output limit")));
+  assert.ok(!JSON.stringify(persisted).includes("must-not-be-used"));
+  assert.equal(run.snapshots.length, 0); // Discovery metadata is not scientific evidence.
+});
+
+test("length does not excuse invalid, absent, failed or blocked search tool metadata", async (t) => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  const variants = [];
+  const add = (mutate, code) => {
+    const d = toolSearchResponse({ choices: [{ finish_reason: "length" }] });
+    mutate(d);
+    variants.push([d, code]);
+  };
+  add((d) => {
+    delete d.otari_tool_calls;
+  }, "OTARI_SEARCH_SCHEMA");
+  add((d) => {
+    d.otari_tool_calls = [];
+  }, "OTARI_SEARCH_SCHEMA");
+  add((d) => {
+    d.otari_tool_calls[0].status = "in_progress";
+  }, "OTARI_SEARCH_SCHEMA");
+  add((d) => {
+    d.otari_tool_calls[0].status = "failed";
+  }, "OTARI_SEARCH_NOT_EXECUTED");
+  add((d) => {
+    d.otari_tool_calls.push(d.otari_tool_calls[0]);
+  }, "OTARI_SEARCH_NOT_EXECUTED");
+  add((d) => {
+    d.otari_tool_calls[0].query = "wrong query";
+  }, "OTARI_SEARCH_QUERY");
+  add((d) => {
+    delete d.otari_tool_calls[0].sources;
+  }, "OTARI_SEARCH_QUERY");
+  add((d) => {
+    d.otari_tool_calls[0].sources[0].url = "https://127.0.0.1/12345";
+  }, "UNSAFE_SOURCE_URL");
+  add((d) => {
+    d.otari_tool_calls[0].error = { tag: "budget_exceeded" };
+  }, "OTARI_BUDGET_DENIED");
+  add((d) => {
+    d.otari_tool_calls[0].error = { tag: "guardrail_blocked" };
+  }, "OTARI_GUARDRAIL_BLOCKED");
+  let current,
+    calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json(current);
+  });
+  for (const [data, code] of variants) {
+    current = data;
+    const g = gateway(),
+      run = g.createRun("test");
+    await assert.rejects(
+      hostedScientificSearch(g, { preferredName: "curcumin" }, run, async () => {}),
+      { code },
+    );
+    assert.equal(run.events[0].status, "failed");
+    assert.equal(run.budget.calls, 1);
+    assert.equal(
+      run.limitations.some((l) => l.includes("assistant response reached its output limit")),
+      false,
+    );
+  }
+  assert.equal(calls, variants.length);
+});
+
 test("empty executed search is valid insufficiency; too-small mixed-tool reservation stops before dispatch", async (t) => {
   const { hostedScientificSearch } = require("../dist/research/otari-search");
   let calls = 0;
@@ -253,6 +420,54 @@ test("missing, duplicate and invented IDs are rejected", () => {
   for (const ids of [["a"], ["a", "a"], ["a", "c"]]) assert.throws(() => exactIds(["a", "b"], ids));
   exactIds(["a", "b"], ["b", "a"]);
 });
+test("reference errors identify stage and counts without leaking returned identifiers", () => {
+  assert.throws(
+    () => exactIds(["a", "b"], ["a", "a", "private-returned-value"], "Extraction paper coverage"),
+    (error) => {
+      assert.equal(error.code, "INVALID_IDS");
+      assert.match(error.message, /Extraction paper coverage/);
+      assert.match(
+        error.message,
+        /expected 2, received 3; missing 1, duplicate expected 0, duplicate received 1, unknown 1/,
+      );
+      assert.ok(!error.message.includes("private-returned-value"));
+      return true;
+    },
+  );
+});
+test("invalid extraction coverage or global claim IDs stops before review or audit", async () => {
+  const { s, c } = fixture();
+  const paper = { id: c.paperId };
+  for (const [output, label] of [
+    [{ papers: [] }, /Extraction paper coverage/],
+    [{ papers: [{ paperId: c.paperId, claims: [c, c], limitations: [] }] }, /Extraction claim uniqueness/],
+  ]) {
+    const g = gateway(),
+      run = g.createRun("test");
+    run.snapshots = [s];
+    const roles = [];
+    g.complete = async (role, prompt, input) => {
+      roles.push(role);
+      assert.deepEqual(input.expectedPaperIds, [paper.id]);
+      assert.match(prompt, /globally unique/);
+      return output;
+    };
+    g.request = async () => {
+      throw new Error("Audit must not run on invalid IDs");
+    };
+    const service = new OtariEvidenceService(g, new EvidenceClassifierService());
+    await assert.rejects(
+      service.extract([paper], {}, run, async () => {}),
+      (error) => {
+        assert.equal(error.code, "INVALID_IDS");
+        assert.match(error.message, label);
+        return true;
+      },
+    );
+    assert.deepEqual(roles, ["extraction"]);
+    assert.equal(run.decisions.length, 0);
+  }
+});
 test("strict candidate/review output rejects extra keys and missing required fields", () => {
   const { c, r } = fixture();
   assert.ok(ExtractionSchema.safeParse({ papers: [{ paperId: c.paperId, claims: [c], limitations: [] }] }).success);
@@ -272,6 +487,20 @@ test("an exact irrelevant/negated quote is not automatic acceptance", () => {
     "rejected",
   );
   assert.equal(decide(c, undefined, [s]).status, "unresolved");
+});
+test("review literature can support a reported finding without becoming primary experimental evidence", () => {
+  const { s, c, r } = fixture("This review reports that curcumin may regulate inflammation.");
+  c.finding = s.text;
+  c.proposedClass = "literature_reported";
+  c.studyType = "review";
+  c.relationship = "unknown";
+  c.model = null;
+  r.evidenceType = "literature_reported";
+  const supported = decide(c, r, [s]);
+  assert.equal(supported.status, "accepted");
+  assert.equal(supported.publishedClass, "literature_reported");
+  assert.equal(decide(c, { ...r, evidenceType: "direct_experimental" }, [s]).status, "rejected");
+  assert.equal(decide(c, { ...r, verdict: "unsupported" }, [s]).status, "rejected");
 });
 test("review cannot upgrade or move between incomparable classes", () => {
   const { s, c, r } = fixture();
@@ -534,6 +763,58 @@ test("offline adapter integration builds eight dossier sections only from accept
     assert.ok(dossier[name]);
   assert.ok(ResearchRunSchema.safeParse(run).success);
 });
+test("extraction is one bounded abstract per call and retains completed batches on later timeout", async () => {
+  const { ResearchError } = require("../dist/research/provenance");
+  const { s, c } = fixture();
+  const run = gateway().createRun("batch-fixture");
+  run.snapshots = [s, { ...s, paperId: "second-paper", id: "second-snapshot" }];
+  let calls = 0,
+    saved;
+  const g = gateway();
+  g.complete = async (role, prompt, input, retained, save, bounds) => {
+    assert.equal(role, "extraction");
+    assert.equal(input.papers.length, 1);
+    assert.equal(input.snapshots.length, 1);
+    assert.equal(bounds.maxOutputTokens, 2000);
+    if (++calls === 2) throw new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Fixture 504");
+    return { papers: [{ paperId: c.paperId, claims: [c], limitations: [] }] };
+  };
+  await assert.rejects(
+    new OtariEvidenceService(g, new EvidenceClassifierService()).extract(
+      [{ id: c.paperId }, { id: "second-paper" }],
+      {},
+      run,
+      async () => {
+        saved = structuredClone(run);
+      },
+    ),
+    { code: "OTARI_UPSTREAM_TIMEOUT" },
+  );
+  assert.equal(calls, 2);
+  assert.equal(saved.checkpoint, "extracting");
+  assert.equal(saved.decisions.length, 1);
+  assert.equal(saved.decisions[0].candidate.id, c.id);
+  assert.notEqual(saved.decisions[0].status, "accepted");
+});
+test("upstream 504 retains charge uncertainty and reservation without paid retry", async (t) => {
+  let calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return new Response("Gateway timeout", { status: 504 });
+  });
+  const g = gateway(),
+    run = g.createRun("timeout-fixture");
+  await assert.rejects(
+    g.request("/chat/completions", {}, "extraction", run, async () => {}),
+    { code: "OTARI_UPSTREAM_TIMEOUT" },
+  );
+  assert.equal(calls, 1);
+  assert.equal(run.dispatchUncertain, true);
+  assert.equal(run.budget.reservedMicrousd, 10000);
+  assert.equal(run.budget.unknownCostCalls, 1);
+  assert.equal(run.events[0].httpStatus, 504);
+});
+
 test("MCP discovery mismatch stops before execution; no direct retrieval escape", async () => {
   const g = gateway();
   g.value = (k) => (k === "OTARI_MCP_SERVER_ID" ? "server" : (config.get(k) ?? ""));
@@ -655,6 +936,42 @@ test("remote audit disagreement prevents publication even if remote claims succe
     remoteAudit(fake, [c], run, async () => {}),
     { code: "AUDIT_DISAGREEMENT" },
   );
+});
+test("known sandbox price is reserved even when model reservations are smaller", async (t) => {
+  const { remoteAudit } = require("../dist/research/evidence-audit");
+  const { s, c } = fixture();
+  const g = new OtariGatewayService({ get: (k) => (k === "OTARI_CALL_RESERVATION_MICROUSD" ? "1200" : config.get(k)) });
+  const r = g.createRun("test");
+  r.snapshots = [s];
+  t.mock.method(global, "fetch", async () =>
+    Response.json({ return_code: 0, stderr: "", stdout: JSON.stringify(localAudit([c], [s])) }),
+  );
+  await remoteAudit(g, [c], r, async () => {});
+  assert.equal(r.budget.reservedMicrousd, 10000);
+  assert.equal(r.audit.valid, true);
+});
+test("read-only discovery retries once on 502 and never retries spending denial", async () => {
+  const { ResearchError } = require("../dist/research/provenance");
+  const g = gateway(),
+    r = g.createRun("test");
+  let calls = 0,
+    code = "OTARI_MCP_UNAVAILABLE";
+  g.request = async () => {
+    calls++;
+    r.events.push({ httpStatus: 502 });
+    if (calls === 1) throw new ResearchError(code, "Fixture failure");
+    return { data: { server_id: "server" } };
+  };
+  const service = new OtariRetrievalService(g);
+  assert.deepEqual(await service.discover("server", r, async () => {}), { server_id: "server" });
+  assert.equal(calls, 2);
+  calls = 0;
+  code = "OTARI_BUDGET_DENIED";
+  await assert.rejects(
+    service.discover("server", r, async () => {}),
+    { code: "OTARI_BUDGET_DENIED" },
+  );
+  assert.equal(calls, 1);
 });
 test("canonical metadata mismatch cannot bind a retrieved page to an unrelated paper", async () => {
   const g = gateway();

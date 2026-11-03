@@ -3,6 +3,7 @@
 import { CheckCircle2, Download, LoaderCircle } from "lucide-react";
 import { useRef, useState } from "react";
 import type { ApiInvestigation } from "@/lib/api";
+import { BrandMark } from "@/components/brand";
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -102,11 +103,11 @@ export function DossierSummaryCard({ item }: { item: ApiInvestigation }) {
 
         <header className="flex items-start justify-between gap-5 border-b border-white/10 pb-5">
           <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-[#eef2df] via-[#9fad7c] to-[#5f9f7c] text-lg font-bold text-[#11150f] shadow-[0_12px_30px_rgba(159,173,124,.22)]">
-              C
-            </span>
+            <BrandMark />
             <div className="grid gap-0.5">
-              <strong className="text-lg font-semibold tracking-tight">Capela</strong>
+              <strong className="text-[17px] font-bold tracking-[-0.04em]">
+                Capela<span className="text-[#a7b587]">°</span>
+              </strong>
               <small className="mono text-[8px] font-semibold uppercase tracking-[.18em] text-white/40">
                 Evidence dossier
               </small>

@@ -110,9 +110,12 @@ export class OtariGatewayService {
         ...(paid ? { body: JSON.stringify(body) } : {}),
       });
       event.httpStatus = response.status;
-      event.requestId = safeHeader(response, "Otari-Request-ID");
-      event.provider = safeHeader(response, "Otari-Provider");
-      event.model = safeHeader(response, "Otari-Model");
+      const requestId = safeHeader(response, "Otari-Request-ID");
+      const provider = safeHeader(response, "Otari-Provider");
+      const model = safeHeader(response, "Otari-Model");
+      if (requestId) event.requestId = requestId;
+      if (provider) event.provider = provider;
+      if (model) event.model = model;
       const fallback = response.headers.get("Otari-Fallback");
       if (fallback === "true" || fallback === "false") event.fallback = fallback === "true";
       if (!response.ok) {
@@ -126,7 +129,7 @@ export class OtariGatewayService {
             /* Error bodies are untrusted; never retain raw provider messages. */
           }
         }
-        event.upstreamCode = upstreamCode;
+        if (upstreamCode) event.upstreamCode = upstreamCode;
         if (response.status === 402 || upstreamCode === "budget_exceeded" || upstreamCode === "insufficient_funds")
           run.budget.terminal = true;
         const code =
@@ -142,7 +145,9 @@ export class OtariGatewayService {
                     ? "OTARI_GUARDRAIL_BLOCKED"
                     : operation === "mcp_discovery" && [502, 503, 504].includes(response.status)
                       ? "OTARI_MCP_UNAVAILABLE"
-                      : "OTARI_PROVIDER_ERROR";
+                      : response.status === 504
+                        ? "OTARI_UPSTREAM_TIMEOUT"
+                        : "OTARI_PROVIDER_ERROR";
         throw new ResearchError(
           code,
           code === "OTARI_INSUFFICIENT_FUNDS"
@@ -153,7 +158,9 @@ export class OtariGatewayService {
                 ? "Otari refused spending. No provider bypass or automatic retry is allowed."
                 : code === "OTARI_MCP_UNAVAILABLE"
                   ? `Otari could not discover the publication MCP server (HTTP ${response.status}). Check the registered remote URL, authentication header and server availability in Otari. Saved search remains partial; no automatic replay was attempted.`
-                  : `Otari ${operation} failed (HTTP ${response.status}).`,
+                  : code === "OTARI_UPSTREAM_TIMEOUT"
+                    ? `Otari ${operation} timed out upstream (HTTP 504). The request may have been charged; its reservation is retained and automatic replay is disabled. Saved sources and completed work remain available.`
+                    : `Otari ${operation} failed (HTTP ${response.status}).`,
         );
       }
 

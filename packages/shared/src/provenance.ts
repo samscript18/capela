@@ -2,6 +2,7 @@ import { z } from "zod";
 import { EvidenceTypeSchema, PaperEvidenceSchema, TargetRelationshipSchema } from "./index";
 
 const Id = z.string().min(1).max(200);
+const OptionalId = Id.optional();
 const Text = z.string().min(1).max(1500);
 export const SupportSpanSchema = z
   .object({
@@ -12,6 +13,23 @@ export const SupportSpanSchema = z
     convention: z.literal("utf16-zero-based-end-exclusive"),
   })
   .strict();
+
+// Normalize only absent optional transport metadata at the persistence boundary.
+// Keep the public schema transform-free for OpenAPI/JSON Schema generation.
+export function parseStoredResearchRun(value: unknown): ResearchRun {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return ResearchRunSchema.parse(value);
+  const stored = value as Record<string, unknown>;
+  const events = Array.isArray(stored.events)
+    ? stored.events.map((event: unknown) => {
+        if (!event || typeof event !== "object" || Array.isArray(event)) return event;
+        const normalized = { ...event } as Record<string, unknown>;
+        for (const key of ["requestId", "provider", "model", "upstreamCode", "toolCallId", "code"])
+          if (normalized[key] === null) delete normalized[key];
+        return normalized;
+      })
+    : stored.events;
+  return ResearchRunSchema.parse({ ...stored, events });
+}
 export const SourceSnapshotSchema = z
   .object({
     id: Id,
@@ -90,6 +108,34 @@ export const ReviewSchema = z
   })
   .strict();
 export type SourceSnapshot = z.infer<typeof SourceSnapshotSchema>;
+
+// Explicit user retry only: replay extraction from durable sources, never interrupted dispatches.
+export function canRetryExtraction(run: ResearchRun | undefined, paperIds: string[]): boolean {
+  if (
+    !run ||
+    !Array.isArray(run.decisions) ||
+    !Array.isArray(run.events) ||
+    !Array.isArray(run.snapshots) ||
+    run.dispatchUncertain ||
+    run.budget.terminal ||
+    run.checkpoint ||
+    run.decisions.length ||
+    !paperIds.length
+  )
+    return false;
+  if (
+    run.budget.calls + paperIds.length + 2 > run.budget.maxCalls ||
+    run.budget.capMicrousd <= run.budget.reportedMicrousd + run.budget.reservedMicrousd
+  )
+    return false;
+  const last = run.events.at(-1);
+  return (
+    last?.operation === "extraction" &&
+    last.status === "completed" &&
+    new Set(paperIds).size === paperIds.length &&
+    paperIds.every((id) => run.snapshots.filter((s) => s.paperId === id).length === 1)
+  );
+}
 export type SupportSpan = z.infer<typeof SupportSpanSchema>;
 export type CandidateClaim = z.infer<typeof CandidateClaimSchema>;
 export type ClaimReview = z.infer<typeof ReviewSchema>["reviews"][number];
@@ -179,16 +225,16 @@ export const ResearchRunSchema = z
             operation: z.string(),
             status: z.enum(["started", "completed", "failed"]),
             correlationId: Id,
-            requestId: Id.optional(),
-            provider: Id.optional(),
-            model: Id.optional(),
+            requestId: OptionalId,
+            provider: OptionalId,
+            model: OptionalId,
             fallback: z.boolean().optional(),
             costMicrousd: z.number().int().optional(),
             durationMs: z.number().optional(),
             httpStatus: z.number().int().min(100).max(599).optional(),
-            upstreamCode: Id.optional(),
-            toolCallId: Id.optional(),
-            code: Id.optional(),
+            upstreamCode: OptionalId,
+            toolCallId: OptionalId,
+            code: OptionalId,
           })
           .strict(),
       )

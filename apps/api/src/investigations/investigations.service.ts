@@ -1,4 +1,4 @@
-import { ACTIVE_INVESTIGATION_STATUSES } from "@capela/shared";
+import { ACTIVE_INVESTIGATION_STATUSES, canRetryExtraction } from "@capela/shared";
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
@@ -171,12 +171,29 @@ export class InvestigationsService {
         HttpStatus.CONFLICT,
       );
 
-    if (failed.research && failed.research.budget.calls > 0)
+    const paidRetry = !!failed.research?.budget.calls;
+    const reservation = Number(this.config.get<string>("OTARI_CALL_RESERVATION_MICROUSD") || 10000);
+    const remaining = failed.research
+      ? failed.research.budget.capMicrousd -
+        failed.research.budget.reportedMicrousd -
+        failed.research.budget.reservedMicrousd
+      : 0;
+    const resumable =
+      paidRetry &&
+      failed.molecule &&
+      canRetryExtraction(
+        failed.research,
+        (failed.papers ?? []).map((p) => String(p.id)),
+      ) &&
+      Number.isSafeInteger(reservation) &&
+      reservation > 0 &&
+      remaining >= (failed.papers.length + 1) * reservation + Math.max(10000, reservation);
+    if (paidRetry && !resumable)
       throw new HttpException(
         {
           code: "PAID_REPLAY_BLOCKED",
           message:
-            "This attempt dispatched paid work. Its checkpoints are retained; automatic replay is disabled to avoid duplicate charges. Start a separately budgeted investigation after reviewing the partial result.",
+            "This attempt dispatched paid work and has no safe extraction retry within its remaining allowance. Saved work is retained; interrupted calls and spending denials cannot be replayed.",
         },
         HttpStatus.CONFLICT,
       );
@@ -203,11 +220,19 @@ export class InvestigationsService {
             $set: {
               status: "queued",
               progress: { message: "Investigation queued for retry" },
+              ...(paidRetry && failed.research
+                ? {
+                    [`research.events.${failed.research.events.length - 1}.code`]: /^[A-Z_]{1,100}$/.test(
+                      failed.error?.code ?? "",
+                    )
+                      ? failed.error!.code
+                      : "EXTRACTION_VALIDATION_FAILED",
+                  }
+                : {}),
               ...(failed.access.type === "free" ? { activeFreeSlot: true } : {}),
             },
             $unset: {
-              molecule: 1,
-              papers: 1,
+              ...(!paidRetry ? { molecule: 1, papers: 1, research: 1 } : {}),
               paperEvidence: 1,
               evidence: 1,
               analysis: 1,
@@ -217,7 +242,6 @@ export class InvestigationsService {
               error: 1,
               startedAt: 1,
               completedAt: 1,
-              research: 1,
               leaseToken: 1,
               leaseExpiresAt: 1,
             },
