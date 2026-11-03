@@ -1,0 +1,336 @@
+{
+  "version": "pilot-mechanical-v1",
+  "date": "2026-11-03T16:52:35.362Z",
+  "commit": "95830075f31d625f68e7e4c1320b72173f5260ad",
+  "datasetHash": "98e7e7ac8b56a79c2da33fad2a446cf892d109fffa0625553409f25daf776500",
+  "sourceCount": 10,
+  "cases": 30,
+  "heldOut": 12,
+  "metrics": {
+    "resolvableReferences": {
+      "numerator": 30,
+      "denominator": 30
+    },
+    "exactPassages": {
+      "numerator": 30,
+      "denominator": 30
+    },
+    "reviewedSupportPrecision": null,
+    "unsupportedAcceptance": null,
+    "classConfusionMatrix": null,
+    "correctionOutcomes": null,
+    "abstentionCoverage": null,
+    "modelRunCompletion": null,
+    "latencyMs": null,
+    "reportedCostUsd": null
+  },
+  "comparison": {
+    "baseline": "blocked: no funded live evaluation",
+    "twoRole": "blocked: no funded live evaluation",
+    "protocol": "Both modes must consume identical snapshot hashes; comparison has not executed"
+  },
+  "humanReview": "pending; provisional AI-drafted labels are not gold labels",
+  "scientificQualityClaim": "withheld",
+  "rows": [
+    {
+      "id": "pubmed-42505335-1",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 175,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42505335-2",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 176,
+      "end": 406,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42505335-3",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 407,
+      "end": 712,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42397814-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 159,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42397814-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 160,
+      "end": 247,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42397814-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 248,
+      "end": 315,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42347487-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 230,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42347487-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 230,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42347487-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 230,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42954735-1",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 201,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42954735-2",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 202,
+      "end": 365,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42954735-3",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 366,
+      "end": 514,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42654293-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 219,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42654293-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 220,
+      "end": 378,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42654293-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 379,
+      "end": 586,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42280140-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 112,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42280140-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 113,
+      "end": 266,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42280140-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 267,
+      "end": 434,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42792674-1",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 189,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42792674-2",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 190,
+      "end": 412,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42792674-3",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 413,
+      "end": 482,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42009901-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 154,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42009901-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 155,
+      "end": 264,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42009901-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 265,
+      "end": 456,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-41859571-1",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 180,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-41859571-2",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 181,
+      "end": 403,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-41859571-3",
+      "split": "development",
+      "reference": true,
+      "exactSpan": true,
+      "start": 404,
+      "end": 554,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42756119-1",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 0,
+      "end": 162,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42756119-2",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 163,
+      "end": 458,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    },
+    {
+      "id": "pubmed-42756119-3",
+      "split": "held-out",
+      "reference": true,
+      "exactSpan": true,
+      "start": 459,
+      "end": 669,
+      "convention": "utf16-zero-based-end-exclusive",
+      "humanReview": "pending"
+    }
+  ]
+}
