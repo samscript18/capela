@@ -40,7 +40,8 @@
           "code": "OTARI_BUDGET_DENIED",
           "durationMs": 1058
         }
-      ]
+      ],
+      "interpretation": "Initial adapter mapped all HTTP 402 to budget denial; owner reported insufficient funds. This is not verified ceiling-denial evidence."
     },
     {
       "status": "failed",
@@ -379,5 +380,13 @@
   },
   "scientificPrecision": null,
   "humanReview": "pending",
-  "sixCapabilitiesDemonstrated": false
+  "sixCapabilitiesDemonstrated": false,
+  "localImplementationCommit": "5b07ebb4fc39acac0c944189d34735d08f1f8a9a",
+  "applicationBrowser": {
+    "target": "https://capela-three.vercel.app",
+    "scope": "real deployed Next application, temporary fresh browser",
+    "observed": "public landing and Sign in controls rendered",
+    "authenticatedJourneys": "pending participant sign-in",
+    "paidInvestigationStarted": false
+  }
 }
