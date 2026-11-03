@@ -1,0 +1,76 @@
+{
+  "version": "signed-in-browser-v1",
+  "date": "2026-11-03",
+  "target": "https://capela-three.vercel.app",
+  "deploymentCommit": "unverified; existing deployed application, not newly deployed local changes",
+  "method": "Standalone Playwright temporary browser; participant signed in through the ordinary Privy UI. No cookie/token/profile extraction or auth bypass.",
+  "localImplementationCheckpoint": "5b07ebb4fc39acac0c944189d34735d08f1f8a9a",
+  "checks": {
+    "history": {
+      "status": "passed",
+      "recordCount": 7,
+      "roundTripCount": 7
+    },
+    "legacyReopen": {
+      "status": "passed",
+      "sections": [
+        "#overview",
+        "#sources",
+        "#activity",
+        "#targets",
+        "#mechanism",
+        "#literature",
+        "#evidence",
+        "#assessment"
+      ],
+      "legacyWarning": true,
+      "abstractOnlyWarning": true
+    },
+    "evidenceDrawer": {
+      "status": "passed",
+      "opened": true,
+      "legacyWarning": true,
+      "closeControlVerified": true
+    },
+    "export": {
+      "status": "partial",
+      "clickExecuted": true,
+      "pendingObserved": true,
+      "returnedToIdle": true,
+      "visibleError": false,
+      "downloadedFileVerified": false,
+      "note": "UI generation flow completed; download event/file was not captured by this browser harness."
+    },
+    "accountPages": [
+      {
+        "name": "notifications",
+        "path": "/notifications",
+        "rendered": true
+      },
+      {
+        "name": "profile",
+        "path": "/profile",
+        "rendered": true
+      },
+      {
+        "name": "settings",
+        "path": "/settings",
+        "rendered": true
+      }
+    ]
+  },
+  "mutations": {
+    "investigationCreated": false,
+    "paidDispatches": 0,
+    "deleted": false,
+    "profileOrSettingsSaved": false,
+    "notificationsMarkedRead": false
+  },
+  "limitations": [
+    "No new Otari investigation completed; hosted search backend remains unconfigured.",
+    "No new-role review trail or partial/budget/provider-error dossier was available in this account for live browser inspection.",
+    "One signed-in owner; cross-owner isolation remains covered by isolated integration checks, not this browser session.",
+    "Export PNG file contents were not inspected."
+  ],
+  "rawArtifacts": "Private ignored .local-evaluation files; no account identities, investigation IDs, auth tokens or full private dossier text included here."
+}

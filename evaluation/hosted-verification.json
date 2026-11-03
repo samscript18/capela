@@ -384,9 +384,9 @@
   "localImplementationCommit": "5b07ebb4fc39acac0c944189d34735d08f1f8a9a",
   "applicationBrowser": {
     "target": "https://capela-three.vercel.app",
-    "scope": "real deployed Next application, temporary fresh browser",
-    "observed": "public landing and Sign in controls rendered",
-    "authenticatedJourneys": "pending participant sign-in",
+    "authenticatedJourneys": "History/reopen, legacy dossier/evidence inspection and read-only notifications/profile/settings verified",
+    "detailArtifact": "evaluation/signed-in-browser.json",
+    "export": "UI returned to idle; downloaded file unverified",
     "paidInvestigationStarted": false
   }
 }
