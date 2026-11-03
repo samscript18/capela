@@ -17,12 +17,21 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "typecheck": "npm run build --workspace @capela/shared && npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run build --workspace @capela/shared && npm run typecheck --workspaces --if-present",
+    "test": "npm run build:api && node --test apps/api/test/*.test.js",
+    "test:unit": "npm test",
+    "evaluate": "npm run build:api && node scripts/evaluate.cjs",
+    "smoke:otari": "dotenv -e .env.local -- node scripts/otari-smoke.cjs",
+    "test:browser": "playwright test --config playwright.config.ts",
+    "test:integration": "npm run build:api && node --test apps/api/integration/*.test.js",
+    "evaluate:live": "npm run build:api && dotenv -e .env.local -- node scripts/compare-models.cjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.64.1",
     "concurrently": "^9.0.0",
     "dotenv-cli": "8.0.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.0.0",
     "globals": "^16.0.0",
     "prettier": "3.6.2",

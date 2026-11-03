@@ -69,7 +69,7 @@ export class InvestigationsService {
       })
       .sort({ completedAt: -1 })
       .exec();
-    if (completed) return completed;
+    if (completed) return this.publicRecord(completed);
 
     const free = await this.dailyFreeAccess(user._id);
     let investigation;
@@ -123,15 +123,21 @@ export class InvestigationsService {
         throw error;
       }
     }
-    void this.runner.run(investigation.id);
-    return investigation;
+    void this.runner.run(investigation.id).catch(() => undefined);
+    return this.publicRecord(investigation);
   }
 
   async list(privyUserId: string, query: ListInvestigationsDto) {
     const user = await this.users.ensureUser(privyUserId);
     const filter: Record<string, unknown> = { userId: user._id };
     if (query.status) filter.status = query.status;
-    return this.investigations.find(filter).sort({ createdAt: -1 }).limit(100).lean().exec();
+    return this.investigations
+      .find(filter)
+      .select("-leaseToken -leaseExpiresAt")
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean()
+      .exec();
   }
 
   async get(privyUserId: string, id: string) {
@@ -139,7 +145,7 @@ export class InvestigationsService {
     const user = await this.users.ensureUser(privyUserId);
     const investigation = await this.investigations.findOne({ _id: id, userId: user._id }).lean().exec();
     if (!investigation) throw new NotFoundException("Investigation not found");
-    return investigation;
+    return this.publicRecord(investigation);
   }
 
   async remove(privyUserId: string, id: string) {
@@ -162,6 +168,16 @@ export class InvestigationsService {
     if (failed.status !== "failed")
       throw new HttpException(
         { message: "Only failed investigations can be retried", code: "INVESTIGATION_NOT_FAILED" },
+        HttpStatus.CONFLICT,
+      );
+
+    if (failed.research && failed.research.budget.calls > 0)
+      throw new HttpException(
+        {
+          code: "PAID_REPLAY_BLOCKED",
+          message:
+            "This attempt dispatched paid work. Its checkpoints are retained; automatic replay is disabled to avoid duplicate charges. Start a separately budgeted investigation after reviewing the partial result.",
+        },
         HttpStatus.CONFLICT,
       );
 
@@ -201,6 +217,9 @@ export class InvestigationsService {
               error: 1,
               startedAt: 1,
               completedAt: 1,
+              research: 1,
+              leaseToken: 1,
+              leaseExpiresAt: 1,
             },
           },
           { returnDocument: "after" },
@@ -211,8 +230,8 @@ export class InvestigationsService {
           { message: "Investigation retry is already in progress", code: "INVESTIGATION_RETRY_CONFLICT" },
           HttpStatus.CONFLICT,
         );
-      void this.runner.run(retried.id);
-      return retried;
+      void this.runner.run(retried.id).catch(() => undefined);
+      return this.publicRecord(retried);
     } catch (error) {
       if ((error as { code?: number }).code === 11000)
         throw new HttpException(
@@ -227,6 +246,35 @@ export class InvestigationsService {
     const user = await this.users.ensureUser(privyUserId);
     const result = await this.investigations.deleteMany({ userId: user._id }).exec();
     return { deletedCount: result.deletedCount };
+  }
+
+  async cancel(privyUserId: string, id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new BadRequestException("Invalid investigation ID");
+    const user = await this.users.ensureUser(privyUserId);
+    const result = await this.investigations
+      .findOneAndUpdate(
+        { _id: id, userId: user._id, status: { $in: ACTIVE_INVESTIGATION_STATUSES } },
+        {
+          $set: {
+            status: "failed",
+            error: { code: "RUN_CANCELLED", message: "Cancelled. An in-flight request may already have been charged." },
+            "progress.message": "Cancelled; saved work remains partial",
+          },
+          $unset: { leaseToken: 1, leaseExpiresAt: 1, activeFreeSlot: 1 },
+        },
+        { returnDocument: "after" },
+      )
+      .lean()
+      .exec();
+    if (!result) throw new NotFoundException("Active investigation not found");
+    return this.publicRecord(result);
+  }
+
+  private publicRecord(record: InvestigationDocument | Record<string, unknown>) {
+    const value = "toObject" in record && typeof record.toObject === "function" ? record.toObject() : { ...record };
+    delete value.leaseToken;
+    delete value.leaseExpiresAt;
+    return value;
   }
 
   private async dailyFreeAccess(userId: Types.ObjectId) {

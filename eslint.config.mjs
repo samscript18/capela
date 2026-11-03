@@ -17,7 +17,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["apps/api/test/**/*.js"],
+    files: ["apps/api/test/**/*.js", "apps/api/integration/**/*.js", "scripts/*.cjs"],
     languageOptions: { globals: globals.node },
     rules: { "@typescript-eslint/no-require-imports": "off" },
   },

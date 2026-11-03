@@ -1,3 +1,11 @@
+import { z } from "zod";
+import { ResearchRunSchema, SourceSnapshotSchema, SupportSpanSchema } from "@capela/shared";
+import type { SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface";
+const runSchema = z.toJSONSchema(ResearchRunSchema) as SchemaObject;
+const spanSchema = z.toJSONSchema(SupportSpanSchema) as SchemaObject;
+const sourceSchema = z.toJSONSchema(SourceSnapshotSchema) as SchemaObject;
+// Exported schemas also document offset conventions and immutable source records.
+export const scientificProvenanceSchemas = { run: runSchema, span: spanSchema, source: sourceSchema };
 import { EVIDENCE_TYPES, INVESTIGATION_STATUSES, TARGET_RELATIONSHIPS } from "@capela/shared";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -187,6 +195,17 @@ export class PaperEvidenceDto {
 }
 
 export class EvidenceClaimDto {
+  @ApiPropertyOptional({
+    type: "object",
+    properties: {
+      snapshotId: { type: "string" },
+      snapshotHash: { type: "string" },
+      decisionId: { type: "string" },
+      spans: { type: "array", items: spanSchema },
+    },
+    required: ["snapshotId", "snapshotHash", "decisionId", "spans"],
+  })
+  provenance?: import("@capela/shared").EvidenceClaim["provenance"];
   @ApiProperty() id!: string;
   @ApiProperty() paperId!: string;
   @ApiProperty({ enum: ["source_context", "activity", "target", "mechanism"] }) kind!: string;
@@ -411,6 +430,13 @@ export class InvestigationErrorResponseDto {
 }
 
 export class InvestigationResponseDto {
+  @ApiPropertyOptional({
+    type: "object",
+    additionalProperties: true,
+    description:
+      "Versioned source snapshots, candidate/review decisions, safe events, observed model IDs and fixed-point USD budget. Absent on legacy investigations.",
+  })
+  research?: import("@capela/shared").ResearchRun;
   @ApiProperty({ example: objectIdExample }) _id!: string;
   @ApiProperty({ example: objectIdExample, description: "Internal owner reference." }) userId!: string;
   @ApiProperty({ example: "aspirin" }) originalInput!: string;

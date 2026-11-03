@@ -7,10 +7,6 @@ const REQUIRED_PRODUCTION_KEYS = [
   "CLOUDINARY_CLOUD_NAME",
   "CLOUDINARY_API_KEY",
   "CLOUDINARY_API_SECRET",
-  "TAVILY_API_KEY",
-  "GEMINI_MODEL",
-  "GROQ_API_KEY",
-  "GROQ_MODEL",
   "WEB_ORIGIN",
 ] as const;
 
@@ -20,14 +16,22 @@ export function assertProductionEnvironment(environment: NodeJS.ProcessEnv) {
   const missing = REQUIRED_PRODUCTION_KEYS.filter((key) => !environment[key]?.trim());
   if (missing.length) throw new Error(`Missing required production environment variables: ${missing.join(", ")}`);
 
-  const googleCloudApiKey = environment.GOOGLE_CLOUD_API_KEY?.trim() || environment.GOOGLE_API_KEY?.trim();
-  const googleCloudProjectConfigured = Boolean(
-    environment.GOOGLE_CLOUD_PROJECT?.trim() && environment.GOOGLE_CLOUD_LOCATION?.trim(),
-  );
-  if (!googleCloudApiKey && !googleCloudProjectConfigured)
-    throw new Error(
-      "Configure Gemini with GOOGLE_CLOUD_API_KEY (Vertex AI Express Mode) or GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION (Application Default Credentials).",
-    );
+  if (environment.RESEARCH_PROVIDER === "legacy") {
+    for (const key of ["TAVILY_API_KEY", "GROQ_API_KEY", "GEMINI_MODEL"])
+      if (!environment[key]?.trim()) throw new Error(`Missing legacy provider configuration: ${key}`);
+  } else {
+    for (const key of [
+      "OTARI_API_KEY",
+      "OTARI_BUDGET_REFERENCE",
+      "OTARI_EXTRACTION_POLICY",
+      "OTARI_REVIEW_POLICY",
+      "OTARI_MCP_SERVER_ID",
+    ])
+      if (!environment[key]?.trim()) throw new Error(`Missing Otari configuration: ${key}`);
+    const cap = Number(environment.OTARI_RUN_BUDGET_MICROUSD);
+    if (!Number.isSafeInteger(cap) || cap <= 0)
+      throw new Error("Configure a finite positive OTARI_RUN_BUDGET_MICROUSD.");
+  }
 
   if (environment.PAYMENTS_ENABLED === "true") validatePaymentEnvironment(environment);
   for (const origin of environment

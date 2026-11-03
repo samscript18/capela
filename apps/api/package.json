@@ -12,6 +12,7 @@
   "dependencies": {
     "@capela/shared": "*",
     "@google/genai": "^2.19.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^11.0.0",

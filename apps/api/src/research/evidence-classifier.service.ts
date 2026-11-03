@@ -47,6 +47,16 @@ export class EvidenceClassifierService {
   classify(extractions: PaperEvidence[], papers: PaperSnapshot[]): ValidatedEvidenceResult {
     this.validateAttribution(extractions, papers);
     const claims = extractions.flatMap((paper) => this.paperClaims(paper));
+    return this.aggregateReviewed(
+      claims,
+      extractions.filter((p) => p.limitations.length).map((p) => ({ paperId: p.paperId, items: p.limitations })),
+    );
+  }
+
+  aggregateReviewed(
+    claims: EvidenceClaim[],
+    limitations: InvestigationAnalysis["limitations"],
+  ): ValidatedEvidenceResult {
     const activityResult = this.aggregateActivities(claims.filter((claim) => claim.kind === "activity"));
     const targetResult = this.aggregateTargets(claims.filter((claim) => claim.kind === "target"));
     const analysis: InvestigationAnalysis = {
@@ -54,12 +64,7 @@ export class EvidenceClassifierService {
       targets: targetResult.summaries,
       sourceContexts: this.aggregateSourceContexts(claims.filter((claim) => claim.kind === "source_context")),
       conflicts: [...activityResult.conflicts, ...targetResult.conflicts],
-      limitations: extractions
-        .filter((paper) => paper.limitations.length)
-        .map((paper) => ({
-          paperId: paper.paperId,
-          items: this.unique(paper.limitations.map((item) => item.trim()).filter(Boolean)),
-        })),
+      limitations,
     };
     return {
       claims,

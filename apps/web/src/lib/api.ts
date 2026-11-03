@@ -1,6 +1,11 @@
 "use client";
 
-import type { AccessResponse, PaymentVerificationResponse, UserPreferences } from "@capela/shared";
+import {
+  ACTIVE_INVESTIGATION_STATUSES,
+  type AccessResponse,
+  type PaymentVerificationResponse,
+  type UserPreferences,
+} from "@capela/shared";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCapelaAuth } from "@/components/providers";
 import { normalizeApiInvestigation, type ApiInvestigationPayload } from "@/lib/investigation-record";
@@ -211,7 +216,7 @@ export function useInvestigation(id: string) {
     enabled: enabled && Boolean(id),
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      return status === "completed" || status === "failed" ? false : 2_000;
+      return status && ACTIVE_INVESTIGATION_STATUSES.includes(status) ? 2_000 : false;
     },
   });
 }
@@ -344,5 +349,17 @@ export function useRemoveNotification() {
   return useMutation({
     mutationFn: (id: string) => apiFetch<void>(`/notifications/${id}`, getAccessToken, { method: "DELETE" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+}
+
+export function useCancelInvestigation(id: string) {
+  const { getAccessToken } = useApiEnabled();
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      apiFetch<ApiInvestigationPayload>(`/investigations/${encodeURIComponent(id)}/cancel`, getAccessToken, {
+        method: "POST",
+      }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["investigation", id] }),
   });
 }

@@ -1,0 +1,23 @@
+name: Offline verification
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      OTARI_RUN_BUDGET_MICROUSD: "0"
+      OTARI_LIVE_TEST_BUDGET_MICROUSD: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+      - run: npm run evaluate
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser

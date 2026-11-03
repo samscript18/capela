@@ -304,7 +304,23 @@ export class PubChemService {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
       try {
-        const response = await fetch(url, { headers: { Accept: "application/json" }, signal: controller.signal });
+        const destination = new URL(url);
+        if (
+          destination.protocol !== "https:" ||
+          destination.port ||
+          destination.username ||
+          destination.password ||
+          !["pubchem.ncbi.nlm.nih.gov", "eutils.ncbi.nlm.nih.gov"].includes(destination.hostname)
+        )
+          throw new PubChemResolutionError(
+            "PUBCHEM_UNAVAILABLE",
+            "Chemical API destination is outside the authoritative allowlist.",
+          );
+        const response = await fetch(url, {
+          redirect: "error",
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
         if (options.notFoundResponse !== false && response.status === 404)
           throw new PubChemResolutionError(
             "MOLECULE_NOT_FOUND",

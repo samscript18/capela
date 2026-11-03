@@ -15,11 +15,12 @@ packages/shared/dist/
 
 # Local agent context and implementation status
 AGENTS.md
-BUILD_STATUS.md
+/BUILD_STATUS.md
 
-# Keep verification suites local; do not publish them with the repository
-**/test/
-**/tests/
-**/__tests__/
-**/*.test.*
-**/*.spec.*
+
+# Generated verification artifacts
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+.local-evaluation/

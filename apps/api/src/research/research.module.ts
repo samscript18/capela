@@ -1,3 +1,7 @@
+import { OtariGatewayService } from "./otari-gateway.service";
+import { OtariRetrievalService } from "./otari-retrieval.service";
+import { OtariEvidenceService } from "./otari-evidence.service";
+import { PublicationMcpController } from "./publication-mcp.controller";
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Investigation, InvestigationSchema } from "../investigations/schemas/investigation.schema";
@@ -16,7 +20,11 @@ import { NotificationsModule } from "../notifications/notifications.module";
     MongooseModule.forFeature([{ name: Investigation.name, schema: InvestigationSchema }]),
     NotificationsModule,
   ],
+  controllers: [PublicationMcpController],
   providers: [
+    OtariGatewayService,
+    OtariRetrievalService,
+    OtariEvidenceService,
     PubChemService,
     TavilyLiteratureService,
     AiEvidenceService,

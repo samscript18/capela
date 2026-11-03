@@ -1,0 +1,604 @@
+{
+  "version": "pilot-v1",
+  "retrievedAt": "2026-11-03",
+  "sources": [
+    {
+      "id": "pubmed-42505335",
+      "pmid": "42505335",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42505335/",
+      "title": "In Vitro Release of Curcumin and Resveratrol from Polymeric Systems: Films and Hydrogel.",
+      "publicationTypes": ["research-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Chronic wounds are a persistent clinical and public health challenge due to impaired tissue repair caused by sustained inflammation, oxidative stress, and cellular senescence. Natural polyphenols such as curcumin and resveratrol, alongside mesenchymal stem cell (MSC) secretome, have demonstrated complementary anti-inflammatory, antioxidant, and pro-angiogenic properties with potential for wound healing. This study reports two complementary in vitro investigations evaluating the release profiles of curcumin and resveratrol from two polymeric platforms: poly(vinyl alcohol)/sodium alginate/carboxymethylcellulose films (Study 1) and an acrylate copolymer-based hydrogel incorporating MSC secretome (Study 2). UV-Vis spectrophotometric analysis confirmed analytical selectivity with no interference from excipients. Resveratrol exhibited progressive and consistent release from the hydrogel. Curcumin compromised polymer matrix integrity and reduced resveratrol release efficiency. Also showed unsatisfactory release in both systems, attributed to its low aqueous solubility. These results support the use of resveratrol-loaded polymeric matrices as promising sustained-release platforms for bioactive wound dressings and highlight the need for nanoencapsulation strategies to improve curcumin bioavailability.",
+      "hash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42397814",
+      "pmid": "42397814",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42397814/",
+      "title": "Efficacy of curcumin and resveratrol in the synergistic activation of foetal haemoglobin in sickle cell disease.",
+      "publicationTypes": ["research-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Background and objectives Sickle cell disease is a major haemoglobin disorder, and foetal haemoglobin (HbF) remains the strongest modifier of disease severity. Hydroxyurea is the standard HbF-inducing drug, but many patients show limited response. Curcumin and resveratrol are natural polyphenols with low toxicity. This study evaluated their individual and combined effects on HbF induction in K562 cells and primary CD34⁺ cells. Methods K562 cells were treated with curcumin, resveratrol, and hydroxyurea at increasing doses. Viability was measured by MTT (3-(4,5-dimethylthiazol-2-yl)-2,5-diphenyltetrazolium bromide) assay, and IC₅₀ values (half maximal inhibitory concentration) were calculated. Drug combinations were tested in fixed ratios, and synergy was analysed using CompuSyn and SynergyFinder. CD34⁺ cells were isolated by MACS (magnetic-activated cell sorting) and differentiated for 14 days. Treatments began on day 3, and HbF levels were measured by ELISA. Results Curcumin showed the lowest IC₅₀ (74.8-66.3 µM), followed by resveratrol (84.3-75.2 µM), and hydroxyurea (140-131.9 µM) (p<0.05 for all comparisons). All compounds maintained over 70% viability at",
+      "hash": "39a74bfdc828200a36dc0dd5de5b42b0b16c2a916ceb922e1830431057d370d9",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42347487",
+      "pmid": "42347487",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42347487/",
+      "title": "RETRACTED: Ferlazzo et al. A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury. &lt;i&gt;Pharmaceuticals&lt;/i&gt; 2021, &lt;i&gt;14,&lt;/i&gt; 386.",
+      "publicationTypes": ["Retraction of Publication", "Journal Article", "Retraction Notice"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "hash": "5d5bb0ef5c79ce45e21800b243f4d78fe58b69691fd9f1b5b2579834ba893b7d",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42954735",
+      "pmid": "42954735",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42954735/",
+      "title": "The Effect of Resveratrol, Quercetin, and Curcumin on Drusen Volume in Age-Related Macular Degeneration: A Randomized Clinical Trial.",
+      "publicationTypes": [
+        "Clinical Trial, Phase II",
+        "research-article",
+        "Randomized Controlled Trial",
+        "Journal Article"
+      ],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Purpose To evaluate the effect of resveratrol, quercetin, and curcumin (RQC) compared with curcumin alone on drusen volume and clinical outcomes in patients with age-related macular degeneration (AMD). Methods In this open-label, randomized phase 2a clinical trial, patients with early and intermediate AMD were randomized 2:1 to oral RQC or curcumin for 24 months. The primary outcome was the mean change in central drusen volume from baseline measured using spectral-domain optical coherence tomography (SD-OCT). Secondary outcomes included analyses of drusen volume and number by baseline size, categorical analyses of individual drusen response, change in best-corrected visual acuity (BCVA), frequency of vision loss, progression to advanced AMD, and safety. Results Thirty-eight patients were included in the final analysis. After 24 months, central drusen volume decreased significantly with RQC compared with curcumin (-13.4% vs. +6.9%; P = 0.02). Mean BCVA increased by 0.8 letters in the RQC group and decreased by 2.1 letters in the curcumin group (P = 0.08). The frequencies",
+      "hash": "1dd2e327fb3712c632a4888f409e3e5b84e2f6336948fb991e86b3ee2670fb69",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42654293",
+      "pmid": "42654293",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42654293/",
+      "title": "Resveratrol and Curcumin in Stroke Therapy: From Experimental Evidence to Clinical Perspectives.",
+      "publicationTypes": ["review-article", "Review", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Stroke remains one of the leading causes of death and long-term neurological disability worldwide, while currently available therapeutic strategies are limited by narrow treatment windows and incomplete neuroprotection. In this context, plant-derived polyphenols have attracted increasing attention as potential adjunctive agents because of their multimodal biological activity. This review focuses on resveratrol and curcumin, two of the most extensively investigated polyphenols, and evaluates their potential role in the prevention and treatment of ischaemic and haemorrhagic stroke. Evidence from in vitro studies, animal models, and early clinical trials indicates that both compounds may attenuate key mechanisms involved in stroke-related brain injury, including oxidative stress, neuroinflammation, mitochondrial dysfunction, apoptosis, autophagy dysregulation, blood-brain barrier disruption, and microglial activation. Emerging evidence further suggests that interactions with the gut microbiota and modulation of the gut-brain axis may contribute to their biological effects by influencing intestinal barrier integrity, microbial metabolite production, systemic inflammation, and vascular risk. Preclinical studies show that resveratrol and curcumin can reduce infarct",
+      "hash": "9a57d1a11fe87eba35b98a94ac04bc1e06ce5f49f748ae17391774a2800d835f",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42280140",
+      "pmid": "42280140",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42280140/",
+      "title": "The Role of Anthocyanins, Curcumin, and Resveratrol in the Prevention and Management of Metabolic Disorders: A Systematic Review.",
+      "publicationTypes": ["Systematic Review", "review-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Metabolic disorders such as obesity, type 2 diabetes, and lipid disorders are major health challenges worldwide. There is increasing interest in the role of food-derived antioxidants in the context of metabolic disorders due to their documented antioxidant activity. Antioxidants such as flavonoids and polyphenols neutralize reactive oxygen species and reduce oxidative stress, which can affect cell function and metabolic processes. Anthocyanins, curcumin, and resveratrol exhibit physiological and pharmacological properties such as antioxidant, anti-inflammatory, anti-cancer, anti-obesity, and anti-diabetic effects. The main aim of this systematic review is to comprehensively evaluate and synthesize the current scientific evidence on the role of anthocyanins, curcumin, and resveratrol in the prevention and management of metabolic disorders, with a focus on obesity, type 2 diabetes, and dyslipidemia. Databases such as PubMed and Embase were searched, and the final selection included 105 studies that met the inclusion criteria. The analyzed studies demonstrated that anthocyanin supplementation (up to 320 mg/day) was associated with reductions in inflammatory markers such",
+      "hash": "43a84d5158b2880b85514a44aa6ccbaed4fe229da5144547d1a4c3a14327a819",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42792674",
+      "pmid": "42792674",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42792674/",
+      "title": "Drug-Induced Reduction in 80Q Aggregates in a &lt;i&gt;Dictyostelium discoideum&lt;/i&gt; Model of PolyQ Disease.",
+      "publicationTypes": ["research-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Background/Objectives : Polyglutamine (polyQ) expansion induces protein misfolding, aggregation, and neurodegeneration; however, effective strategies for aggregate clearance remain limited. This study evaluated the effect of metformin, resveratrol, and curcumin on polyQ proteotoxicity using an engineered Dictyostelium discoideum model expressing 80Q repeats, and investigated their autophagy-related mechanism. Methods : In this study, 80Q-expressing Dictyostelium discoideum ( D. discoideum ) cells were treated with metformin, resveratrol, or curcumin. Cell viability and proliferation were assessed by growth curve and doubling-time analyses. Developmental assays examined restoration of multicellular morphology. PolyQ aggregation was analyzed using brightfield microscopy, fluorescence microscopy, Thioflavin T (ThT), and Congo Red assays. Quantitative real-time polymerase chain reaction (qRT-PCR) evaluated AMP-activated protein kinase (AMPK) and autophagy-related gene expression. Molecular docking and molecular dynamics (MD) simulations were performed to assess interactions between the compounds and AMPK. Results : All three compounds significantly improved viability and reduced doubling time in 80Q-expressing cells. Treated strains displayed improved developmental morphology and culmination compared to untreated controls.",
+      "hash": "340db0937c983416d26fd00d1807c4960ad10f6dbb5bf2eeeb4e90341e5f0664",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42009901",
+      "pmid": "42009901",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42009901/",
+      "title": "Protective effects of curcumin and resveratrol on neurodegeneration and cognitive dysfunction in a streptozotocin-induced alzheimer rat model.",
+      "publicationTypes": ["research-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Alzheimer's disease (AD) is a progressive neurodegenerative disorder that is characterized by memory loss, cognitive decline, and behavioral disturbances. Given the limited efficacy of current treatments, there is an urgent need for new neuroprotective strategies. In this study, the therapeutic potential of curcumin and resveratrol was evaluated in a rat AD model induced by intracerebroventricular (ICV) administration of streptozotocin (STZ) (3 mg/kg). Subsequent to model induction, rats were administered curcumin, resveratrol, or a combination of both. The behavioral analyses, which included the Morris water maze, open field, and passive avoidance tests, revealed that both compounds significantly improved learning and memory performance. The histological and immunohistochemical findings demonstrated a decrease in caspase-3 and GFAP immunoreactivity, suggesting reduced neuronal apoptosis and astrocyte activation. The behavioral analyses, which included the Morris water maze, open field, and passive avoidance tests, revealed that both compounds significantly improved learning and memory performance. The histological and immunohistochemical findings demonstrated a decrease in caspase-3 and GFAP immunoreactivity, suggesting",
+      "hash": "73d13e45daad310fb5c7399b5d4cb4749a73e175c06764b73c772f83db6fb022",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-41859571",
+      "pmid": "41859571",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/41859571/",
+      "title": "Natural Polyphenols Versus Standard Therapy: Effects on Neuroinflammation and Alpha-Synuclein Expression in a 1-Methyl-4-Phenyl-1,2,3,6-Tetrahydropyridine (MPTP)-Induced Mouse Model of Parkinson's Disease.",
+      "publicationTypes": ["research-article", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Background Parkinson's disease (PD) is a progressive neurodegenerative disorder characterized by dopaminergic neuronal loss, α-synuclein aggregation, and chronic neuroinflammation. While levodopa (L-DOPA) + carbidopa remains the cornerstone of symptomatic management, long-term use is associated with motor complications, prompting interest in adjunctive therapies targeting non-dopaminergic mechanisms. Polyphenolic compounds such as resveratrol and curcumin have demonstrated neuroprotective potential through antioxidant and anti-inflammatory actions. This study aimed to comparatively evaluate the effects of L-DOPA + carbidopa, resveratrol, curcumin, and their combination, resveratrol + curcumin, on motor function and biochemical markers in a 1-methyl-4-phenyl-1,2,3,6-tetrahydropyridine (MPTP)-induced mouse model of PD. Methodology An experimental study was conducted using 36 adult female C57BL/6 mice randomly allocated into six groups ( n = 6): normal control group, MPTP group, L-DOPA + carbidopa group, resveratrol group, curcumin group, and resveratrol + curcumin group. PD was induced using intraperitoneal injection of MPTP (30 mg/kg/day for five days). Treatments were administered orally for 30 days. Motor coordination and locomotor activity were",
+      "hash": "b0b12c276e0f40cc43eb0b99fc5fecba27f8323b97b1d425f4aaa33b7debccf3",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    },
+    {
+      "id": "pubmed-42756119",
+      "pmid": "42756119",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42756119/",
+      "title": "A narrative review of emerging chemoprotective agents for chemotherapy-induced toxicity: nanoformulated natural products, dual COX-2/TNF-α inhibitors, and Nrf2 modulators.",
+      "publicationTypes": ["review-article", "Review", "Journal Article"],
+      "scope": "bounded-abstract-excerpt",
+      "text": "Background Chemotherapy-induced toxicity remains a major cause of treatment discontinuation, reduced quality of life, and long-term morbidity in cancer survivors. Established chemoprotective agents (dexrazoxane, mesna, and amifostine) are limited by narrow indications (dexrazoxane: only anthracycline cardiotoxicity), significant adverse effects (amifostine: hypotension in 62%), and lack of efficacy against common toxicities such as peripheral neuropathy. Objective This focused review evaluates emerging chemoprotective strategies with preclinical or early clinical data published between 2015 and 2025, with an emphasis on agents that address unmet clinical needs. Methods This is a critical narrative review, not a systematic review. A literature search was conducted in PubMed, Scopus, and ClinicalTrials.gov (2015-2025) using keywords including \"chemoprotection,\" \"nanoparticle,\" \"curcumin,\" \"resveratrol,\" \"dual COX-2/TNF-α inhibitor,\" \"Nrf2 modulator,\" and \"chemotherapy-induced peripheral neuropathy.\" Articles were selected based on relevance to chemoprotection, mechanistic clarity, and availability of preclinical or clinical data. Results Three major emerging categories were identified: (i) Nanoformulated natural products such as curcumin, resveratrol, luteolin, and naringenin encapsulated in polymeric, lipid,",
+      "hash": "de1dc00908e5fe7c3c73b379bd51376be7656c64e745893a3b84ce7f43d50089",
+      "retrievedAt": "2026-11-03",
+      "retrieval": "Europe PMC canonical MED record",
+      "coverage": "Excerpt only; omitted remainder of abstract",
+      "rights": "Bounded quotation for evaluation; full text and license not asserted"
+    }
+  ],
+  "cases": [
+    {
+      "id": "pubmed-42505335-1",
+      "sourceId": "pubmed-42505335",
+      "split": "held-out",
+      "finding": "Chronic wounds are a persistent clinical and public health challenge due to impaired tissue repair caused by sustained inflammation, oxidative stress, and cellular senescence.",
+      "quote": "Chronic wounds are a persistent clinical and public health challenge due to impaired tissue repair caused by sustained inflammation, oxidative stress, and cellular senescence.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42505335-2",
+      "sourceId": "pubmed-42505335",
+      "split": "held-out",
+      "finding": "Natural polyphenols such as curcumin and resveratrol, alongside mesenchymal stem cell (MSC) secretome, have demonstrated complementary anti-inflammatory, antioxidant, and pro-angiogenic properties with potential for wound healing.",
+      "quote": "Natural polyphenols such as curcumin and resveratrol, alongside mesenchymal stem cell (MSC) secretome, have demonstrated complementary anti-inflammatory, antioxidant, and pro-angiogenic properties with potential for wound healing.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42505335-3",
+      "sourceId": "pubmed-42505335",
+      "split": "held-out",
+      "finding": "This study reports two complementary in vitro investigations evaluating the release profiles of curcumin and resveratrol from two polymeric platforms: poly(vinyl alcohol)/sodium alginate/carboxymethylcellulose films (Study 1) and an acrylate copolymer-based hydrogel incorporating MSC secretome (Study 2).",
+      "quote": "This study reports two complementary in vitro investigations evaluating the release profiles of curcumin and resveratrol from two polymeric platforms: poly(vinyl alcohol)/sodium alginate/carboxymethylcellulose films (Study 1) and an acrylate copolymer-based hydrogel incorporating MSC secretome (Study 2).",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42397814-1",
+      "sourceId": "pubmed-42397814",
+      "split": "development",
+      "finding": "Background and objectives Sickle cell disease is a major haemoglobin disorder, and foetal haemoglobin (HbF) remains the strongest modifier of disease severity.",
+      "quote": "Background and objectives Sickle cell disease is a major haemoglobin disorder, and foetal haemoglobin (HbF) remains the strongest modifier of disease severity.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42397814-2",
+      "sourceId": "pubmed-42397814",
+      "split": "development",
+      "finding": "Hydroxyurea is the standard HbF-inducing drug, but many patients show limited response.",
+      "quote": "Hydroxyurea is the standard HbF-inducing drug, but many patients show limited response.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42397814-3",
+      "sourceId": "pubmed-42397814",
+      "split": "development",
+      "finding": "Curcumin and resveratrol are natural polyphenols with low toxicity.",
+      "quote": "Curcumin and resveratrol are natural polyphenols with low toxicity.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42347487-1",
+      "sourceId": "pubmed-42347487",
+      "split": "development",
+      "finding": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "quote": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "unsupported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42347487-2",
+      "sourceId": "pubmed-42347487",
+      "split": "development",
+      "finding": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "quote": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "unsupported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42347487-3",
+      "sourceId": "pubmed-42347487",
+      "split": "development",
+      "finding": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "quote": "The journal retracts the article titled, \"A Flavonoid-Rich Extract from Bergamot Juice, Alone or in Association with Curcumin and Resveratrol, Shows Protective Effects in a Murine Model of Cadmium-Induced Testicular Injury\" [...].",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "unsupported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42954735-1",
+      "sourceId": "pubmed-42954735",
+      "split": "held-out",
+      "finding": "Purpose To evaluate the effect of resveratrol, quercetin, and curcumin (RQC) compared with curcumin alone on drusen volume and clinical outcomes in patients with age-related macular degeneration (AMD).",
+      "quote": "Purpose To evaluate the effect of resveratrol, quercetin, and curcumin (RQC) compared with curcumin alone on drusen volume and clinical outcomes in patients with age-related macular degeneration (AMD).",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42954735-2",
+      "sourceId": "pubmed-42954735",
+      "split": "held-out",
+      "finding": "Methods In this open-label, randomized phase 2a clinical trial, patients with early and intermediate AMD were randomized 2:1 to oral RQC or curcumin for 24 months.",
+      "quote": "Methods In this open-label, randomized phase 2a clinical trial, patients with early and intermediate AMD were randomized 2:1 to oral RQC or curcumin for 24 months.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42954735-3",
+      "sourceId": "pubmed-42954735",
+      "split": "held-out",
+      "finding": "The primary outcome was the mean change in central drusen volume from baseline measured using spectral-domain optical coherence tomography (SD-OCT).",
+      "quote": "The primary outcome was the mean change in central drusen volume from baseline measured using spectral-domain optical coherence tomography (SD-OCT).",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42654293-1",
+      "sourceId": "pubmed-42654293",
+      "split": "development",
+      "finding": "Stroke remains one of the leading causes of death and long-term neurological disability worldwide, while currently available therapeutic strategies are limited by narrow treatment windows and incomplete neuroprotection.",
+      "quote": "Stroke remains one of the leading causes of death and long-term neurological disability worldwide, while currently available therapeutic strategies are limited by narrow treatment windows and incomplete neuroprotection.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42654293-2",
+      "sourceId": "pubmed-42654293",
+      "split": "development",
+      "finding": "In this context, plant-derived polyphenols have attracted increasing attention as potential adjunctive agents because of their multimodal biological activity.",
+      "quote": "In this context, plant-derived polyphenols have attracted increasing attention as potential adjunctive agents because of their multimodal biological activity.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42654293-3",
+      "sourceId": "pubmed-42654293",
+      "split": "development",
+      "finding": "This review focuses on resveratrol and curcumin, two of the most extensively investigated polyphenols, and evaluates their potential role in the prevention and treatment of ischaemic and haemorrhagic stroke.",
+      "quote": "This review focuses on resveratrol and curcumin, two of the most extensively investigated polyphenols, and evaluates their potential role in the prevention and treatment of ischaemic and haemorrhagic stroke.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42280140-1",
+      "sourceId": "pubmed-42280140",
+      "split": "development",
+      "finding": "Metabolic disorders such as obesity, type 2 diabetes, and lipid disorders are major health challenges worldwide.",
+      "quote": "Metabolic disorders such as obesity, type 2 diabetes, and lipid disorders are major health challenges worldwide.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42280140-2",
+      "sourceId": "pubmed-42280140",
+      "split": "development",
+      "finding": "There is increasing interest in the role of food-derived antioxidants in the context of metabolic disorders due to their documented antioxidant activity.",
+      "quote": "There is increasing interest in the role of food-derived antioxidants in the context of metabolic disorders due to their documented antioxidant activity.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42280140-3",
+      "sourceId": "pubmed-42280140",
+      "split": "development",
+      "finding": "Antioxidants such as flavonoids and polyphenols neutralize reactive oxygen species and reduce oxidative stress, which can affect cell function and metabolic processes.",
+      "quote": "Antioxidants such as flavonoids and polyphenols neutralize reactive oxygen species and reduce oxidative stress, which can affect cell function and metabolic processes.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42792674-1",
+      "sourceId": "pubmed-42792674",
+      "split": "held-out",
+      "finding": "Background/Objectives : Polyglutamine (polyQ) expansion induces protein misfolding, aggregation, and neurodegeneration; however, effective strategies for aggregate clearance remain limited.",
+      "quote": "Background/Objectives : Polyglutamine (polyQ) expansion induces protein misfolding, aggregation, and neurodegeneration; however, effective strategies for aggregate clearance remain limited.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42792674-2",
+      "sourceId": "pubmed-42792674",
+      "split": "held-out",
+      "finding": "This study evaluated the effect of metformin, resveratrol, and curcumin on polyQ proteotoxicity using an engineered Dictyostelium discoideum model expressing 80Q repeats, and investigated their autophagy-related mechanism.",
+      "quote": "This study evaluated the effect of metformin, resveratrol, and curcumin on polyQ proteotoxicity using an engineered Dictyostelium discoideum model expressing 80Q repeats, and investigated their autophagy-related mechanism.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42792674-3",
+      "sourceId": "pubmed-42792674",
+      "split": "held-out",
+      "finding": "Methods : In this study, 80Q-expressing Dictyostelium discoideum ( D.",
+      "quote": "Methods : In this study, 80Q-expressing Dictyostelium discoideum ( D.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42009901-1",
+      "sourceId": "pubmed-42009901",
+      "split": "development",
+      "finding": "Alzheimer's disease (AD) is a progressive neurodegenerative disorder that is characterized by memory loss, cognitive decline, and behavioral disturbances.",
+      "quote": "Alzheimer's disease (AD) is a progressive neurodegenerative disorder that is characterized by memory loss, cognitive decline, and behavioral disturbances.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42009901-2",
+      "sourceId": "pubmed-42009901",
+      "split": "development",
+      "finding": "Given the limited efficacy of current treatments, there is an urgent need for new neuroprotective strategies.",
+      "quote": "Given the limited efficacy of current treatments, there is an urgent need for new neuroprotective strategies.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42009901-3",
+      "sourceId": "pubmed-42009901",
+      "split": "development",
+      "finding": "In this study, the therapeutic potential of curcumin and resveratrol was evaluated in a rat AD model induced by intracerebroventricular (ICV) administration of streptozotocin (STZ) (3 mg/kg).",
+      "quote": "In this study, the therapeutic potential of curcumin and resveratrol was evaluated in a rat AD model induced by intracerebroventricular (ICV) administration of streptozotocin (STZ) (3 mg/kg).",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-41859571-1",
+      "sourceId": "pubmed-41859571",
+      "split": "development",
+      "finding": "Background Parkinson's disease (PD) is a progressive neurodegenerative disorder characterized by dopaminergic neuronal loss, α-synuclein aggregation, and chronic neuroinflammation.",
+      "quote": "Background Parkinson's disease (PD) is a progressive neurodegenerative disorder characterized by dopaminergic neuronal loss, α-synuclein aggregation, and chronic neuroinflammation.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-41859571-2",
+      "sourceId": "pubmed-41859571",
+      "split": "development",
+      "finding": "While levodopa (L-DOPA) + carbidopa remains the cornerstone of symptomatic management, long-term use is associated with motor complications, prompting interest in adjunctive therapies targeting non-dopaminergic mechanisms.",
+      "quote": "While levodopa (L-DOPA) + carbidopa remains the cornerstone of symptomatic management, long-term use is associated with motor complications, prompting interest in adjunctive therapies targeting non-dopaminergic mechanisms.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-41859571-3",
+      "sourceId": "pubmed-41859571",
+      "split": "development",
+      "finding": "Polyphenolic compounds such as resveratrol and curcumin have demonstrated neuroprotective potential through antioxidant and anti-inflammatory actions.",
+      "quote": "Polyphenolic compounds such as resveratrol and curcumin have demonstrated neuroprotective potential through antioxidant and anti-inflammatory actions.",
+      "provisionalClass": "insufficient",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42756119-1",
+      "sourceId": "pubmed-42756119",
+      "split": "held-out",
+      "finding": "Background Chemotherapy-induced toxicity remains a major cause of treatment discontinuation, reduced quality of life, and long-term morbidity in cancer survivors.",
+      "quote": "Background Chemotherapy-induced toxicity remains a major cause of treatment discontinuation, reduced quality of life, and long-term morbidity in cancer survivors.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42756119-2",
+      "sourceId": "pubmed-42756119",
+      "split": "held-out",
+      "finding": "Established chemoprotective agents (dexrazoxane, mesna, and amifostine) are limited by narrow indications (dexrazoxane: only anthracycline cardiotoxicity), significant adverse effects (amifostine: hypotension in 62%), and lack of efficacy against common toxicities such as peripheral neuropathy.",
+      "quote": "Established chemoprotective agents (dexrazoxane, mesna, and amifostine) are limited by narrow indications (dexrazoxane: only anthracycline cardiotoxicity), significant adverse effects (amifostine: hypotension in 62%), and lack of efficacy against common toxicities such as peripheral neuropathy.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    },
+    {
+      "id": "pubmed-42756119-3",
+      "sourceId": "pubmed-42756119",
+      "split": "held-out",
+      "finding": "Objective This focused review evaluates emerging chemoprotective strategies with preclinical or early clinical data published between 2015 and 2025, with an emphasis on agents that address unmet clinical needs.",
+      "quote": "Objective This focused review evaluates emerging chemoprotective strategies with preclinical or early clinical data published between 2015 and 2025, with an emphasis on agents that address unmet clinical needs.",
+      "provisionalClass": "literature_reported",
+      "provisionalVerdict": "supported",
+      "rationale": "Finding repeats a stored source passage. Exact occurrence is mechanically checkable; scientific interpretation and class require human review. Retractions cannot establish evidence.",
+      "annotation": {
+        "author": "AI-drafted",
+        "humanReview": "pending",
+        "expertReview": false
+      }
+    }
+  ],
+  "humanReview": "pending; no gold-label quality claims"
+}

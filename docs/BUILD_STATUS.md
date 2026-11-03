@@ -1,0 +1,17 @@
+# Build status — 2026-11-03
+
+Baseline: clean main at `ffab39f117aa4d07cf40417ac75b30919c500583`. Dedicated branch `feat/mozilla-otari-capela`. No user changes discarded. Node declared 24; available runtime 26.4.0.
+
+A: completed local baseline and primary-source inspection. Rubric/video rule verified; onboarding requirements inspected in the current public page bundle. Otari docs pinned to `39a2ae847c51eb2ae668bf7f8755a03d5eb7d7c8`.
+
+B/C: implemented default hosted gateway, strict versioned contracts, immutable abstract snapshots, exact UTF-16 support, distinct observed-model extraction/review, deterministic reject/downgrade and a single exact-passage correction. Original candidates/reviews remain inspectable. Legacy provider path requires explicit opt-in.
+
+D: implemented hosted search/MCP/sandbox boundaries, SDK authenticated metadata server, conservative reservations, denial stopping, Mongo atomic leases/heartbeat/fencing, cancellation and stale-run interruption. Local tests verify behavior; hosted execution is blocked. Selective paid-stage resume is not implemented: attempts with any paid dispatch cannot auto-retry. Existing checkpoints are retained.
+
+E: evidence/review/source/model/cost UI, technical events, partial/error states, legacy warning and export coverage labels. Fixed pilot: 30 cases / 10 real source records / 12 held-out; labels provisional pending human review. Mechanical reference/span checks pass; scientific precision and paired model comparison withheld. Opt-in paired harness is supplied but has made no paid calls.
+
+F: local gates and handoff reconciliation in progress. Unit/adapter suite, isolated real Mongo + real local MCP SDK, and four isolated browser journeys pass; production build passes with dependency warnings. Exact final command counts and tested commit are recorded at handoff in TEST_EVIDENCE.
+
+First actual Otari integration commit: pending commit creation after source checks. No push/deploy/account registration/email/submission, no credits purchased, no production settings changed.
+
+Live blocker: no Otari credentials, finite positive live cap, chosen policies/model cards, reachable registered remote MCP or workspace tool/ceiling verification. Zero paid requests performed. **No six-capability demonstration; submission readiness withheld.** Owner setup is listed once in OTARI_INTEGRATION. Participant must record their own actual screen/audio; no generated submission media.

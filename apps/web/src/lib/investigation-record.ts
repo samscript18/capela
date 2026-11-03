@@ -11,6 +11,7 @@ import type {
 } from "@capela/shared";
 
 export type ApiInvestigation = {
+  research?: import("@capela/shared").ResearchRun;
   _id: string;
   originalInput: string;
   status: InvestigationStatus;

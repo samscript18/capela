@@ -10,6 +10,47 @@
 
 **Source code:** [github.com/samscript18/capela](https://github.com/samscript18/capela)
 
+## Mozilla Developers Wilding upgrade (2026-11-03)
+
+New investigations default to **hosted Otari**. They resolve chemical identity, search scientific literature through Otari, retrieve canonical PubMed metadata through a read-only remote MCP server, persist immutable abstract snapshots, extract exact passage-backed candidates, ask a different observed model to review them, apply deterministic publication rules and compare a hosted sandbox audit against local validation before assembling the eight-section dossier.
+
+Inspect original claims, review decisions/rejections, exact UTF-16 passages, source hashes, actual observed models and cost uncertainty in the workspace. Legacy dossiers remain readable and explicitly say passage verification was not performed. Existing Privy ownership, history, account operations, exports and payment settings remain in place.
+
+**Hosted verification is blocked:** this checkout had no Otari credentials, configured model policies, reachable hosted MCP registration or finite live-test cap. No hosted capability or open-weight model usage is claimed as demonstrated. See [build status](docs/BUILD_STATUS.md), [setup and exact contracts](docs/OTARI_INTEGRATION.md) and [capability evidence](docs/RUBRIC_EVIDENCE.md). The existing direct-provider path is available only with explicit `RESEARCH_PROVIDER=legacy`; it is outside the hackathon integration.
+
+### Local setup
+
+Use Node 24, npm, MongoDB and the existing Privy app. Copy `.env.example` to ignored `.env.local`; supply secrets locally, never in chat or public configuration. Keep `PAYMENTS_ENABLED` in its existing state. Configure hosted Otari according to [the setup checklist](docs/OTARI_INTEGRATION.md). Paid runs are disabled until a finite positive local run cap and hosted runtime-key ceiling are configured. `npm run smoke:otari` first checks the catalog only; it makes no paid inference/tool call.
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Web: http://localhost:3000. API: http://localhost:4000. Swagger/OpenAPI: `/docs`, `/docs/openapi.json`, `/docs/openapi.yaml` on the API. All investigation reads/actions require verified owner authentication. `POST /investigations/:id/cancel` fences late writes. After any paid dispatch, automatic retry is blocked to avoid duplicate charges; partial checkpoints remain inspectable. Recovery marks expired leases interrupted rather than replaying paid stages. Selective paid-stage resume is not implemented.
+
+### Verification
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm run build
+npm test
+npm run test:integration
+npm run test:browser
+npm run evaluate
+```
+
+Unit tests spend no credits and use labeled adapter fixtures. Integration checks use a temporary isolated local `mongod` database and authenticated SDK MCP HTTP server with a mocked canonical upstream. Browser checks exercise the actual evidence-inspection component in a separate synthetic harness, without bypassing production authentication. They are not authenticated live scientific journeys or hosted traces. Install Chromium with `npx playwright install chromium` if it is absent. Integration tests require `mongod` on PATH and local port 27841 free; they never use `MONGODB_URI` or production data.
+
+The evaluation pilot has 30 cases from 10 real source records, with provisional AI-drafted labels awaiting human review; mechanical validity is distinct from scientific precision. See [evaluation](docs/EVALUATION.md), [test evidence](docs/TEST_EVIDENCE.md), [participant recording checklist](docs/DEMO_RECORDING_CHECKLIST.md) and [submission checklist](docs/SUBMISSION_CHECKLIST.md).
+
+## Product background (legacy architecture below)
+
+The remaining sections describe the original direct-provider implementation, retained only under `RESEARCH_PROVIDER=legacy`. Otari setup above is authoritative for new default investigations.
+
 ## Why Capela exists
 
 Scientific knowledge about a molecule is rarely available in one coherent place. A researcher may need to resolve chemical identity in PubChem, search several literature indexes, compare study models, inspect targets and pathways, distinguish docking from direct binding, and trace every conclusion back to a publication.

@@ -15,7 +15,7 @@ export class ResearchAssessmentService {
     claims: EvidenceClaim[],
     analysis: InvestigationAnalysis,
     mechanism: MechanismResult,
-    paperEvidence: PaperEvidence[],
+    paperEvidence: Pick<PaperEvidence, "analyzedSource">[],
   ): ResearchAssessment {
     const papersByType = (type: EvidenceType) =>
       new Set(claims.filter((claim) => claim.evidenceType === type).map((claim) => claim.paperId)).size;

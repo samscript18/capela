@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { ResearchRunView } from "./research-run-view";
 import { DossierSummaryCard } from "@/components/dossier-summary-card";
 import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -196,6 +197,7 @@ export function DossierView({ item }: { item: ApiInvestigation }) {
         )}
       >
         <DossierSummaryCard item={item} />
+        <ResearchRunView run={item.research} />
 
         <DossierSection id="overview" number="01" label="Molecule overview" title="Resolved chemical identity">
           <div className="premium-surface grid overflow-hidden lg:grid-cols-[200px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
@@ -730,6 +732,24 @@ function EvidenceDetail({ claim, paper }: { claim: EvidenceClaim; paper?: Dossie
         <span className="mono text-[8px] uppercase tracking-[.1em] text-[#788274]">{claim.analyzedSource}</span>
       </div>
       <h3 className="mt-5 text-sm leading-6">{claim.finding}</h3>
+      {claim.provenance ? (
+        <div className="mt-4 space-y-3">
+          {claim.provenance.spans.map((s, i) => (
+            <blockquote
+              key={i}
+              className="whitespace-pre-wrap border-l border-[#9fad7c]/40 pl-4 text-xs leading-6 text-[#c8d1aa]"
+            >
+              {s.quote}
+            </blockquote>
+          ))}
+          <p className="break-all text-[10px] text-[#a9b0a4]">
+            Exact passage verified · {claim.provenance.snapshotHash}
+          </p>
+        </div>
+      ) : (
+        <p className="mt-4 text-xs text-[#a9b0a4]">Legacy claim: passage verification was not performed.</p>
+      )}
+
       {claim.measuredOutcome && (
         <div className="mt-4 rounded-xl border border-white/[.07] bg-black/15 p-4">
           <span className="mono text-[8px] uppercase tracking-[.12em] text-[#788274]">Reported measurement</span>

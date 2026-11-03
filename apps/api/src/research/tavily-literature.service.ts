@@ -215,18 +215,18 @@ export class TavilyLiteratureService {
   }
 
   private identifiers(result: Pick<TavilySearchResult, "url" | "content" | "rawContent">) {
-    const text = `${result.url}\n${result.content}\n${result.rawContent ?? ""}`;
     const url = new URL(result.url);
-    const pubmedPath =
-      url.hostname === "pubmed.ncbi.nlm.nih.gov" ? url.pathname.match(/^\/(\d{4,10})(?:\/|$)/) : undefined;
-    const europePmcPath = url.pathname.match(/\/article\/(?:MED|PMC)\/(PMC)?(\d{4,10})/i);
-    const pmcid =
-      text.match(/\bPMC\d{4,10}\b/i)?.[0]?.toUpperCase() ?? (europePmcPath?.[1] ? `PMC${europePmcPath[2]}` : undefined);
-    const pmid =
-      pubmedPath?.[1] ??
-      (europePmcPath && !europePmcPath[1] ? europePmcPath[2] : text.match(/\bPMID\s*:?\s*(\d{4,10})\b/i)?.[1]);
-    const doiMatch = text.match(/\b10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i)?.[0];
-    return { pmid, pmcid, doi: doiMatch?.replace(/[.,;:)\]}]+$/g, "") };
+    const pubmed = url.hostname === "pubmed.ncbi.nlm.nih.gov" ? url.pathname.match(/^\/(\d{4,10})\/?$/) : undefined;
+    const pmc =
+      url.hostname === "pmc.ncbi.nlm.nih.gov" ? url.pathname.match(/^\/articles\/(PMC\d{4,10})\/?$/i) : undefined;
+    const europe =
+      url.hostname === "europepmc.org" ? url.pathname.match(/^\/article\/(MED|PMC)\/(PMC)?(\d{4,10})\/?$/i) : undefined;
+    // Reference lists and snippets cannot establish the identity of their containing page.
+    return {
+      pmid: pubmed?.[1] ?? (europe?.[1]?.toUpperCase() === "MED" ? europe[3] : undefined),
+      pmcid: pmc?.[1]?.toUpperCase() ?? (europe?.[1]?.toUpperCase() === "PMC" ? `PMC${europe[3]}` : undefined),
+      doi: undefined,
+    };
   }
 
   private identityKeys(
@@ -302,7 +302,9 @@ export class TavilyLiteratureService {
 
   private isTrustedScientificUrl(value: string) {
     try {
-      const hostname = new URL(value).hostname.toLowerCase();
+      const url = new URL(value);
+      if (url.protocol !== "https:" || url.username || url.password || url.port) return false;
+      const hostname = url.hostname.toLowerCase();
       return SCIENTIFIC_DOMAINS.some((domain) => hostname === domain || hostname.endsWith(`.${domain}`));
     } catch {
       return false;

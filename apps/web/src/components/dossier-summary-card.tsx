@@ -176,6 +176,12 @@ export function DossierSummaryCard({ item }: { item: ApiInvestigation }) {
           </section>
         </div>
 
+        <p className="mt-5 text-[10px] leading-5 text-white/55">
+          Abstract-only, bounded source coverage. Evidence grades are heuristics, not efficacy probabilities.{" "}
+          {item.research
+            ? "Model-assisted review is not proof of scientific truth."
+            : "Legacy record: passage verification was not performed."}
+        </p>
         <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
           <span className="text-xs font-semibold tracking-[.02em] text-white/80">Evidence before conclusion.</span>
           <small className="mono text-[8px] uppercase tracking-[.1em] text-white/30">

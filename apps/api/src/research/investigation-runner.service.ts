@@ -1,185 +1,214 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, type OnModuleInit, type OnModuleDestroy } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { randomUUID } from "node:crypto";
+import {
+  ACTIVE_INVESTIGATION_STATUSES,
+  ResearchRunSchema,
+  type ResearchRun,
+  type InvestigationStatus,
+  type MoleculeSnapshot,
+} from "@capela/shared";
 import { Investigation, type InvestigationDocument } from "../investigations/schemas/investigation.schema";
-import { AiEvidenceError, AiEvidenceService } from "./ai-evidence.service";
-import { DossierService, DossierValidationError } from "./dossier.service";
-import { TavilyLiteratureError, TavilyLiteratureService } from "./tavily-literature.service";
-import { EvidenceClassifierService, EvidenceValidationError } from "./evidence-classifier.service";
-import { MechanismService, MechanismValidationError } from "./mechanism.service";
-import { PubChemResolutionError, PubChemService } from "./pubchem.service";
+import { AiEvidenceService } from "./ai-evidence.service";
+import { DossierService } from "./dossier.service";
+import { TavilyLiteratureService } from "./tavily-literature.service";
+import { EvidenceClassifierService } from "./evidence-classifier.service";
+import { MechanismService } from "./mechanism.service";
+import { PubChemService, PubChemResolutionError } from "./pubchem.service";
 import { ResearchAssessmentService } from "./research-assessment.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { OtariGatewayService } from "./otari-gateway.service";
+import { OtariRetrievalService } from "./otari-retrieval.service";
+import { OtariEvidenceService } from "./otari-evidence.service";
+import { ResearchError } from "./provenance";
 
+const LEASE_MS = 120000;
 @Injectable()
-export class InvestigationRunnerService {
+export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(InvestigationRunnerService.name);
-  private readonly inFlight = new Set<string>();
-
+  private sweep?: ReturnType<typeof setInterval>;
   constructor(
     @InjectModel(Investigation.name) private readonly investigations: Model<InvestigationDocument>,
     private readonly pubChem: PubChemService,
-    private readonly literatureSearch: TavilyLiteratureService,
-    private readonly aiEvidence: AiEvidenceService,
-    private readonly evidenceClassifier: EvidenceClassifierService,
+    private readonly literature: TavilyLiteratureService,
+    private readonly ai: AiEvidenceService,
+    private readonly classifier: EvidenceClassifierService,
     private readonly mechanismService: MechanismService,
-    private readonly researchAssessment: ResearchAssessmentService,
-    private readonly dossierService: DossierService,
+    private readonly assessmentService: ResearchAssessmentService,
+    private readonly dossiers: DossierService,
     private readonly notifications: NotificationsService,
+    private readonly gateway: OtariGatewayService,
+    private readonly retrieval: OtariRetrievalService,
+    private readonly extraction: OtariEvidenceService,
+    private readonly config: ConfigService,
   ) {}
-
-  async run(investigationId: string) {
-    if (this.inFlight.has(investigationId)) return;
-    this.inFlight.add(investigationId);
-    try {
-      const investigation = await this.investigations.findById(investigationId).lean().exec();
-      if (!investigation || investigation.status === "completed" || investigation.status === "failed") return;
-      await this.wait(600);
-      const resolving = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "queued" },
-          {
-            $set: {
-              status: "resolving_molecule",
-              "progress.message": "Resolving molecule identity",
-              startedAt: new Date(),
+  async onModuleInit() {
+    await this.recover();
+    this.sweep = setInterval(() => {
+      void this.recover().catch(() => this.logger.warn("Recovery sweep unavailable"));
+    }, 30000);
+    this.sweep.unref();
+  }
+  onModuleDestroy() {
+    if (this.sweep) clearInterval(this.sweep);
+  }
+  async recover() {
+    // Interrupted paid calls are never replayed. Durable snapshots/reviews remain inspectable.
+    await this.investigations
+      .updateMany(
+        {
+          status: { $in: ACTIVE_INVESTIGATION_STATUSES.filter((s) => s !== "queued") },
+          $or: [{ leaseExpiresAt: { $lt: new Date() } }, { leaseExpiresAt: { $exists: false } }],
+        },
+        {
+          $set: {
+            status: "failed",
+            error: {
+              code: "RUN_INTERRUPTED",
+              message: "Worker interrupted. Stored work is partial; an in-flight provider call may have been charged.",
             },
+            "progress.message": "Interrupted; saved checkpoints retained",
           },
-        )
-        .exec();
-      if (!resolving.matchedCount) return;
-      const molecule = await this.pubChem.resolve(investigation.originalInput);
-      await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "resolving_molecule" },
-          { $set: { molecule, "progress.message": "Chemical information retrieved" } },
-        )
-        .exec();
-      await this.wait(500);
-      const searching = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "resolving_molecule" },
-          {
-            $set: { status: "searching_literature", "progress.message": "Searching scientific literature with Tavily" },
+          $unset: { leaseToken: 1, leaseExpiresAt: 1, activeFreeSlot: 1 },
+        },
+      )
+      .exec();
+    const queued = await this.investigations
+      .find({ status: "queued", leaseToken: { $exists: false } })
+      .select("_id")
+      .limit(10)
+      .lean()
+      .exec();
+    for (const q of queued)
+      void this.run(q._id.toString()).catch(() => this.logger.warn("Queued run could not be claimed"));
+  }
+  async run(id: string) {
+    const token = randomUUID();
+    const item = await this.investigations
+      .findOneAndUpdate(
+        { _id: id, status: "queued", leaseToken: { $exists: false } },
+        {
+          $set: {
+            leaseToken: token,
+            leaseExpiresAt: new Date(Date.now() + LEASE_MS),
+            status: "resolving_molecule",
+            startedAt: new Date(),
           },
-        )
-        .exec();
-      if (!searching.matchedCount) return;
-      const literature = await this.literatureSearch.search(molecule, investigation.originalInput);
-      const ranked = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "searching_literature" },
-          {
-            $set: {
-              status: "ranking_studies",
-              "progress.message": `Ranking ${literature.discoveredCount} retrieved publications`,
-              "progress.papersDiscovered": literature.discoveredCount,
-            },
-          },
-        )
-        .exec();
-      if (!ranked.matchedCount) return;
-      await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "ranking_studies" },
-          {
-            $set: {
-              papers: literature.papers,
-              "progress.message": `${literature.papers.length} relevant studies selected`,
-              "progress.papersSelected": literature.papers.length,
-            },
-          },
-        )
-        .exec();
-      await this.wait(500);
-      const extracting = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "ranking_studies" },
-          {
-            $set: {
-              status: "extracting_evidence",
-              "progress.message": "Extracting structured evidence from selected abstracts",
-            },
-          },
-        )
-        .exec();
-      if (!extracting.matchedCount) return;
-      const evidence = await this.aiEvidence.extract(literature.papers, molecule, async (partialEvidence) => {
-        await this.investigations
-          .updateOne(
-            { _id: investigationId, status: "extracting_evidence" },
-            {
-              $set: {
-                paperEvidence: partialEvidence,
-                "progress.papersAnalyzed": partialEvidence.length,
-                "progress.message": `${partialEvidence.length} studies analyzed`,
-              },
-            },
-          )
-          .exec();
+          $inc: { attempt: 1 },
+        },
+        { returnDocument: "after" },
+      )
+      .lean()
+      .exec();
+    if (!item) return;
+    let lost = false;
+    const filter = () => ({
+      _id: id,
+      leaseToken: token,
+      leaseExpiresAt: { $gt: new Date() },
+      status: { $in: ACTIVE_INVESTIGATION_STATUSES },
+    });
+    const heartbeat = setInterval(() => {
+      void this.investigations
+        .updateOne(filter(), { $set: { leaseExpiresAt: new Date(Date.now() + LEASE_MS) } })
+        .exec()
+        .then((r) => {
+          if (!r.matchedCount) lost = true;
+        })
+        .catch(() => {
+          lost = true;
+        });
+    }, 15000);
+    heartbeat.unref();
+    let research: ResearchRun | undefined;
+    const write = async (fields: Record<string, unknown>) => {
+      if (lost) throw new ResearchError("LEASE_LOST", "Run ownership expired or was cancelled.");
+      const r = await this.investigations.updateOne(filter(), { $set: fields }).exec();
+      if (!r.matchedCount) {
+        lost = true;
+        throw new ResearchError("LEASE_LOST", "Run ownership expired or was cancelled.");
+      }
+    };
+    const save = async () => {
+      if (research) ResearchRunSchema.parse(research);
+      const last = research?.events.at(-1);
+      const messages: Record<string, string> = {
+        extraction: "Extracting candidate claims from stored abstracts",
+        review: "Reviewing source support and overstatement",
+        sandbox_audit: "Auditing accepted evidence in the hosted sandbox",
+        publication_metadata: "Retrieving canonical publication metadata via hosted MCP",
+        scientific_search: "Searching scientific literature through Otari",
+      };
+      await write({
+        research,
+        ...(last?.status === "started" && messages[last.operation]
+          ? { "progress.message": messages[last.operation] }
+          : {}),
       });
-      const classified = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "extracting_evidence" },
-          {
-            $set: {
-              status: "classifying_evidence",
-              paperEvidence: evidence,
-              "progress.papersAnalyzed": evidence.length,
-              "progress.message": "Validating extracted evidence",
-            },
-          },
-        )
-        .exec();
-      if (!classified.matchedCount) return;
-      const validated = this.evidenceClassifier.classify(evidence, literature.papers);
-      const analyzed = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "classifying_evidence" },
-          {
-            $set: {
-              status: "analyzing_findings",
-              evidence: validated.claims,
-              analysis: validated.analysis,
-              "progress.message": `Aggregated ${validated.analysis.activities.length} activities and ${validated.analysis.targets.length} targets`,
-              "progress.experimentalFindings": validated.counts.experimentalFindings,
-              "progress.computationalFindings": validated.counts.computationalFindings,
-              "progress.targetsEvaluated": validated.counts.targetsEvaluated,
-            },
-          },
-        )
-        .exec();
-      if (!analyzed.matchedCount) return;
-      await this.wait(500);
+    };
+    const stage = async (status: InvestigationStatus, message: string, extra: Record<string, unknown> = {}) =>
+      write({ status, "progress.message": message, ...extra });
+    try {
+      const legacy = this.config.get<string>("RESEARCH_PROVIDER") === "legacy";
+      if (!legacy) {
+        research = this.gateway.createRun(randomUUID());
+        await save();
+        this.gateway.assertConfigured();
+        if (research.budget.capMicrousd <= 0)
+          throw new ResearchError(
+            "LIVE_BUDGET_NOT_CONFIGURED",
+            "Otari spending is disabled. Configure a finite local run cap and hosted key ceiling.",
+          );
+      }
+      const molecule: MoleculeSnapshot = await this.pubChem.resolve(item.originalInput);
+      await stage(
+        "searching_literature",
+        legacy ? "Searching scientific literature (legacy)" : "Searching scientific literature through Otari",
+        { molecule },
+      );
+      const literature = legacy
+        ? await this.literature.search(molecule, item.originalInput)
+        : await this.retrieval.search(molecule, research!, save);
+      await stage("ranking_studies", `${literature.papers.length} canonical abstracts selected`, {
+        papers: literature.papers,
+        "progress.papersDiscovered": literature.discoveredCount,
+        "progress.papersSelected": literature.papers.length,
+      });
+      await stage("extracting_evidence", "Extracting and reviewing source passages");
+      const legacyEvidence = legacy ? await this.ai.extract(literature.papers, molecule) : [];
+      const validated = legacy
+        ? this.classifier.classify(legacyEvidence, literature.papers)
+        : await this.extraction.extract(literature.papers, molecule, research!, save);
+      await stage("classifying_evidence", "Passage and review validation complete", {
+        evidence: validated.claims,
+        paperEvidence: legacyEvidence,
+        "progress.papersAnalyzed": literature.papers.length,
+        analysis: validated.analysis,
+        "progress.experimentalFindings": validated.counts.experimentalFindings,
+        "progress.computationalFindings": validated.counts.computationalFindings,
+        "progress.targetsEvaluated": validated.counts.targetsEvaluated,
+      });
+      await stage("analyzing_findings", "Building accepted-evidence mechanism");
       const mechanism = this.mechanismService.build(molecule, validated.claims, literature.papers, validated.analysis);
-      const assessing = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "analyzing_findings" },
-          {
-            $set: {
-              status: "building_assessment",
-              mechanism,
-              "progress.message": "Assessing evidence strength and consistency",
-            },
-          },
-        )
-        .exec();
-      if (!assessing.matchedCount) return;
-      const assessment = this.researchAssessment.assess(validated.claims, validated.analysis, mechanism, evidence);
-      const dossierStage = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "building_assessment" },
-          {
-            $set: {
-              status: "generating_dossier",
-              assessment,
-              "progress.message": "Preparing validated findings for the research dossier",
-            },
-          },
-        )
-        .exec();
-      if (!dossierStage.matchedCount) return;
-      const dossier = this.dossierService.build(
+      await stage("building_assessment", "Assessing strength, conflicts and gaps", { mechanism });
+      const assessment = this.assessmentService.assess(
+        validated.claims,
+        validated.analysis,
+        mechanism,
+        legacy ? legacyEvidence : literature.papers.map(() => ({ analyzedSource: "abstract" as const })),
+      );
+      // New extraction uses claim records rather than the legacy paper-extraction schema.
+      if (!legacy) {
+        assessment.basis.papersAnalyzed = literature.papers.length;
+        assessment.basis.abstractOnlyPapers = literature.papers.length;
+        assessment.majorEvidenceGaps.push(
+          "Abstract-only, bounded retrieval. Evidence score is a heuristic, not an efficacy probability.",
+        );
+      }
+      await stage("generating_dossier", "Assembling eight-section dossier", { assessment });
+      const dossier = this.dossiers.build(
         molecule,
         literature.papers,
         validated.claims,
@@ -187,87 +216,54 @@ export class InvestigationRunnerService {
         mechanism,
         assessment,
       );
-      const dossierSaved = await this.investigations
-        .updateOne(
-          { _id: investigationId, status: "generating_dossier" },
-          { $set: { dossier, "progress.message": "Research dossier complete" } },
-        )
-        .exec();
-      if (!dossierSaved.matchedCount) return;
-      await this.wait(800);
-      const completed = await this.investigations
+      if (research) {
+        research.checkpoint = "completed";
+        await save();
+      }
+      const done = await this.investigations
         .findOneAndUpdate(
-          { _id: investigationId, status: "generating_dossier" },
+          filter(),
           {
             $set: {
               status: "completed",
-              "progress.message": "Investigation workflow complete",
+              dossier,
               completedAt: new Date(),
+              "progress.message": "Dossier complete; source limitations retained",
             },
-            $unset: { activeFreeSlot: 1 },
+            $unset: { activeFreeSlot: 1, leaseToken: 1, leaseExpiresAt: 1 },
           },
           { returnDocument: "after" },
         )
         .lean()
         .exec();
-      if (completed) await this.recordNotification(completed);
+      if (done)
+        await this.notifications
+          .recordInvestigation(done)
+          .catch(() => this.logger.warn("Completion notification unavailable"));
     } catch (error) {
-      const known =
-        error instanceof PubChemResolutionError ||
-        error instanceof TavilyLiteratureError ||
-        error instanceof AiEvidenceError ||
-        error instanceof EvidenceValidationError ||
-        error instanceof MechanismValidationError ||
-        error instanceof DossierValidationError;
-      if (!known)
-        this.logger.error(
-          `Investigation runner failed for ${investigationId}`,
-          error instanceof Error ? error.stack : undefined,
-        );
-      else this.logger.warn(`Investigation ${investigationId} stopped with ${error.code}`);
+      const code =
+        error && typeof error === "object" && "code" in error && typeof error.code === "string"
+          ? error.code
+          : "RESEARCH_FAILED";
+      const safe = error instanceof ResearchError || error instanceof PubChemResolutionError;
+      this.logger.warn(`Run stopped: ${code}`);
       await this.investigations
-        .updateOne(
-          { _id: investigationId, status: { $nin: ["completed", "failed"] } },
-          {
-            $set: {
-              status: "failed",
-              "progress.message": known ? error.message : "Investigation failed",
-              error: {
-                code: known ? error.code : "RUNNER_FAILED",
-                message: known ? error.message : "The investigation workflow could not be completed.",
-              },
+        .updateOne(filter(), {
+          $set: {
+            status: "failed",
+            ...(research ? { research } : {}),
+            error: {
+              code,
+              message: safe ? error.message : "Research could not be validated. Saved work remains partial.",
             },
-            $unset: { activeFreeSlot: 1 },
+            "progress.message": "Investigation stopped; saved work is partial",
           },
-        )
+          $unset: { activeFreeSlot: 1, leaseToken: 1, leaseExpiresAt: 1 },
+        })
         .exec()
         .catch(() => undefined);
     } finally {
-      this.inFlight.delete(investigationId);
-    }
-  }
-
-  private wait(milliseconds: number) {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
-  }
-
-  private async recordNotification(investigation: {
-    _id: import("mongoose").Types.ObjectId;
-    userId: import("mongoose").Types.ObjectId;
-    originalInput: string;
-    status: string;
-    molecule?: Record<string, unknown>;
-    error?: { code: string; message: string };
-  }) {
-    if (!this.notifications || !investigation?._id || !investigation.userId) return;
-    try {
-      await this.notifications.recordInvestigation(investigation);
-    } catch (error) {
-      this.logger.warn(
-        `Investigation notification could not be recorded for ${investigation._id.toString()}: ${
-          error instanceof Error ? error.message : "unknown error"
-        }`,
-      );
+      clearInterval(heartbeat);
     }
   }
 }

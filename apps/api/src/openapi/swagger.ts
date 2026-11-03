@@ -1,4 +1,5 @@
 import type { INestApplication } from "@nestjs/common";
+import { scientificProvenanceSchemas } from "./openapi.models";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 export const SWAGGER_PATH = "docs";
@@ -16,7 +17,7 @@ export function buildOpenApiConfig() {
         "Protected operations require a current Privy access token in `Authorization: Bearer <token>`. The API derives the user identity from the verified token; it never trusts a client-supplied user ID.",
         "",
         "## Investigation lifecycle",
-        "Create an investigation, then poll its detail resource until `status` becomes `completed` or `failed`. Failed investigations can be retried through the retry operation. A completed response may contain the full eight-section scientific dossier.",
+        "Create an investigation, then poll its detail resource until `status` becomes `completed` or `failed`. Failed investigations with no dispatched paid work can be retried. Paid attempts retain partial checkpoints and reject automatic replay. Cancel stops future dispatch and fences late writes. A completed response may contain the full eight-section scientific dossier.",
         "",
         "## Scientific contract",
         "Capela retrieves chemical and literature records before evidence extraction and synthesis. Evidence classifications distinguish direct and indirect experiments, computational predictions, literature reports, Capela inferences, and insufficient evidence.",
@@ -52,6 +53,15 @@ export function configureSwagger(app: INestApplication) {
     operationIdFactory: (controllerKey, methodKey) =>
       `${controllerKey.replace(/Controller$/, "").replace(/^./, (character) => character.toLowerCase())}.${methodKey}`,
   });
+
+  const schemas = document.components?.schemas;
+  const investigation = schemas?.InvestigationResponseDto;
+  if (investigation && "properties" in investigation && investigation.properties) {
+    investigation.properties.research = {
+      ...scientificProvenanceSchemas.run,
+      description: "Absent on legacy dossiers; all new snapshots, reviews and budgets are versioned.",
+    };
+  }
 
   SwaggerModule.setup(SWAGGER_PATH, app, document, {
     customSiteTitle: "Capela API Documentation",

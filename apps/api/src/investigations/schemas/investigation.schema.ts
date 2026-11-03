@@ -38,6 +38,10 @@ export class Investigation {
   @Prop({ type: SchemaFactory.createForClass(InvestigationAccess), required: true }) access!: InvestigationAccess;
   @Prop({ type: Boolean }) activeFreeSlot?: boolean;
   @Prop({ type: MongooseSchema.Types.Mixed }) error?: { code: string; message: string };
+  @Prop({ type: MongooseSchema.Types.Mixed }) research?: import("@capela/shared").ResearchRun;
+  @Prop() leaseToken?: string;
+  @Prop() leaseExpiresAt?: Date;
+  @Prop({ default: 0 }) attempt!: number;
   @Prop() startedAt?: Date;
   @Prop() completedAt?: Date;
   createdAt!: Date;
@@ -51,3 +55,5 @@ InvestigationSchema.index(
   { userId: 1, activeFreeSlot: 1 },
   { unique: true, partialFilterExpression: { activeFreeSlot: true } },
 );
+
+InvestigationSchema.index({ status: 1, leaseExpiresAt: 1 });

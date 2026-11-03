@@ -1,14 +1,15 @@
 "use client";
 
-import type { InvestigationStatus } from "@capela/shared";
+import { ACTIVE_INVESTIGATION_STATUSES, type InvestigationStatus } from "@capela/shared";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Check, Circle, ExternalLink, LoaderCircle, RotateCcw, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
+import { ResearchRunView } from "@/components/research-run-view";
 import { DossierView } from "@/components/dossier-view";
 import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
-import { ApiError, useInvestigation, useRetryInvestigation } from "@/lib/api";
+import { ApiError, useInvestigation, useRetryInvestigation, useCancelInvestigation } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
 import { formatAccessType, formatInvestigationStatus } from "@/lib/investigation-record";
 
@@ -28,6 +29,7 @@ export default function InvestigationPage() {
   const queryClient = useQueryClient();
   const investigation = useInvestigation(id);
   const retry = useRetryInvestigation(id);
+  const cancel = useCancelInvestigation(id);
   const status = investigation.data?.status;
   useEffect(() => {
     if (status !== "completed" && status !== "failed") return;
@@ -44,7 +46,7 @@ export default function InvestigationPage() {
   if (item.status === "completed" && item.dossier) return <DossierView item={item} />;
   if (item.status === "completed") return <MissingDossierState />;
   const activeIndex = stages.findIndex((stage) => stage.status === item.status);
-  const failed = item.status === "failed";
+  const failed = item.status === "failed" || !ACTIVE_INVESTIGATION_STATUSES.includes(item.status);
   const progress = item.status === "queued" ? 3 : Math.max(8, Math.round(((activeIndex + 0.45) / stages.length) * 100));
   const metrics = [
     ["Publications discovered", item.progress.papersDiscovered],
@@ -71,6 +73,16 @@ export default function InvestigationPage() {
               <span className="size-1.5 rounded-full bg-[#63e6a1] shadow-[0_0_10px_#63e6a1]" />
               Live · updates every 2s
             </span>
+          )}
+          {!failed && (
+            <button
+              type="button"
+              disabled={cancel.isPending}
+              onClick={() => cancel.mutate()}
+              className="rounded-full border border-white/15 px-4 py-2 text-xs"
+            >
+              {cancel.isPending ? "Cancelling…" : "Cancel research"}
+            </button>
           )}
           <DeleteInvestigationButton id={item._id} name={item.molecule?.preferredName ?? item.originalInput} />
         </div>
@@ -111,11 +123,13 @@ export default function InvestigationPage() {
         <div className="premium-surface mt-8 p-5 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-4">
             <span className="text-xs text-[#a9b0a4]">{item.progress.message}</span>
-            <span className="mono text-[9px] text-[#788274]">{progress}%</span>
+            <span className="mono text-[9px] text-[#788274]">
+              Stage {Math.max(0, activeIndex + 1)} / {stages.length}
+            </span>
           </div>
           <div
             className="h-2 overflow-hidden rounded-full bg-white/[.06]"
-            aria-label={`${progress}% complete`}
+            aria-label={`$Stage {Math.max(0,activeIndex+1)} / {stages.length} complete`}
             role="progressbar"
             aria-valuenow={progress}
             aria-valuemin={0}
@@ -123,12 +137,22 @@ export default function InvestigationPage() {
           >
             <div
               className="h-full rounded-full bg-gradient-to-r from-[#9fad7c] to-[#63e6a1] shadow-[0_0_18px_rgba(159,173,124,.35)] transition-[width] duration-500"
-              style={{ width: `${progress}%` }}
+              style={{ width: `$Stage {Math.max(0,activeIndex+1)} / {stages.length}` }}
             />
           </div>
         </div>
       )}
 
+      {item.research && (
+        <div className="mt-6">
+          <ResearchRunView run={item.research} partial={failed} />
+        </div>
+      )}
+      {cancel.isError && (
+        <p role="alert" className="mt-4 text-xs text-[#ff8b8b]">
+          Cancellation failed. Reload to check the current run state.
+        </p>
+      )}
       {item.molecule && (
         <section className="premium-surface mt-6 grid overflow-hidden sm:grid-cols-[190px_minmax(0,1fr)]">
           <div className="grid min-h-48 place-items-center border-b border-white/[.07] bg-[#f7f9ef] p-4 sm:border-b-0 sm:border-r">
@@ -294,7 +318,7 @@ export default function InvestigationPage() {
                 </div>
                 <div className="flex items-start gap-2 lg:justify-end">
                   <span className="mono rounded-full border border-white/[.09] bg-white/[.025] px-2.5 py-1 text-[8px] uppercase tracking-[.1em] text-[#a9b0a4]">
-                    Score {paper.relevanceScore}
+                    {item.research ? "Canonical metadata" : `Score ${paper.relevanceScore}`}
                   </span>
                   {paper.fullTextAvailable && (
                     <span className="mono rounded-full border border-[#63e6a1]/25 bg-[#63e6a1]/5 px-2.5 py-1 text-[8px] uppercase tracking-[.1em] text-[#63e6a1]">
@@ -316,8 +340,9 @@ export default function InvestigationPage() {
             {item.error?.message ?? "The investigation workflow could not be completed."}
           </p>
           <p className="mt-3 max-w-2xl text-xs leading-5 text-[#788274]">
-            This failed run did not consume investigation access. Retrying this record will not require another
-            entitlement.
+            {item.research?.budget.calls
+              ? "Paid work was dispatched. Its checkpoints remain available; automatic retry is disabled to avoid duplicate charges. Review the partial record before starting a separately budgeted investigation."
+              : "This run did not complete. You can retry after resolving its configuration or provider error."}
           </p>
           {item.error?.code && (
             <span className="mono mt-5 inline-flex rounded-full border border-[#ff7474]/20 px-2.5 py-1 text-[8px] uppercase tracking-[.1em] text-[#ff8b8b]">
@@ -328,7 +353,7 @@ export default function InvestigationPage() {
             <button
               type="button"
               onClick={() => retry.mutate()}
-              disabled={retry.isPending}
+              disabled={retry.isPending || !!item.research?.budget.calls}
               className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#9fad7c]/35 bg-[#9fad7c] px-5 text-sm font-bold text-[#10140d] shadow-[0_10px_30px_rgba(109,126,76,.16)] transition hover:-translate-y-0.5 hover:bg-[#b4c18f] disabled:pointer-events-none disabled:opacity-50"
             >
               {retry.isPending ? <LoaderCircle size={15} className="animate-spin" /> : <RotateCcw size={15} />}

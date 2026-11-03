@@ -211,6 +211,12 @@ export type EvidenceClaim = {
   cellularEffect?: string;
   biologicalOutcome?: string;
   source?: string;
+  provenance?: {
+    snapshotId: string;
+    snapshotHash: string;
+    spans: import("./provenance").SupportSpan[];
+    decisionId: string;
+  };
 };
 
 export type BiologicalActivitySummary = {
@@ -327,3 +333,5 @@ export type CapelaDossier = {
   };
   researchAssessment: ResearchAssessment & { paperIds: string[]; evidenceIds: string[] };
 };
+
+export * from "./provenance";
