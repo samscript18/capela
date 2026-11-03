@@ -11,7 +11,7 @@ import {
   type ResearchRun,
 } from "@capela/shared";
 import { OtariGatewayService, type SaveRun } from "./otari-gateway.service";
-import { decide, exactIds, referenceValid, ResearchError, strictOutput } from "./provenance";
+import { decide, exactIds, referenceValid, ResearchError, strictOutput, canDowngrade } from "./provenance";
 import { EvidenceClassifierService, type ValidatedEvidenceResult } from "./evidence-classifier.service";
 import { remoteAudit } from "./evidence-audit";
 
@@ -132,6 +132,17 @@ export class OtariEvidenceService {
         papers,
       ),
     );
+    run.decisions = run.decisions.map((d) => {
+      const published = claims.find((c) => c.id === d.candidate.id);
+      if (!published || published.evidenceType === d.publishedClass) return d;
+      return {
+        ...d,
+        status: "revised" as const,
+        publishedClass: published.evidenceType,
+        reason: `${d.reason} Deterministic classification narrowed ${d.publishedClass} to ${published.evidenceType}.`,
+      };
+    });
+    await save();
     // Classifier may only preserve/downgrade original claims. It cannot add findings.
     const auditClaims: CandidateClaim[] = claims.map((c) => {
       const original = accepted.find((d) => d.candidate.id === c.id)!.candidate;
@@ -199,11 +210,16 @@ export class OtariEvidenceService {
       papers.filter((p) => p.id === c.paperId),
     ).claims[0];
     if (!claim) throw new ResearchError("INVALID_CLAIM", "Claim could not be deterministically classified.");
+    const finalClass = c.proposedClass === "insufficient" ? "insufficient" : claim.evidenceType;
+    if (!canDowngrade(c.proposedClass, finalClass))
+      throw new ResearchError(
+        "SCIENTIFIC_CLASS_UPGRADE",
+        "Deterministic classification attempted an unsupported class change.",
+      );
     return {
       ...claim,
       id: c.id,
-      evidenceType:
-        c.kind === "source_context" && c.proposedClass === "insufficient" ? "insufficient" : claim.evidenceType,
+      evidenceType: finalClass,
       model: c.model ?? undefined,
       measuredOutcome: c.measuredOutcome ?? undefined,
       provenance: { snapshotId: c.snapshotId, snapshotHash: c.snapshotHash, spans: c.spans, decisionId: c.id },

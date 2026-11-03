@@ -133,4 +133,178 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
   );
   await assert.rejects(outsider.get("other-owner", stale.id), /not found/);
   await assert.rejects(outsider.cancel("other-owner", stale.id), /not found/);
+  await t.test(
+    "complete hosted-path runner with mocked Otari persists source before inference and stops on denial",
+    async (sub) => {
+      const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+      const { OtariRetrievalService } = require("../dist/research/otari-retrieval.service");
+      const { OtariEvidenceService } = require("../dist/research/otari-evidence.service");
+      const { EvidenceClassifierService } = require("../dist/research/evidence-classifier.service");
+      const { MechanismService } = require("../dist/research/mechanism.service");
+      const { ResearchAssessmentService } = require("../dist/research/research-assessment.service");
+      const { DossierService } = require("../dist/research/dossier.service");
+      const { snapshot } = require("../dist/research/provenance");
+      const { localAudit } = require("../dist/research/evidence-audit");
+      const cfg = {
+        get: (k) =>
+          ({
+            OTARI_API_KEY: "fixture-only-key",
+            OTARI_BUDGET_REFERENCE: "fixture-ceiling",
+            OTARI_RUN_BUDGET_MICROUSD: "200000",
+            OTARI_MCP_SERVER_ID: "server",
+            OTARI_EXTRACTION_POLICY: "extract-policy",
+            OTARI_REVIEW_POLICY: "review-policy",
+          })[k],
+      };
+      const g = new OtariGatewayService(cfg),
+        classifier = new EvidenceClassifierService();
+      const molecule = {
+        pubchemCid: 2244,
+        preferredName: "aspirin",
+        synonyms: [],
+        structure2dUrl: "https://pubchem.ncbi.nlm.nih.gov/2244.png",
+        pubchemUrl: "https://pubchem.ncbi.nlm.nih.gov/compound/2244",
+      };
+      const text = "Aspirin altered a marker in mice in this synthetic integration fixture.";
+      const source = snapshot("12345", "https://pubmed.ncbi.nlm.nih.gov/12345/", text);
+      const span = {
+        blockId: "abstract",
+        quote: text,
+        start: 0,
+        end: text.length,
+        convention: "utf16-zero-based-end-exclusive",
+      };
+      const claim = {
+        id: "fixture-claim",
+        paperId: "12345",
+        snapshotId: source.id,
+        snapshotHash: source.hash,
+        analyzedSource: "abstract",
+        finding: text,
+        proposedClass: "indirect_experimental",
+        kind: "activity",
+        studyType: "experimental_in_vivo",
+        model: "mice",
+        measuredOutcome: "marker",
+        label: "marker",
+        relationship: null,
+        spans: [span],
+      };
+      const review = {
+        claimId: claim.id,
+        verdict: "supported",
+        reason: "Fixture support only.",
+        evidenceType: claim.proposedClass,
+        revisedFinding: null,
+        spans: [span],
+        checks: { molecule: true, negation: true, studyContext: true, directness: true, sourceLimitations: true },
+      };
+      let current,
+        denied = false,
+        requests = [];
+      sub.mock.method(global, "fetch", async (url, init) => {
+        const pathname = new URL(url).pathname.replace("/api/v1", "");
+        requests.push(pathname);
+        if (denied) return new Response("{}", { status: 403, headers: { "Otari-Error-Code": "budget_exceeded" } });
+        if (pathname === "/search")
+          return Response.json({
+            results: [{ title: "Fixture publication", url: source.canonicalUrl, snippet: "Fixture search result" }],
+          });
+        if (pathname.includes("/tools"))
+          return Response.json({
+            server_id: "server",
+            server_revision: "rev",
+            tools: [
+              {
+                name: "publication_abstract",
+                input_schema: {
+                  type: "object",
+                  additionalProperties: false,
+                  required: ["url"],
+                  properties: { url: { type: "string" } },
+                },
+              },
+            ],
+          });
+        if (pathname === "/mcp/execute")
+          return Response.json({
+            isError: false,
+            resultType: "complete",
+            structuredContent: {
+              pmid: "12345",
+              title: "Synthetic fixture",
+              abstract: text,
+              authors: [],
+              journal: "",
+              year: null,
+              doi: null,
+              publicationTypes: [],
+              canonicalUrl: source.canonicalUrl,
+            },
+          });
+        if (pathname === "/chat/completions") {
+          const persisted = await Model.findById(current.id).lean();
+          assert.equal(persisted.research.snapshots[0].hash, source.hash, "source durable before inference");
+          const extraction = JSON.parse(init.body).model === "extract-policy";
+          return Response.json(
+            {
+              choices: [
+                {
+                  finish_reason: "stop",
+                  message: {
+                    content: JSON.stringify(
+                      extraction
+                        ? { papers: [{ paperId: "12345", claims: [claim], limitations: ["Synthetic fixture"] }] }
+                        : { reviews: [review] },
+                    ),
+                  },
+                },
+              ],
+              usage: { cost_usd: "0.000010" },
+            },
+            { headers: { "Otari-Model": extraction ? "fixture-a" : "fixture-b" } },
+          );
+        }
+        if (pathname === "/code/execute")
+          return Response.json({ return_code: 0, stderr: "", stdout: JSON.stringify(localAudit([claim], [source])) });
+        throw new Error("Unexpected network path");
+      });
+      const full = new InvestigationRunnerService(
+        Model,
+        { resolve: async () => molecule },
+        undefined,
+        undefined,
+        classifier,
+        new MechanismService(),
+        new ResearchAssessmentService(),
+        new DossierService(),
+        { recordInvestigation: async () => {} },
+        g,
+        new OtariRetrievalService(g),
+        new OtariEvidenceService(g, classifier),
+        cfg,
+      );
+      current = await Model.create({ userId: owner, originalInput: "fixture", access: { type: "free" } });
+      await full.run(current.id);
+      const completed = await Model.findById(current.id).lean();
+      assert.equal(completed.status, "completed", JSON.stringify(completed.error));
+      assert.equal(completed.evidence.length, 1);
+      assert.ok(completed.evidence[0].provenance);
+      assert.ok(completed.research.models.distinct);
+      assert.ok(completed.research.audit.remote);
+      assert.equal(completed.research.budget.calls, 5);
+      assert.notEqual(completed.research.runId, completed.leaseToken);
+      assert.equal(Object.keys(completed.dossier).length, 9);
+      denied = true;
+      requests = [];
+      current = await Model.create({ userId: owner, originalInput: "denied fixture", access: { type: "free" } });
+      await full.run(current.id);
+      const partial = await Model.findById(current.id).lean();
+      assert.equal(partial.status, "failed");
+      assert.equal(partial.error.code, "OTARI_BUDGET_DENIED");
+      assert.equal(partial.research.budget.terminal, true);
+      assert.deepEqual(requests, ["/search"]);
+      assert.equal(partial.dossier, undefined);
+    },
+  );
 });

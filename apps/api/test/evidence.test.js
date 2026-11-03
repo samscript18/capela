@@ -505,3 +505,11 @@ test("live evaluation and catalog smoke remain disabled at zero budget", () => {
     assert.match(result.stdout, /No requests sent/i);
   }
 });
+
+test("deterministic computational classification cannot upgrade an insufficient candidate", () => {
+  const { c } = fixture("A docking computation suggests an uncertain relationship.");
+  const service = new OtariEvidenceService(undefined, new EvidenceClassifierService());
+  const candidate = { ...c, proposedClass: "insufficient", studyType: "computational" };
+  const result = service.toClaim(candidate, [{ id: c.paperId }]);
+  assert.equal(result.evidenceType, "insufficient");
+});

@@ -124,6 +124,11 @@ export function decide(
     return reject("Source context is literature reported, not an experimental result.");
   const quotes = candidate.spans.map((s) => s.quote).join(" ");
   const context = `${quotes} ${finding}`;
+  if (
+    candidate.studyType === "computational" &&
+    !["computational_prediction", "insufficient"].includes(review.evidenceType)
+  )
+    return reject("Computational studies cannot establish experimental evidence.");
   if (candidate.studyType === "review" && !["literature_reported", "insufficient"].includes(review.evidenceType))
     return reject("Review cannot establish primary experimental evidence.");
   if (
