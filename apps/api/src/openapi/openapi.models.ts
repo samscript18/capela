@@ -431,6 +431,17 @@ export class InvestigationErrorResponseDto {
 
 export class InvestigationResponseDto {
   @ApiPropertyOptional({
+    type: "array",
+    items: { type: "object", additionalProperties: true },
+    description:
+      "Archived failed research attempts, retained with their original decisions, uncertainty and budget ledger.",
+  })
+  previousResearchRuns?: {
+    research: import("@capela/shared").ResearchRun;
+    error?: { code: string; message: string };
+    failedAt?: string;
+  }[];
+  @ApiPropertyOptional({
     type: "object",
     additionalProperties: true,
     description:

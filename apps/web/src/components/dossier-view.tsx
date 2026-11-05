@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { PreviousResearchRuns } from "@/components/previous-research-runs";
 import { ResearchRunView } from "./research-run-view";
 import { DossierSummaryCard } from "@/components/dossier-summary-card";
 import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
@@ -197,6 +198,7 @@ export function DossierView({ item }: { item: ApiInvestigation }) {
         )}
       >
         <DossierSummaryCard item={item} />
+        <PreviousResearchRuns attempts={item.previousResearchRuns} />
         <ResearchRunView run={item.research} />
 
         <DossierSection id="overview" number="01" label="Molecule overview" title="Resolved chemical identity">

@@ -156,9 +156,11 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
       write({ status, "progress.message": message, ...extra });
     try {
       const legacy = this.config.get<string>("RESEARCH_PROVIDER") === "legacy";
-      const resume = !!item.research?.budget.calls;
+      const preparedRetry = !!item.retryMode;
+      const resume = item.retryMode === "saved_sources" || (!preparedRetry && !!item.research?.budget.calls);
       if (
         resume &&
+        !preparedRetry &&
         (legacy ||
           !item.molecule ||
           !canRetryExtraction(
@@ -168,7 +170,8 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
       )
         throw new ResearchError("PAID_REPLAY_BLOCKED", "Saved run is not eligible for extraction retry.");
       if (!legacy) {
-        research = resume ? parseStoredResearchRun(item.research) : this.gateway.createRun(randomUUID());
+        research =
+          resume || preparedRetry ? parseStoredResearchRun(item.research) : this.gateway.createRun(randomUUID());
         await save();
         this.gateway.assertConfigured();
         if (research.budget.capMicrousd <= 0)

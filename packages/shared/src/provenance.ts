@@ -14,7 +14,7 @@ export const SupportSpanSchema = z
   })
   .strict();
 
-// Normalize only absent optional transport metadata at the persistence boundary.
+// Normalize absent optional persisted metadata without weakening required evidence fields.
 // Keep the public schema transform-free for OpenAPI/JSON Schema generation.
 export function parseStoredResearchRun(value: unknown): ResearchRun {
   if (!value || typeof value !== "object" || Array.isArray(value)) return ResearchRunSchema.parse(value);
@@ -28,7 +28,18 @@ export function parseStoredResearchRun(value: unknown): ResearchRun {
         return normalized;
       })
     : stored.events;
-  return ResearchRunSchema.parse({ ...stored, events });
+  const decisions = Array.isArray(stored.decisions)
+    ? stored.decisions.map((decision: unknown) => {
+        if (!decision || typeof decision !== "object" || Array.isArray(decision)) return decision;
+        const normalized = { ...decision } as Record<string, unknown>;
+        for (const key of ["review", "publishedFinding", "publishedClass"])
+          if (normalized[key] === null) delete normalized[key];
+        return normalized;
+      })
+    : stored.decisions;
+  const normalized: Record<string, unknown> = { ...stored, events, decisions };
+  for (const key of ["audit", "checkpoint"] as const) if (normalized[key] === null) delete normalized[key];
+  return ResearchRunSchema.parse(normalized);
 }
 export const SourceSnapshotSchema = z
   .object({

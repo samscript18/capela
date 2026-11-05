@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Circle, ExternalLink, LoaderCircle, RotateCcw, Shield
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
+import { PreviousResearchRuns } from "@/components/previous-research-runs";
 import { ResearchRunView } from "@/components/research-run-view";
 import { DossierView } from "@/components/dossier-view";
 import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
@@ -147,6 +148,7 @@ export default function InvestigationPage() {
         </div>
       )}
 
+      <PreviousResearchRuns attempts={item.previousResearchRuns} />
       {item.research && (
         <div className="mt-6">
           <ResearchRunView run={item.research} partial={failed} />
@@ -347,7 +349,7 @@ export default function InvestigationPage() {
             {extractionRetry
               ? "Retry extraction using the saved abstracts and remaining original allowance. This makes new model calls; earlier charges and unknown-cost reservations remain counted."
               : item.research?.budget.calls
-                ? "Paid work was dispatched. Its checkpoints remain available; automatic retry is disabled to avoid duplicate charges. Review the partial record before starting a separately budgeted investigation."
+                ? "Retry uses saved abstracts when available and starts a new attempt. Previous attempts, charges and uncertain reservations remain counted. New model/tool calls may incur additional charges."
                 : "This run did not complete. You can retry after resolving its configuration or provider error."}
           </p>
           {item.error?.code && (
@@ -359,7 +361,7 @@ export default function InvestigationPage() {
             <button
               type="button"
               onClick={() => retry.mutate()}
-              disabled={retry.isPending || (!!item.research?.budget.calls && !extractionRetry)}
+              disabled={retry.isPending}
               className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#9fad7c]/35 bg-[#9fad7c] px-5 text-sm font-bold text-[#10140d] shadow-[0_10px_30px_rgba(109,126,76,.16)] transition hover:-translate-y-0.5 hover:bg-[#b4c18f] disabled:pointer-events-none disabled:opacity-50"
             >
               {retry.isPending ? <LoaderCircle size={15} className="animate-spin" /> : <RotateCcw size={15} />}

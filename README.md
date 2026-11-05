@@ -6,7 +6,7 @@
 >
 > Capela resolves a molecule, searches scientific literature, extracts reported findings, separates experiments from predictions, and returns a structured research dossier that keeps uncertainty visible.
 
-[![Orion Agents Hackathon](https://img.shields.io/badge/Orion-Agents_Hackathon-788f68?style=flat-square)](https://orionagents.org/hackathon) [![API docs](https://img.shields.io/badge/API-OpenAPI_3-788f68?style=flat-square)](#api-documentation) [![Source](https://img.shields.io/badge/Source-GitHub-222725?style=flat-square)](https://github.com/samscript18/capela)
+[![API docs](https://img.shields.io/badge/API-OpenAPI_3-788f68?style=flat-square)](#api-documentation) [![Source](https://img.shields.io/badge/Source-GitHub-222725?style=flat-square)](https://github.com/samscript18/capela)
 
 **Source code:** [github.com/samscript18/capela](https://github.com/samscript18/capela)
 

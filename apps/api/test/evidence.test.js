@@ -40,6 +40,8 @@ test("run schema exports to JSON Schema and OpenAPI models load without transfor
   assert.equal(z.toJSONSchema(ResearchRunSchema).type, "object");
   assert.doesNotThrow(() => require("../dist/openapi/openapi.models"));
   const stored = gateway().createRun("stored-fixture");
+  stored.audit = null;
+  stored.checkpoint = null;
   stored.events = [
     {
       sequence: 1,
@@ -54,6 +56,12 @@ test("run schema exports to JSON Schema and OpenAPI models load without transfor
   const loaded = parseStoredResearchRun(stored);
   assert.equal(loaded.events[0].provider, undefined);
   assert.equal(stored.events[0].provider, null);
+  assert.equal(loaded.audit, undefined);
+  assert.equal(loaded.checkpoint, undefined);
+  assert.equal(stored.audit, null);
+  assert.equal(stored.checkpoint, null);
+  assert.throws(() => parseStoredResearchRun({ ...stored, audit: "malformed" }));
+  assert.throws(() => parseStoredResearchRun({ ...stored, checkpoint: 123 }));
   stored.events[0].sequence = null;
   assert.throws(() => parseStoredResearchRun(stored));
 });
@@ -93,7 +101,7 @@ test("explicit hosted search bounds tools and uses actual tool sources, not mode
   assert.equal(result.results[0].url, "https://pubmed.ncbi.nlm.nih.gov/12345/");
   assert.equal(result.results[0].snippet, "");
   assert.equal(r.events[0].toolCallId, "otari_ws_test");
-  assert.equal(r.budget.reservedMicrousd, 12000);
+  assert.equal(r.budget.reservedMicrousd, 60000);
   assert.equal(r.models.extraction, undefined);
 });
 test("a budget refusal embedded in malformed HTTP-200 tool output is terminal", async (t) => {
@@ -217,7 +225,7 @@ test("length-limited assistant text does not discard completed search metadata o
   ]);
   assert.equal(calls, 1);
   assert.equal(persisted.budget.calls, 1);
-  assert.equal(persisted.budget.reservedMicrousd, 12000);
+  assert.equal(persisted.budget.reservedMicrousd, 60000);
   assert.equal(persisted.events[0].status, "completed");
   assert.equal(persisted.events[0].requestId, "req_completed_search_fixture");
   assert.equal(persisted.events[0].toolCallId, "otari_ws_test");
@@ -301,7 +309,7 @@ test("empty executed search is valid insufficiency; too-small mixed-tool reserva
     r = g.createRun("test");
   assert.deepEqual(await hostedScientificSearch(g, { preferredName: "curcumin" }, r, async () => {}), { results: [] });
   const limited = g.createRun("limited");
-  limited.budget.capMicrousd = 11999;
+  limited.budget.capMicrousd = 59999;
   await assert.rejects(
     hostedScientificSearch(g, { preferredName: "curcumin" }, limited, async () => {}),
     { code: "RUN_BUDGET_EXHAUSTED" },
@@ -1208,4 +1216,50 @@ test("minimal role bounds are explicit and invalid bounds cannot dispatch", asyn
     { code: "OTARI_CONFIGURATION" },
   );
   assert.equal(calls, 1);
+});
+
+test("settled cost above an estimate does not exhaust a funded run; later dispatch still checks total allowance", async (t) => {
+  const g = gateway(),
+    run = g.createRun("estimate-overrun");
+  run.budget.capMicrousd = 20000000;
+  let calls = 0;
+  t.mock.method(global, "fetch", async () => {
+    calls++;
+    return Response.json({ usage: { cost_usd: calls === 1 ? "0.057036" : "0.000001" } });
+  });
+  await g.request("/chat/completions", {}, "scientific_search_tool", run, async () => {}, 12000);
+  assert.equal(run.budget.reportedMicrousd, 57036);
+  assert.equal(run.budget.reservedMicrousd, 0);
+  assert.equal(run.budget.terminal, false);
+  assert.match(run.limitations.at(-1), /exceeded its estimated reservation/);
+  await g.request("/mcp/execute", {}, "publication_metadata", run, async () => {});
+  assert.equal(calls, 2);
+  assert.equal(run.budget.reportedMicrousd, 57037);
+  run.budget.capMicrousd = 57038;
+  await assert.rejects(
+    g.request("/chat/completions", {}, "extraction", run, async () => {}),
+    { code: "RUN_BUDGET_EXHAUSTED" },
+  );
+  assert.equal(calls, 2);
+});
+
+test("settled charges that consume the actual run cap remain terminal", async (t) => {
+  for (const cap of [57036, 50000]) {
+    const g = gateway(),
+      run = g.createRun("actual-exhaustion");
+    run.budget.capMicrousd = cap;
+    let calls = 0;
+    t.mock.method(global, "fetch", async () => {
+      calls++;
+      return Response.json({ usage: { cost_usd: "0.057036" } });
+    });
+    await g.request("/chat/completions", {}, "scientific_search_tool", run, async () => {}, 12000);
+    assert.equal(run.budget.terminal, true);
+    assert.equal(run.budget.reportedMicrousd, 57036);
+    await assert.rejects(
+      g.request("/mcp/servers/test/tools", undefined, "mcp_discovery", run, async () => {}),
+      { code: "RUN_BUDGET_EXHAUSTED" },
+    );
+    assert.equal(calls, 1);
+  }
 });

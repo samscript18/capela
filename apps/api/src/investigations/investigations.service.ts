@@ -1,4 +1,5 @@
-import { ACTIVE_INVESTIGATION_STATUSES, canRetryExtraction } from "@capela/shared";
+import { randomUUID } from "node:crypto";
+import { ACTIVE_INVESTIGATION_STATUSES, parseStoredResearchRun } from "@capela/shared";
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectModel } from "@nestjs/mongoose";
@@ -173,30 +174,78 @@ export class InvestigationsService {
 
     const paidRetry = !!failed.research?.budget.calls;
     const reservation = Number(this.config.get<string>("OTARI_CALL_RESERVATION_MICROUSD") || 10000);
-    const remaining = failed.research
-      ? failed.research.budget.capMicrousd -
-        failed.research.budget.reportedMicrousd -
-        failed.research.budget.reservedMicrousd
-      : 0;
-    const resumable =
-      paidRetry &&
-      failed.molecule &&
-      canRetryExtraction(
-        failed.research,
-        (failed.papers ?? []).map((p) => String(p.id)),
-      ) &&
-      Number.isSafeInteger(reservation) &&
-      reservation > 0 &&
-      remaining >= (failed.papers.length + 1) * reservation + Math.max(10000, reservation);
-    if (paidRetry && !resumable)
-      throw new HttpException(
-        {
-          code: "PAID_REPLAY_BLOCKED",
-          message:
-            "This attempt dispatched paid work and has no safe extraction retry within its remaining allowance. Saved work is retained; interrupted calls and spending denials cannot be replayed.",
-        },
-        HttpStatus.CONFLICT,
+    let retryResearch: import("@capela/shared").ResearchRun | undefined;
+    let retryMode: "saved_sources" | "restart" | undefined;
+    if (paidRetry) {
+      let prior: import("@capela/shared").ResearchRun;
+      try {
+        prior = parseStoredResearchRun(failed.research);
+      } catch {
+        throw new HttpException(
+          {
+            code: "INVALID_STORED_RUN",
+            message: "Saved budget data could not be validated; retry cannot discard prior charges.",
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+      const configuredCap = Number(this.config.get<string>("OTARI_RUN_BUDGET_MICROUSD") ?? prior.budget.capMicrousd);
+      const spendingDenied = /SPENDING_DENIED|BUDGET_DENIED|INSUFFICIENT_FUNDS|PRICING_REQUIRED/.test(
+        failed.error?.code ?? "",
       );
+      if (
+        !Number.isSafeInteger(configuredCap) ||
+        configuredCap <= 0 ||
+        configuredCap > 100000000 ||
+        !Number.isSafeInteger(reservation) ||
+        reservation <= 0 ||
+        reservation > 100000000 ||
+        (spendingDenied && configuredCap <= prior.budget.capMicrousd)
+      )
+        throw new HttpException(
+          {
+            code: "RETRY_BUDGET_REQUIRED",
+            message:
+              "Configure a positive run allowance. After a hosted spending denial, raise the authorized allowance and resolve the hosted limit before retrying.",
+          },
+          HttpStatus.CONFLICT,
+        );
+      const cap = configuredCap;
+      const savedSources =
+        !!failed.molecule &&
+        !!failed.papers?.length &&
+        failed.papers.every((p) => prior.snapshots.some((source) => source.paperId === String(p.id)));
+      const needed = savedSources
+        ? (failed.papers.length + 1) * reservation + Math.max(10000, reservation)
+        : Math.max(60000, reservation) + 3 * reservation + Math.max(10000, reservation);
+      if (cap - prior.budget.reportedMicrousd - prior.budget.reservedMicrousd < needed)
+        throw new HttpException(
+          {
+            code: "RETRY_BUDGET_REQUIRED",
+            message:
+              "The remaining allowance cannot fund a retry. Increase the configured run allowance; previous charges and uncertain reservations remain counted.",
+          },
+          HttpStatus.CONFLICT,
+        );
+      retryMode = savedSources ? "saved_sources" : "restart";
+      retryResearch = {
+        ...prior,
+        runId: randomUUID(),
+        snapshots: savedSources ? prior.snapshots : [],
+        decisions: [],
+        events: [],
+        models: { distinct: false },
+        budget: { ...prior.budget, capMicrousd: cap, maxCalls: prior.budget.calls + 16, terminal: false },
+        dispatchUncertain: false,
+        limitations: [
+          ...prior.limitations,
+          "Explicit retry: prior attempts and all reported charges/unknown reservations are retained. New calls may incur additional charges.",
+        ],
+      };
+      // Mixed BSON fields can turn explicit undefined into null. Omit cleared fields entirely.
+      delete retryResearch.checkpoint;
+      delete retryResearch.audit;
+    }
 
     if (failed.access.type === "free") {
       const activeFree = await this.investigations.exists({
@@ -215,23 +264,33 @@ export class InvestigationsService {
     try {
       const retried = await this.investigations
         .findOneAndUpdate(
-          { _id: failed._id, userId: user._id, status: "failed" },
+          {
+            _id: failed._id,
+            userId: user._id,
+            status: "failed",
+            ...(failed.updatedAt ? { updatedAt: failed.updatedAt } : {}),
+          },
           {
             $set: {
               status: "queued",
               progress: { message: "Investigation queued for retry" },
-              ...(paidRetry && failed.research
-                ? {
-                    [`research.events.${failed.research.events.length - 1}.code`]: /^[A-Z_]{1,100}$/.test(
-                      failed.error?.code ?? "",
-                    )
-                      ? failed.error!.code
-                      : "EXTRACTION_VALIDATION_FAILED",
-                  }
-                : {}),
+              ...(retryResearch ? { research: retryResearch, retryMode } : {}),
               ...(failed.access.type === "free" ? { activeFreeSlot: true } : {}),
             },
+            ...(retryResearch
+              ? {
+                  $push: {
+                    previousResearchRuns: {
+                      research: failed.research,
+                      error: failed.error,
+                      failedAt: failed.updatedAt,
+                    },
+                  },
+                }
+              : {}),
             $unset: {
+              ...(!retryResearch ? { retryMode: 1 } : {}),
+              ...(retryMode === "restart" ? { molecule: 1, papers: 1 } : {}),
               ...(!paidRetry ? { molecule: 1, papers: 1, research: 1 } : {}),
               paperEvidence: 1,
               evidence: 1,

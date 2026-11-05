@@ -76,7 +76,7 @@ export async function hostedScientificSearch(
     "scientific_search_tool",
     run,
     save,
-    Math.max(12000, gateway.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000)),
+    Math.max(60000, gateway.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000)),
   );
   // Tool refusals may arrive inside HTTP 200; they must still stop spending.
   const errors = Array.isArray(data.otari_tool_calls) ? data.otari_tool_calls.slice(0, 100) : [];

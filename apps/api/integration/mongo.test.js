@@ -123,7 +123,7 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
   assert.equal(saved.status, "failed");
   assert.equal(saved.error.code, "RUN_INTERRUPTED");
   assert.equal(saved.research.snapshots[0].id, "persisted-source");
-  await assert.rejects(service.retry("fixture-owner", stale.id), /dispatched paid work/);
+  await assert.rejects(service.retry("fixture-owner", stale.id), /Saved budget data/);
   const outsider = new InvestigationsService(
     Model,
     { ensureUser: async () => ({ _id: new mongoose.Types.ObjectId() }) },
@@ -133,6 +133,66 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
   );
   await assert.rejects(outsider.get("other-owner", stale.id), /not found/);
   await assert.rejects(outsider.cancel("other-owner", stale.id), /not found/);
+  await t.test("explicit retry is atomic in Mongo and preserves the previous run and all charges", async () => {
+    const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+    const { snapshot } = require("../dist/research/provenance");
+    const run = new OtariGatewayService({ get: () => undefined }).createRun("failed-attempt");
+    run.budget.capMicrousd = 100000;
+    run.budget.calls = 4;
+    run.budget.reservedMicrousd = 10000;
+    run.budget.reportedMicrousd = 400;
+    run.budget.unknownCostCalls = 1;
+    run.dispatchUncertain = true;
+    run.audit = null;
+    run.checkpoint = null;
+    run.snapshots = [snapshot("123", "https://pubmed.ncbi.nlm.nih.gov/123/", "Synthetic abstract.")];
+    const failed = await Model.create({
+      userId: owner,
+      originalInput: "retry fixture",
+      access: { type: "free" },
+      status: "failed",
+      research: run,
+      molecule: { preferredName: "fixture" },
+      papers: [{ id: "123" }],
+      error: { code: "OTARI_UPSTREAM_TIMEOUT", message: "Fixture timeout" },
+    });
+    let launches = 0;
+    const retries = new InvestigationsService(
+      Model,
+      users,
+      { get: (k) => (k === "OTARI_RUN_BUDGET_MICROUSD" ? "20000000" : undefined) },
+      {
+        run: async () => {
+          launches++;
+        },
+      },
+      {},
+    );
+    const results = await Promise.allSettled([retries.retry("owner", failed.id), retries.retry("owner", failed.id)]);
+    assert.equal(results.filter((r) => r.status === "fulfilled").length, 1);
+    assert.equal(launches, 1);
+    const queued = await Model.findById(failed.id).lean();
+    assert.equal(queued.status, "queued");
+    assert.equal(queued.retryMode, "saved_sources");
+    assert.equal(Object.hasOwn(queued.research, "audit"), false);
+    assert.equal(Object.hasOwn(queued.research, "checkpoint"), false);
+    assert.equal(queued.previousResearchRuns.length, 1);
+    assert.equal(queued.previousResearchRuns[0].research.runId, run.runId);
+    assert.equal(queued.previousResearchRuns[0].research.dispatchUncertain, true);
+    assert.equal(queued.research.budget.reportedMicrousd, 400);
+    assert.equal(queued.research.budget.reservedMicrousd, 10000);
+    assert.equal(queued.research.budget.calls, 4);
+    assert.equal(queued.research.budget.capMicrousd, 20000000);
+    const other = new InvestigationsService(
+      Model,
+      { ensureUser: async () => ({ _id: new mongoose.Types.ObjectId() }) },
+      {},
+      {},
+      {},
+    );
+    await assert.rejects(other.retry("outsider", failed.id), /not found/);
+    await Model.deleteOne({ _id: failed._id });
+  });
   await t.test(
     "complete hosted-path runner with mocked Otari persists source before inference and stops on denial",
     async (sub) => {

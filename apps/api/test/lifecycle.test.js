@@ -81,7 +81,7 @@ test("paid attempts cannot reset budget or snapshots on retry", async () => {
       return query({});
     },
   });
-  await assert.rejects(s.retry("verified-owner", new Types.ObjectId().toString()), /dispatched paid work/);
+  await assert.rejects(s.retry("verified-owner", new Types.ObjectId().toString()), /Saved budget data/);
   assert.equal(writes, 0);
 });
 test("explicit extraction retry retains sources and budget, is owner-scoped and atomically queues", async () => {
@@ -91,8 +91,17 @@ test("explicit extraction retry retains sources and budget, is owner-scoped and 
   run.budget.capMicrousd = 100000;
   run.budget.reservedMicrousd = 10000;
   run.budget.calls = 4;
-  run.snapshots = [{ paperId: "123" }];
-  run.events = [{ operation: "extraction", status: "completed" }];
+  const { snapshot } = require("../dist/research/provenance");
+  run.snapshots = [snapshot("123", "https://pubmed.ncbi.nlm.nih.gov/123/", "Synthetic abstract.")];
+  run.events = [
+    {
+      sequence: 1,
+      at: new Date().toISOString(),
+      correlationId: "fixture",
+      operation: "extraction",
+      status: "completed",
+    },
+  ];
   assert.equal(canRetryExtraction(run, ["123"]), true);
   for (const altered of [
     { ...run, dispatchUncertain: true },
@@ -124,7 +133,8 @@ test("explicit extraction retry retains sources and budget, is owner-scoped and 
   assert.equal(filter.status, "failed");
   assert.deepEqual(filter.userId, user._id);
   for (const field of ["research", "molecule", "papers"]) assert.equal(update.$unset[field], undefined);
-  assert.equal(update.$set.research, undefined);
+  assert.notEqual(update.$set.research.runId, run.runId);
+  assert.deepEqual(update.$push.previousResearchRuns.research, run);
   assert.equal(run.budget.calls, 4);
   assert.equal(run.budget.reservedMicrousd, 10000);
   run.budget.reservedMicrousd = 95000;
@@ -241,9 +251,13 @@ test("resumed extraction reuses the original run and budget without repeating re
         assert.deepEqual(papers, [paper]);
         assert.deepEqual(resolved, molecule);
         assert.equal(retained.runId, "original-run");
-        assert.equal(retained.events[0].provider, undefined);
-        assert.equal(retained.events[0].model, undefined);
-        assert.equal(retained.events[0].upstreamCode, undefined);
+        if (!item.retryMode) {
+          assert.equal(retained.events[0].provider, undefined);
+          assert.equal(retained.events[0].model, undefined);
+          assert.equal(retained.events[0].upstreamCode, undefined);
+        } else {
+          assert.deepEqual(retained.events, []);
+        }
         assert.equal(retained.budget.calls, 4);
         assert.equal(retained.budget.reservedMicrousd, 10000);
         throw new ResearchError("FIXTURE_STOP", "Stop before new spending.");
@@ -253,10 +267,205 @@ test("resumed extraction reuses the original run and budget without repeating re
   );
   await runner.run("fixture-investigation");
   assert.equal(extracted, 1);
+  item.retryMode = "saved_sources";
+  run.events = [];
+  await runner.run("fixture-investigation");
+  assert.equal(extracted, 2, "a prepared retry reuses sources even without the narrow extraction-failure predicate");
 });
 
 test("legacy record arrays need no synthetic provenance or review history", () => {
   const legacy = { evidence: [{ id: "old", finding: "Historical record" }], dossier: { generatedAt: "2020-01-01" } };
   assert.equal(legacy.research, undefined);
   assert.equal(legacy.evidence[0].provenance, undefined);
+});
+
+test("explicit retry after timeout archives prior decisions and keeps unknown charges while reusing sources", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { snapshot } = require("../dist/research/provenance");
+  const run = new OtariGatewayService({ get: () => undefined }).createRun("old-attempt");
+  run.snapshots = [snapshot("123", "https://pubmed.ncbi.nlm.nih.gov/123/", "Synthetic abstract.")];
+  run.checkpoint = "extracting";
+  run.audit = {
+    version: "old-audit",
+    programHash: "old-hash",
+    valid: false,
+    accepted: 0,
+    sources: 0,
+    distribution: {},
+    invalidIds: [],
+    remote: true,
+  };
+  run.dispatchUncertain = true;
+  run.decisions = [
+    {
+      candidate: {
+        id: "c1",
+        paperId: "123",
+        snapshotId: run.snapshots[0].id,
+        snapshotHash: run.snapshots[0].hash,
+        analyzedSource: "abstract",
+        finding: "Synthetic finding",
+        proposedClass: "insufficient",
+        kind: "activity",
+        studyType: "other",
+        model: null,
+        measuredOutcome: null,
+        label: "Synthetic",
+        relationship: null,
+        spans: [
+          {
+            blockId: "abstract",
+            quote: "Synthetic abstract.",
+            start: 0,
+            end: 18,
+            convention: "utf16-zero-based-end-exclusive",
+          },
+        ],
+      },
+      review: null,
+      status: "rejected",
+      reason: "Fixture unsupported claim",
+      publishedFinding: null,
+      publishedClass: null,
+    },
+  ];
+  run.budget = {
+    ...run.budget,
+    capMicrousd: 50000,
+    calls: 5,
+    reportedMicrousd: 5000,
+    reservedMicrousd: 10000,
+    unknownCostCalls: 1,
+  };
+  const record = {
+    _id: new Types.ObjectId(),
+    status: "failed",
+    molecule: {},
+    papers: [{ id: "123" }],
+    research: run,
+    access: { type: "free" },
+    updatedAt: new Date(),
+    error: { code: "OTARI_UPSTREAM_TIMEOUT", message: "Timeout" },
+  };
+  let update,
+    filter,
+    launched = 0;
+  const model = {
+    findOne: () => query(record),
+    exists: async () => false,
+    findOneAndUpdate: (f, u) => {
+      filter = f;
+      update = u;
+      return query({ ...record, ...u.$set, id: record._id.toString() });
+    },
+  };
+  const config = { get: (k) => (k === "OTARI_RUN_BUDGET_MICROUSD" ? "20000000" : undefined) };
+  const s = new InvestigationsService(
+    model,
+    { ensureUser: async () => user },
+    config,
+    {
+      run: async () => {
+        launched++;
+      },
+    },
+    {},
+  );
+  await s.retry("owner", record._id.toString());
+  assert.equal(launched, 1);
+  assert.deepEqual(filter.userId, user._id);
+  assert.deepEqual(filter.updatedAt, record.updatedAt);
+  assert.equal(update.$set.retryMode, "saved_sources");
+  const next = update.$set.research;
+  assert.equal(Object.hasOwn(next, "audit"), false);
+  assert.equal(Object.hasOwn(next, "checkpoint"), false);
+  assert.notEqual(next.runId, run.runId);
+  assert.deepEqual(next.snapshots, run.snapshots);
+  assert.deepEqual(update.$push.previousResearchRuns.research, run);
+  for (const key of ["calls", "reportedMicrousd", "reservedMicrousd", "unknownCostCalls"])
+    assert.equal(next.budget[key], run.budget[key]);
+  assert.equal(next.budget.capMicrousd, 20000000);
+  assert.equal(next.budget.maxCalls, 21);
+  assert.equal(next.dispatchUncertain, false);
+  assert.equal(run.dispatchUncertain, true);
+  assert.equal(update.$unset.molecule, undefined);
+  assert.equal(update.$unset.papers, undefined);
+  record.research = { ...run, budget: { ...run.budget, capMicrousd: 20000000, terminal: true } };
+  record.error.code = "OTARI_BUDGET_DENIED";
+  await assert.rejects(s.retry("owner", record._id.toString()), /hosted limit/);
+  record.error.code = "OTARI_PROVIDER_ERROR";
+  record.research.budget.reservedMicrousd = 19995000;
+  await assert.rejects(s.retry("owner", record._id.toString()), /remaining allowance/);
+});
+
+test("retry without canonical abstracts restarts retrieval and retains the original ledger", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const run = new OtariGatewayService({ get: () => undefined }).createRun("old-search");
+  run.budget.capMicrousd = 200000;
+  run.budget.calls = 1;
+  run.budget.reservedMicrousd = 10000;
+  run.dispatchUncertain = true;
+  const record = {
+    _id: new Types.ObjectId(),
+    status: "failed",
+    access: { type: "free" },
+    research: run,
+    papers: [],
+    error: { code: "OTARI_MCP_UNAVAILABLE", message: "Unavailable" },
+  };
+  let update;
+  const s = service({
+    findOne: () => query(record),
+    exists: async () => false,
+    findOneAndUpdate: (_, u) => {
+      update = u;
+      return query({ ...record, ...u.$set, id: record._id.toString() });
+    },
+  });
+  await s.retry("owner", record._id.toString());
+  assert.equal(update.$set.retryMode, "restart");
+  assert.equal(update.$unset.papers, 1);
+  assert.equal(update.$set.research.budget.reservedMicrousd, 10000);
+  assert.deepEqual(update.$push.previousResearchRuns.research, run);
+});
+
+test("prepared retrieval restart carries cumulative budget instead of creating a new allowance", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { ResearchError } = require("../dist/research/provenance");
+  const gateway = new OtariGatewayService({ get: (k) => (k === "OTARI_API_KEY" ? "fixture-only" : undefined) });
+  const research = gateway.createRun("retry-attempt");
+  research.budget.capMicrousd = 100000;
+  research.budget.calls = 6;
+  research.budget.reservedMicrousd = 15000;
+  const item = { retryMode: "restart", research, papers: [], progress: {} };
+  const model = { findOneAndUpdate: () => query(item), updateOne: () => query({ matchedCount: 1 }) };
+  let searched = 0;
+  gateway.createRun = () => {
+    throw new Error("Retry must not create a separate allowance");
+  };
+  const runner = new InvestigationRunnerService(
+    model,
+    { resolve: async () => ({ preferredName: "fixture" }) },
+    {},
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    gateway,
+    {
+      search: async (_, retained) => {
+        searched++;
+        assert.equal(retained.runId, "retry-attempt");
+        assert.equal(retained.budget.calls, 6);
+        assert.equal(retained.budget.reservedMicrousd, 15000);
+        throw new ResearchError("FIXTURE_STOP", "Stop before spending");
+      },
+    },
+    {},
+    { get: () => undefined },
+  );
+  await runner.run("fixture-investigation");
+  assert.equal(searched, 1);
 });

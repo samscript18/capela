@@ -11,6 +11,11 @@ import type {
 } from "@capela/shared";
 
 export type ApiInvestigation = {
+  previousResearchRuns?: {
+    research: import("@capela/shared").ResearchRun;
+    error?: { code: string; message: string };
+    failedAt?: string;
+  }[];
   research?: import("@capela/shared").ResearchRun;
   _id: string;
   originalInput: string;

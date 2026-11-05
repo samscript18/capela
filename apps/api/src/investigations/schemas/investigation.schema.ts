@@ -39,6 +39,13 @@ export class Investigation {
   @Prop({ type: Boolean }) activeFreeSlot?: boolean;
   @Prop({ type: MongooseSchema.Types.Mixed }) error?: { code: string; message: string };
   @Prop({ type: MongooseSchema.Types.Mixed }) research?: import("@capela/shared").ResearchRun;
+  @Prop({ type: [MongooseSchema.Types.Mixed], default: [] })
+  previousResearchRuns!: {
+    research: import("@capela/shared").ResearchRun;
+    error?: { code: string; message: string };
+    failedAt?: Date;
+  }[];
+  @Prop({ type: String, enum: ["saved_sources", "restart"] }) retryMode?: "saved_sources" | "restart";
   @Prop() leaseToken?: string;
   @Prop() leaseExpiresAt?: Date;
   @Prop({ default: 0 }) attempt!: number;

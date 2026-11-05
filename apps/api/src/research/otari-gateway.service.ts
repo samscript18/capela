@@ -170,7 +170,11 @@ export class OtariGatewayService {
         run.budget.reservedMicrousd -= amount;
         run.budget.reportedMicrousd += cost;
         event.costMicrousd = cost;
-        if (cost > amount || run.budget.reportedMicrousd + run.budget.reservedMicrousd > run.budget.capMicrousd)
+        if (cost > amount)
+          run.limitations.push(
+            `Reported ${operation} cost exceeded its estimated reservation (${cost} versus ${amount} USD microdollars). The actual charge is counted against the run allowance.`,
+          );
+        if (run.budget.reportedMicrousd + run.budget.reservedMicrousd >= run.budget.capMicrousd)
           run.budget.terminal = true;
       } else if (paid) run.budget.unknownCostCalls += 1;
       run.dispatchUncertain = false;
