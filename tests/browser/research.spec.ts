@@ -39,3 +39,30 @@ test("inspection is keyboard reachable and fits a mobile viewport", async ({ pag
   await expect(page.getByRole("button", { name: "Partial", exact: true })).toBeFocused();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test("hybrid review visibly distinguishes direct Vertex billing and Otari capability evidence", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Hybrid", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("direct Vertex AI review");
+  await expect(page.getByRole("status")).toContainText("billed by Google");
+  await expect(page.getByRole("status")).toContainText("This review ran outside Otari.");
+  await page.getByRole("button", { name: "Completed", exact: true }).click();
+  await expect(page.getByText("Hybrid investigation:", { exact: false })).toHaveCount(0);
+});
+
+test("evidence phase distinguishes Otari review from Vertex review", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("evidence-phase")).toHaveText("Reviewing extracted evidence");
+  await page.getByRole("button", { name: "Hybrid", exact: true }).click();
+  await expect(page.getByTestId("evidence-phase")).toHaveText("Reviewing evidence with Vertex AI");
+});
+
+test("Vertex technical diagnostics label Google response and safe finish metadata", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Hybrid", exact: true }).click();
+  await page.getByText("Technical run view", { exact: true }).click();
+  await expect(page.getByText(/Vertex response synthetic-vertex-response/)).toBeVisible();
+  await expect(page.getByText(/finish STOP/)).toBeVisible();
+  await expect(page.getByText(/123 output tokens/)).toBeVisible();
+  await expect(page.getByText(/17 thinking tokens/)).toBeVisible();
+});

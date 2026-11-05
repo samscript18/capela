@@ -142,6 +142,7 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
         extraction: "Extracting candidate claims from stored abstracts",
         review: "Reviewing source support and overstatement",
         sandbox_audit: "Auditing accepted evidence in the hosted sandbox",
+        vertex_review: "Reviewing saved evidence through Vertex AI",
         publication_metadata: "Retrieving canonical publication metadata via hosted MCP",
         scientific_search: "Searching scientific literature through Otari",
       };
@@ -283,6 +284,11 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
                 upstreamCode: failedEvent.upstreamCode,
                 requestId: failedEvent.requestId,
                 correlationId: failedEvent.correlationId,
+                finishReason: failedEvent.finishReason,
+                blockReason: failedEvent.blockReason,
+                outputCharacters: failedEvent.outputCharacters,
+                outputTokens: failedEvent.outputTokens,
+                thoughtTokens: failedEvent.thoughtTokens,
               })}`
             : ""),
       );

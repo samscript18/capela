@@ -469,3 +469,121 @@ test("prepared retrieval restart carries cumulative budget instead of creating a
   await runner.run("fixture-investigation");
   assert.equal(searched, 1);
 });
+
+test("retry of a timed-out review preserves extraction and routes directly to explicitly enabled Vertex", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { snapshot } = require("../dist/research/provenance");
+  const source = snapshot("123", "https://pubmed.ncbi.nlm.nih.gov/123/", "Synthetic abstract.");
+  const run = new OtariGatewayService({ get: () => undefined }).createRun("timed-out-review");
+  run.snapshots = [source];
+  run.checkpoint = "extracted";
+  run.models = { extraction: "actual-fixture-extractor", distinct: false };
+  run.budget = { ...run.budget, capMicrousd: 20000000, calls: 4, reservedMicrousd: 10000, unknownCostCalls: 1 };
+  run.dispatchUncertain = true;
+  run.events = [
+    {
+      sequence: 1,
+      at: new Date().toISOString(),
+      operation: "review",
+      status: "failed",
+      correlationId: "fixture",
+      code: "OTARI_UPSTREAM_TIMEOUT",
+      httpStatus: 504,
+    },
+  ];
+  run.decisions = [
+    {
+      candidate: {
+        id: "candidate",
+        paperId: "123",
+        snapshotId: source.id,
+        snapshotHash: source.hash,
+        analyzedSource: "abstract",
+        finding: "Synthetic finding",
+        proposedClass: "insufficient",
+        kind: "activity",
+        studyType: "other",
+        model: null,
+        measuredOutcome: null,
+        label: "Fixture",
+        relationship: null,
+        spans: [
+          {
+            blockId: "abstract",
+            quote: source.text,
+            start: 0,
+            end: source.text.length,
+            convention: "utf16-zero-based-end-exclusive",
+          },
+        ],
+      },
+      status: "unresolved",
+      reason: "Awaiting review",
+    },
+  ];
+  const record = {
+    _id: new Types.ObjectId(),
+    status: "failed",
+    access: { type: "free" },
+    molecule: {},
+    papers: [{ id: "123" }],
+    research: run,
+    error: { code: "OTARI_UPSTREAM_TIMEOUT", message: "Review timed out" },
+  };
+  let update;
+  const service = new InvestigationsService(
+    {
+      findOne: () => query(record),
+      exists: async () => false,
+      findOneAndUpdate: (_, u) => {
+        update = u;
+        return query({ ...record, ...u.$set, id: record._id.toString() });
+      },
+    },
+    { ensureUser: async () => user },
+    { get: (key) => (key === "OTARI_REVIEW_FALLBACK" ? "vertex" : undefined) },
+    { run: async () => {} },
+    {},
+  );
+  await service.retry("owner", record._id.toString());
+  const next = update.$set.research;
+  assert.equal(next.checkpoint, "extracted");
+  assert.equal(next.reviewRoute, "vertex");
+  assert.deepEqual(next.decisions, run.decisions);
+  assert.deepEqual(next.events, run.events);
+  assert.equal(next.models.extraction, run.models.extraction);
+  assert.equal(next.budget.reservedMicrousd, 10000);
+  assert.equal(update.$unset.papers, undefined);
+  assert.equal(update.$set.retryMode, "saved_sources");
+});
+
+test("local API boot reads new root env flags without relying on an older dev parent environment", async () => {
+  const { apiEnvironmentFiles } = require("../dist/config/environment");
+  const { ConfigModule, ConfigService } = require("@nestjs/config");
+  const fs = require("node:fs/promises"),
+    path = require("node:path"),
+    os = require("node:os");
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "capela-env-test-"));
+  const previous = process.env.OTARI_REVIEW_FALLBACK;
+  try {
+    const files = apiEnvironmentFiles(path.join(root, "apps/api/dist"), "development");
+    assert.equal(files[0], path.join(root, ".env.local"));
+    assert.deepEqual(apiEnvironmentFiles(path.join(root, "apps/api/src"), "development"), files);
+    assert.deepEqual(apiEnvironmentFiles(path.join(root, "apps/api/dist"), "production"), [".env"]);
+    await fs.writeFile(files[0], "OTARI_REVIEW_FALLBACK=vertex\n");
+    delete process.env.OTARI_REVIEW_FALLBACK;
+    await ConfigModule.forRoot({ envFilePath: [files[0]] });
+    assert.equal(new ConfigService().get("OTARI_REVIEW_FALLBACK"), "vertex");
+    process.env.OTARI_REVIEW_FALLBACK = "disabled-by-owner";
+    await ConfigModule.forRoot({ envFilePath: [files[0]] });
+    assert.equal(
+      new ConfigService().get("OTARI_REVIEW_FALLBACK"),
+      "disabled-by-owner",
+      "explicit process config still takes priority",
+    );
+  } finally {
+    if (previous === undefined) delete process.env.OTARI_REVIEW_FALLBACK;
+    else process.env.OTARI_REVIEW_FALLBACK = previous;
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});

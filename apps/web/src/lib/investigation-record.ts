@@ -72,6 +72,17 @@ export function formatInvestigationStatus(status: InvestigationStatus) {
     .join(" ");
 }
 
+export function evidenceStageLabel(run?: import("@capela/shared").ResearchRun) {
+  const operation = run?.events
+    .slice()
+    .reverse()
+    .find((event) => ["extraction", "review", "vertex_review"].includes(event.operation))?.operation;
+  if (operation === "vertex_review") return "Reviewing evidence with Vertex AI";
+  if (operation === "review") return "Reviewing extracted evidence";
+  if (run?.checkpoint === "extracted") return "Preparing evidence review";
+  return "Extracting structured evidence";
+}
+
 export function formatAccessType(type: ApiInvestigation["access"]["type"]) {
   return `${type.charAt(0).toUpperCase()}${type.slice(1)} access`;
 }

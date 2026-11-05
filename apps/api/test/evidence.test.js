@@ -1263,3 +1263,424 @@ test("settled charges that consume the actual run cap remain terminal", async (t
     assert.equal(calls, 1);
   }
 });
+
+const { VertexReviewService } = require("../dist/research/vertex-review.service");
+const { ResearchError } = require("../dist/research/provenance");
+const { REVIEW_PROMPT } = require("../dist/research/otari-evidence.service");
+function vertexReviewer(response) {
+  const service = new VertexReviewService({
+    get: (k) =>
+      ({ OTARI_REVIEW_FALLBACK: "vertex", GOOGLE_CLOUD_API_KEY: "fixture-only-key", GEMINI_MODEL: "gemini-3.8-flash" })[
+        k
+      ],
+  });
+  service.client = { models: { generateContent: response } };
+  return service;
+}
+test("explicit Vertex fallback is transient-only and cannot bypass budgets, guardrails or invalid scientific output", async () => {
+  const run = gateway().createRun("fixture");
+  const v = vertexReviewer(async () => {
+    throw new Error("Must not dispatch");
+  });
+  for (const code of [
+    "OTARI_BUDGET_DENIED",
+    "RUN_BUDGET_EXHAUSTED",
+    "OTARI_INSUFFICIENT_FUNDS",
+    "OTARI_GUARDRAIL_BLOCKED",
+    "OTARI_INVALID_JSON",
+    "INVALID_RESEARCH_SCHEMA",
+  ])
+    assert.equal(v.canFallback(new ResearchError(code, "Fixture"), run), false);
+  assert.equal(v.canFallback(new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Fixture"), run), true);
+  run.budget.terminal = true;
+  assert.equal(v.canFallback(new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Fixture"), run), false);
+  const disabled = new VertexReviewService({ get: () => undefined });
+  await assert.rejects(
+    disabled.review("", {}, run, async () => {}, 2000),
+    { code: "VERTEX_NOT_CONFIGURED" },
+  );
+});
+test("Vertex review preserves the Otari uncertain reservation, reserves external cost, and records observed identity", async () => {
+  const { r } = fixture();
+  const run = gateway().createRun("fixture");
+  run.budget.reservedMicrousd = 10000;
+  run.budget.unknownCostCalls = 1;
+  run.budget.calls = 1;
+  run.dispatchUncertain = true;
+  run.models.extraction = "fixture-extractor";
+  run.events = [
+    {
+      sequence: 1,
+      at: new Date().toISOString(),
+      operation: "review",
+      status: "failed",
+      correlationId: "prior-timeout",
+      code: "OTARI_UPSTREAM_TIMEOUT",
+      httpStatus: 504,
+    },
+  ];
+  let calls = 0,
+    saves = 0;
+  const v = vertexReviewer(async (request) => {
+    calls++;
+    assert.equal(request.config.systemInstruction, REVIEW_PROMPT);
+    assert.equal(request.config.maxOutputTokens, 2000);
+    assert.deepEqual(request.config.httpOptions.retryOptions, { attempts: 1 });
+    assert.deepEqual(JSON.parse(request.contents).claims, ["immutable-fixture"]);
+    assert.ok(saves > 0);
+    return {
+      candidates: [{ finishReason: "STOP" }],
+      modelVersion: "gemini-3.8-flash-001",
+      responseId: "actual-response",
+      text: JSON.stringify({ reviews: [r] }),
+    };
+  });
+  const result = await v.review(
+    REVIEW_PROMPT,
+    { claims: ["immutable-fixture"] },
+    run,
+    async () => {
+      saves++;
+    },
+    2000,
+  );
+  assert.equal(result.reviews[0].claimId, r.claimId);
+  assert.equal(calls, 1);
+  assert.equal(run.budget.reservedMicrousd, 110000);
+  assert.equal(run.budget.unknownCostCalls, 2);
+  assert.equal(run.models.review, "gemini-3.8-flash-001");
+  assert.equal(run.events[0].status, "failed");
+  assert.equal(run.events[1].provider, "vertex-ai");
+  assert.equal(run.events[1].requestId, "actual-response");
+  assert.equal(run.events[1].costMicrousd, undefined);
+  assert.equal(run.dispatchUncertain, true);
+  assert.ok(run.limitations.some((s) => s.includes("billed by Google")));
+  assert.ok(ResearchRunSchema.safeParse(run).success);
+});
+test("Vertex never dispatches after fencing failure or an unaffordable reservation", async () => {
+  let calls = 0;
+  const v = vertexReviewer(async () => {
+    calls++;
+    throw new Error("Must not dispatch");
+  });
+  const run = gateway().createRun("fixture");
+  await assert.rejects(
+    v.review(
+      "",
+      {},
+      run,
+      async () => {
+        throw new Error("Lease lost");
+      },
+      2000,
+    ),
+    /Lease lost/,
+  );
+  assert.equal(calls, 0);
+  const small = gateway().createRun("fixture");
+  small.budget.capMicrousd = 99999;
+  await assert.rejects(
+    v.review("", {}, small, async () => {}, 2000),
+    { code: "RUN_BUDGET_EXHAUSTED" },
+  );
+  assert.equal(calls, 0);
+});
+test("Vertex truncated, malformed and unidentifiable reviews fail without replay or manufactured results", async () => {
+  for (const response of [
+    { candidates: [{ finishReason: "MAX_TOKENS" }], modelVersion: "fixture", text: "{}" },
+    { candidates: [{ finishReason: "SAFETY" }], modelVersion: "fixture", text: "{}" },
+    { candidates: [{ finishReason: "STOP" }], text: "{}" },
+    { candidates: [{ finishReason: "STOP" }], modelVersion: "fixture", text: "invalid json" },
+    { candidates: [{ finishReason: "STOP" }], modelVersion: "fixture", text: "{}" },
+  ]) {
+    let calls = 0;
+    const v = vertexReviewer(async () => {
+      calls++;
+      return response;
+    });
+    const run = gateway().createRun("fixture");
+    await assert.rejects(v.review("", {}, run, async () => {}, 2000));
+    assert.equal(calls, 1);
+    assert.equal(run.budget.reservedMicrousd, 100000);
+    assert.equal(run.budget.unknownCostCalls, 1);
+    assert.equal(run.events[0].status, "failed");
+    assert.deepEqual(run.decisions, []);
+  }
+});
+test("hybrid review fallback and checkpoint resume retain exact-span validation and hosted sandbox publication gate", async () => {
+  const { s, c, r } = fixture("Aspirin altered a marker in mice.");
+  const paper = {
+    id: c.paperId,
+    title: "Synthetic fixture",
+    abstract: s.text,
+    publicationTypes: [],
+    studyType: "journal_article",
+  };
+  for (const resume of [false, true]) {
+    const run = gateway().createRun("hybrid-fixture");
+    run.snapshots = [s];
+    let extractionCalls = 0,
+      otariReviewCalls = 0,
+      vertexCalls = 0,
+      audits = 0;
+    if (resume) {
+      run.checkpoint = "extracted";
+      run.reviewRoute = "vertex";
+      run.models.extraction = "fixture-extractor";
+      run.decisions = [decide(c, undefined, [s])];
+    }
+    const g = gateway();
+    g.complete = async (role) => {
+      if (role === "extraction") {
+        extractionCalls++;
+        run.models.extraction = "fixture-extractor";
+        return { papers: [{ paperId: c.paperId, claims: [c], limitations: [] }] };
+      }
+      otariReviewCalls++;
+      throw new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Synthetic 504");
+    };
+    g.request = async (path) => {
+      assert.equal(path, "/code/execute");
+      audits++;
+      return { data: { return_code: 0, stderr: "", stdout: JSON.stringify(localAudit([c], [s])) }, event: {} };
+    };
+    const vertex = vertexReviewer(async () => {
+      vertexCalls++;
+      return {
+        candidates: [{ finishReason: "STOP" }],
+        modelVersion: "gemini-3.8-flash-001",
+        text: JSON.stringify({ reviews: [r] }),
+      };
+    });
+    const service = new OtariEvidenceService(g, new EvidenceClassifierService(), vertex);
+    const result = await service.extract([paper], { preferredName: "aspirin" }, run, async () => {});
+    assert.equal(extractionCalls, resume ? 0 : 1);
+    assert.equal(otariReviewCalls, resume ? 0 : 1);
+    assert.equal(vertexCalls, 1);
+    assert.equal(audits, 1);
+    assert.equal(result.claims.length, 1);
+    assert.equal(run.checkpoint, "audited");
+    assert.ok(referenceValid(run.decisions[0].candidate, run.snapshots));
+    assert.equal(run.models.review, "gemini-3.8-flash-001");
+  }
+});
+
+test("Vertex SDK authorization/model failures stay sanitized, retain charges and are not retried", async () => {
+  for (const [status, code] of [
+    [403, "VERTEX_AUTHORIZATION_DENIED"],
+    [404, "VERTEX_MODEL_UNAVAILABLE"],
+    [429, "VERTEX_RATE_LIMITED"],
+  ]) {
+    let calls = 0;
+    const v = vertexReviewer(async () => {
+      calls++;
+      throw Object.assign(new Error("private-provider-message"), { status });
+    });
+    const run = gateway().createRun("fixture");
+    await assert.rejects(
+      v.review("", {}, run, async () => {}, 2000),
+      (error) => error.code === code && !error.message.includes("private-provider-message"),
+    );
+    assert.equal(calls, 1);
+    assert.equal(run.events[0].httpStatus, status);
+    assert.equal(run.budget.reservedMicrousd, 100000);
+  }
+});
+
+test("Gemini is pinned to 3.8 Flash and never accepts a lower configured or resolved model", async () => {
+  for (const model of ["gemini-2.5-flash", "gemini-3.5-flash", "gemini-4-argon"]) {
+    const v = new VertexReviewService({
+      get: (key) =>
+        ({ OTARI_REVIEW_FALLBACK: "vertex", GEMINI_MODEL: model, GOOGLE_CLOUD_API_KEY: "fixture-only" })[key],
+    });
+    const run = gateway().createRun("fixture");
+    await assert.rejects(
+      v.review("", {}, run, async () => {}, 8000),
+      { code: "VERTEX_CONFIGURATION" },
+    );
+    assert.equal(run.budget.calls, 0);
+    const { AiEvidenceService } = require("../dist/research/ai-evidence.service");
+    assert.throws(
+      () => new AiEvidenceService({ get: (key) => (key === "GEMINI_MODEL" ? model : undefined) }),
+      /Only gemini-3.8-flash/,
+    );
+  }
+  const v = vertexReviewer(async (request) => {
+    assert.equal(request.model, "gemini-3.8-flash");
+    assert.deepEqual(request.config.thinkingConfig, { thinkingLevel: "LOW" });
+    return {
+      candidates: [{ finishReason: "STOP" }],
+      modelVersion: "gemini-2.5-flash",
+      text: JSON.stringify({ reviews: [] }),
+    };
+  });
+  await assert.rejects(
+    v.review("", {}, gateway().createRun("fixture"), async () => {}, 8000),
+    { code: "VERTEX_MODEL_UNVERIFIED" },
+  );
+});
+test("Vertex diagnostics distinguish truncation, blocking, empty output and candidate count without retaining response text", async () => {
+  const variants = [
+    [
+      {
+        candidates: [{ finishReason: "MAX_TOKENS" }],
+        usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 3, thoughtsTokenCount: 7 },
+        text: "private-generated-response",
+      },
+      "VERTEX_OUTPUT_TRUNCATED",
+    ],
+    [{ candidates: [{ finishReason: "SAFETY" }], text: "private-generated-response" }, "VERTEX_REVIEW_BLOCKED"],
+    [{ candidates: [], promptFeedback: { blockReason: "SAFETY" } }, "VERTEX_REVIEW_BLOCKED"],
+    [{ candidates: [{ finishReason: "STOP" }], text: "" }, "VERTEX_EMPTY_COMPLETION"],
+    [{ candidates: [{ finishReason: "STOP" }, { finishReason: "STOP" }], text: "{}" }, "VERTEX_INVALID_COMPLETION"],
+  ];
+  for (const [response, code] of variants) {
+    const v = vertexReviewer(async () => ({
+      modelVersion: "gemini-3.8-flash-001",
+      responseId: "actual-response-fixture",
+      ...response,
+    }));
+    const run = gateway().createRun("fixture");
+    await assert.rejects(
+      v.review("", { expectedClaimIds: ["claim-fixture"] }, run, async () => {}, 8000),
+      { code },
+    );
+    const event = run.events.at(-1);
+    assert.equal(event.model, "gemini-3.8-flash-001");
+    assert.equal(event.requestId, "actual-response-fixture");
+    assert.deepEqual(event.claimIds, ["claim-fixture"]);
+    assert.equal(event.finishReason, response.candidates[0]?.finishReason ?? "MISSING");
+    assert.ok(!JSON.stringify(run).includes("private-generated-response"));
+    assert.ok(ResearchRunSchema.safeParse(run).success);
+    if (code === "VERTEX_OUTPUT_TRUNCATED") {
+      assert.equal(event.inputTokens, 10);
+      assert.equal(event.outputTokens, 3);
+      assert.equal(event.thoughtTokens, 7);
+    }
+  }
+});
+test("Vertex reviews at most two claims per call and retry skips successful review batches", async () => {
+  const { s, c, r } = fixture("Aspirin altered a marker in mice.");
+  const claims = [1, 2, 3].map((i) => ({ ...c, id: `claim-${i}` }));
+  const paper = {
+    id: c.paperId,
+    title: "Synthetic fixture",
+    abstract: s.text,
+    publicationTypes: [],
+    studyType: "journal_article",
+  };
+  const run = gateway().createRun("partial-vertex");
+  run.budget.capMicrousd = 1000000;
+  run.snapshots = [s];
+  run.decisions = claims.map((claim) => decide(claim, undefined, [s]));
+  run.checkpoint = "extracted";
+  run.reviewRoute = "vertex";
+  run.models.extraction = "fixture-extractor";
+  const seen = [];
+  const vertex = vertexReviewer(async (request) => {
+    const input = JSON.parse(request.contents);
+    assert.ok(input.claims.length <= 2);
+    assert.equal(input.papers.length, 1);
+    assert.equal(input.snapshots.length, 1);
+    assert.equal(request.config.maxOutputTokens, 8000);
+    seen.push(input.expectedClaimIds);
+    if (seen.length === 2) throw Object.assign(new Error("Fixture timeout"), { status: 504 });
+    return {
+      candidates: [{ finishReason: "STOP" }],
+      modelVersion: "gemini-3.8-flash-001",
+      text: JSON.stringify({ reviews: input.claims.map((claim) => ({ ...r, claimId: claim.id })) }),
+    };
+  });
+  const g = gateway();
+  g.complete = async () => {
+    throw new Error("Saved extraction must not repeat");
+  };
+  let audits = 0;
+  g.request = async () => {
+    audits++;
+    return { event: {}, data: { return_code: 0, stderr: "", stdout: JSON.stringify(localAudit(claims, [s])) } };
+  };
+  const service = new OtariEvidenceService(g, new EvidenceClassifierService(), vertex);
+  let persisted;
+  const save = async () => {
+    persisted = structuredClone(run);
+  };
+  await assert.rejects(service.extract([paper], { preferredName: "aspirin" }, run, save), {
+    code: "VERTEX_REVIEW_UNAVAILABLE",
+  });
+  assert.equal(audits, 0);
+  assert.equal(persisted.checkpoint, "extracted");
+  assert.equal(persisted.decisions.filter((d) => d.review).length, 2);
+  assert.equal(persisted.budget.reservedMicrousd, 200000);
+  const result = await service.extract([paper], { preferredName: "aspirin" }, run, save);
+  assert.deepEqual(seen, [["claim-1", "claim-2"], ["claim-3"], ["claim-3"]]);
+  assert.equal(result.claims.length, 3);
+  assert.equal(audits, 1);
+  assert.equal(run.checkpoint, "audited");
+  assert.equal(run.budget.reservedMicrousd, 300000);
+});
+test("hybrid call ceiling accounts for bounded per-source extraction and review batches", () => {
+  const hybrid = new OtariGatewayService({
+    get: (key) => (key === "OTARI_REVIEW_FALLBACK" ? "vertex" : undefined),
+  }).createRun("fixture");
+  assert.equal(hybrid.budget.maxCalls, 24);
+  assert.equal(gateway().createRun("fixture").budget.maxCalls, 16);
+});
+
+test("Vertex batch missing or duplicate claim IDs cannot mark a batch reviewed or advance publication", async () => {
+  const { s, c, r } = fixture();
+  const claims = [1, 2, 3].map((i) => ({ ...c, id: `c${i}` }));
+  const run = gateway().createRun("coverage-fixture");
+  run.snapshots = [s];
+  run.checkpoint = "extracted";
+  run.reviewRoute = "vertex";
+  run.decisions = claims.map((claim) => decide(claim, undefined, [s]));
+  let calls = 0;
+  const vertex = vertexReviewer(async () => {
+    calls++;
+    return {
+      candidates: [{ finishReason: "STOP" }],
+      modelVersion: "gemini-3.8-flash-001",
+      text: JSON.stringify({
+        reviews: [
+          { ...r, claimId: "c1" },
+          { ...r, claimId: "c1" },
+        ],
+      }),
+    };
+  });
+  const g = gateway();
+  g.request = async () => {
+    throw new Error("Invalid batch must not reach audit");
+  };
+  const service = new OtariEvidenceService(g, new EvidenceClassifierService(), vertex);
+  await assert.rejects(
+    service.extract([{ id: c.paperId, abstract: s.text }], {}, run, async () => {}),
+    { code: "INVALID_IDS" },
+  );
+  assert.equal(calls, 1);
+  assert.ok(run.decisions.every((d) => !d.review));
+  assert.equal(run.events.at(-1).status, "failed");
+  assert.equal(run.events.at(-1).code, "INVALID_IDS");
+});
+
+test("legacy Gemini compatibility also rejects a resolved lower model instead of accepting its output", async () => {
+  const { AiEvidenceService } = require("../dist/research/ai-evidence.service");
+  const service = new AiEvidenceService({ get: (key) => (key === "GEMINI_MODEL" ? "gemini-3.8-flash" : undefined) });
+  let calls = 0;
+  service.geminiClient = {
+    models: {
+      generateContent: async (request) => {
+        calls++;
+        assert.equal(request.model, "gemini-3.8-flash");
+        assert.deepEqual(request.config.thinkingConfig, { thinkingLevel: "LOW" });
+        return { modelVersion: "gemini-2.5-flash", candidates: [{ finishReason: "STOP" }], text: "{}" };
+      },
+    },
+  };
+  await assert.rejects(
+    service.extractGeminiBatch([], { preferredName: "fixture", synonyms: [], pubchemCid: 1 }),
+    (error) => error.code === "AI_INVALID_RESPONSE" && /did not confirm gemini-3.8-flash/.test(error.message),
+  );
+  assert.equal(calls, 1);
+});

@@ -12,7 +12,7 @@ import { DossierView } from "@/components/dossier-view";
 import { DeleteInvestigationButton } from "@/components/delete-investigation-button";
 import { ApiError, useInvestigation, useRetryInvestigation, useCancelInvestigation } from "@/lib/api";
 import { formatDateTime } from "@/lib/format";
-import { formatAccessType, formatInvestigationStatus } from "@/lib/investigation-record";
+import { evidenceStageLabel, formatAccessType, formatInvestigationStatus } from "@/lib/investigation-record";
 
 const stages: { status: InvestigationStatus; label: string }[] = [
   { status: "resolving_molecule", label: "Resolving molecule identity" },
@@ -44,6 +44,7 @@ export default function InvestigationPage() {
   if (investigation.isLoading) return <LoadingState />;
   if (investigation.isError || !investigation.data) return <LoadError />;
   const item = investigation.data;
+  const reviewRetry = item.research?.checkpoint === "extracted" && item.research.decisions.length > 0;
   const extractionRetry = canRetryExtraction(
     item.research,
     item.papers.map((p) => p.id),
@@ -106,7 +107,9 @@ export default function InvestigationPage() {
           <span
             className={`mono rounded-full px-3 py-1.5 text-[8px] ${failed ? "border border-[#ff7474]/30 bg-[#ff7474]/[.07] !text-[#ff7474]" : "border border-[#9fad7c]/20 bg-[#9fad7c]/[.06] !text-[#9fad7c]"}`}
           >
-            {formatInvestigationStatus(item.status)}
+            {item.status === "extracting_evidence"
+              ? evidenceStageLabel(item.research)
+              : formatInvestigationStatus(item.status)}
           </span>
           <span className="mono rounded-full border border-white/[.09] bg-white/[.025] px-3 py-1.5 text-[8px] uppercase tracking-[.12em] text-[#a9b0a4]">
             {formatAccessType(item.access.type)}
@@ -224,7 +227,7 @@ export default function InvestigationPage() {
                     <span className="mono text-[8px] text-[#596354]">{String(index + 1).padStart(2, "0")}</span>
                   </div>
                   <p className={`mt-8 text-xs leading-5 ${done || active ? "text-[#e6ebe2]" : "text-[#788274]"}`}>
-                    {stage.label}
+                    {stage.status === "extracting_evidence" ? evidenceStageLabel(item.research) : stage.label}
                   </p>
                   <p
                     className={`mono mt-3 text-[7px] uppercase tracking-[.12em] ${done ? "text-[#63e6a1]" : active ? "text-[#9fad7c]" : "text-[#596354]"}`}
@@ -346,11 +349,13 @@ export default function InvestigationPage() {
             {item.error?.message ?? "The investigation workflow could not be completed."}
           </p>
           <p className="mt-3 max-w-2xl text-xs leading-5 text-[#788274]">
-            {extractionRetry
-              ? "Retry extraction using the saved abstracts and remaining original allowance. This makes new model calls; earlier charges and unknown-cost reservations remain counted."
-              : item.research?.budget.calls
-                ? "Retry uses saved abstracts when available and starts a new attempt. Previous attempts, charges and uncertain reservations remain counted. New model/tool calls may incur additional charges."
-                : "This run did not complete. You can retry after resolving its configuration or provider error."}
+            {reviewRetry
+              ? "Retry resumes review from saved findings without repeating extraction. Previous charges and uncertain reservations remain counted; additional review calls may be billed."
+              : extractionRetry
+                ? "Retry extraction using the saved abstracts and remaining original allowance. This makes new model calls; earlier charges and unknown-cost reservations remain counted."
+                : item.research?.budget.calls
+                  ? "Retry uses saved abstracts when available and starts a new attempt. Previous attempts, charges and uncertain reservations remain counted. New model/tool calls may incur additional charges."
+                  : "This run did not complete. You can retry after resolving its configuration or provider error."}
           </p>
           {item.error?.code && (
             <span className="mono mt-5 inline-flex rounded-full border border-[#ff7474]/20 px-2.5 py-1 text-[8px] uppercase tracking-[.1em] text-[#ff8b8b]">
@@ -367,9 +372,11 @@ export default function InvestigationPage() {
               {retry.isPending ? <LoaderCircle size={15} className="animate-spin" /> : <RotateCcw size={15} />}
               {retry.isPending
                 ? "Restarting investigation…"
-                : extractionRetry
-                  ? "Retry extraction from saved sources"
-                  : "Retry this investigation"}
+                : reviewRetry
+                  ? "Retry review from saved findings"
+                  : extractionRetry
+                    ? "Retry extraction from saved sources"
+                    : "Retry this investigation"}
             </button>
             <Link
               href="/dashboard/investigate"

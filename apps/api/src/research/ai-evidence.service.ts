@@ -1,10 +1,11 @@
+import { CAPELA_GEMINI_MODEL, isPinnedGeminiVersion } from "./gemini-model";
 import {
   PaperEvidenceBatchSchema,
   type MoleculeSnapshot,
   type PaperEvidence,
   type PaperSnapshot,
 } from "@capela/shared";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { z } from "zod";
@@ -70,7 +71,6 @@ export class AiEvidenceService {
   private readonly groqBatchSize: number;
   private readonly maxPaperTextChars: number;
   private readonly maxOutputTokens: number;
-  private readonly geminiThinkingBudget: number;
   private readonly groqMaxOutputTokens: number;
   private readonly geminiTimeoutMs: number;
   private readonly groqTimeoutMs: number;
@@ -83,6 +83,8 @@ export class AiEvidenceService {
     const project = config.get<string>("GOOGLE_CLOUD_PROJECT")?.trim();
     const location = config.get<string>("GOOGLE_CLOUD_LOCATION")?.trim() || "global";
     this.geminiModel = config.get<string>("GEMINI_MODEL")?.trim() || undefined;
+    if (this.geminiModel && this.geminiModel !== CAPELA_GEMINI_MODEL)
+      throw new AiEvidenceError("AI_NOT_CONFIGURED", `Only ${CAPELA_GEMINI_MODEL} is allowed for Gemini inference.`);
     this.groqApiKey = config.get<string>("GROQ_API_KEY")?.trim() || undefined;
     this.groqModel = config.get<string>("GROQ_MODEL")?.trim() || "openai/gpt-oss-20b";
     const configuredGroqFallback = config.get<string>("GROQ_FALLBACK_MODEL")?.trim() || "openai/gpt-oss-120b";
@@ -98,7 +100,6 @@ export class AiEvidenceService {
     this.groqBatchSize = this.boundedNumber(config.get<string>("GROQ_EVIDENCE_BATCH_SIZE"), 1, 1, 2);
     this.maxPaperTextChars = this.boundedNumber(config.get<string>("MAX_PAPER_TEXT_CHARS"), 12_000, 2_000, 20_000);
     this.maxOutputTokens = this.boundedNumber(config.get<string>("GEMINI_MAX_OUTPUT_TOKENS"), 12_000, 2_000, 16_000);
-    this.geminiThinkingBudget = this.boundedNumber(config.get<string>("GEMINI_THINKING_BUDGET"), 0, -1, 4_096);
     this.groqMaxOutputTokens = this.boundedNumber(config.get<string>("GROQ_MAX_OUTPUT_TOKENS"), 4_000, 1_000, 8_000);
     this.geminiTimeoutMs = this.boundedNumber(config.get<string>("GEMINI_TIMEOUT_MS"), 90_000, 10_000, 180_000);
     this.groqTimeoutMs = this.boundedNumber(config.get<string>("GROQ_TIMEOUT_MS"), 90_000, 10_000, 180_000);
@@ -234,12 +235,15 @@ export class AiEvidenceService {
           responseJsonSchema: PROVIDER_JSON_SCHEMA,
           temperature: 0,
           maxOutputTokens: this.maxOutputTokens,
-          ...(this.geminiModel!.startsWith("gemini-2.5-")
-            ? { thinkingConfig: { thinkingBudget: this.geminiThinkingBudget } }
-            : {}),
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
           abortSignal: controller.signal,
         },
       });
+      if (!response.modelVersion || !isPinnedGeminiVersion(response.modelVersion))
+        throw new AiEvidenceError(
+          "AI_INVALID_RESPONSE",
+          "Google did not confirm gemini-3.8-flash as the resolved model.",
+        );
       const finishReason = response.candidates?.[0]?.finishReason;
       if (finishReason && finishReason !== "STOP")
         throw new AiEvidenceError(

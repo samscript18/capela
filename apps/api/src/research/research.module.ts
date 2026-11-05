@@ -1,3 +1,4 @@
+import { VertexReviewService } from "./vertex-review.service";
 import { OtariGatewayService } from "./otari-gateway.service";
 import { OtariRetrievalService } from "./otari-retrieval.service";
 import { OtariEvidenceService } from "./otari-evidence.service";
@@ -25,6 +26,7 @@ import { NotificationsModule } from "../notifications/notifications.module";
     OtariGatewayService,
     OtariRetrievalService,
     OtariEvidenceService,
+    VertexReviewService,
     PubChemService,
     TavilyLiteratureService,
     AiEvidenceService,

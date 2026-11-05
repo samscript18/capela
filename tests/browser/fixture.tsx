@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ResearchRunView } from "../../apps/web/src/components/research-run-view";
+import { evidenceStageLabel } from "../../apps/web/src/lib/investigation-record";
 import type { ResearchRun } from "@capela/shared";
 
 const text = "In this synthetic browser fixture, a marker did not change in mice.";
@@ -86,14 +87,43 @@ const run: ResearchRun = {
 };
 function App() {
   const [mode, setMode] = useState("Completed");
+  const scenarioRun: ResearchRun | undefined =
+    mode === "Legacy"
+      ? undefined
+      : {
+          ...run,
+          events:
+            mode === "Hybrid"
+              ? [
+                  ...run.events,
+                  {
+                    sequence: 2,
+                    at: "2026-11-05T00:00:00.000Z",
+                    operation: "vertex_review",
+                    status: "completed",
+                    correlationId: "synthetic-vertex",
+                    provider: "vertex-ai",
+                    requestId: "synthetic-vertex-response",
+                    finishReason: "STOP",
+                    outputTokens: 123,
+                    thoughtTokens: 17,
+                    claimIds: ["fixture-claim"],
+                    model: "synthetic-vertex-reviewer",
+                    fallback: true,
+                  },
+                ]
+              : run.events,
+          budget: { ...run.budget, terminal: mode === "Budget denied" },
+        };
   return (
     <main>
       <h1>Capela isolated browser checks</h1>
       <p role="note">
         Synthetic fixture only. These controls are outside the production application and bypass no authentication.
       </p>
+      <p data-testid="evidence-phase">{evidenceStageLabel(scenarioRun)}</p>
       <nav aria-label="Test scenarios">
-        {["Completed", "Partial", "Budget denied", "Provider error", "Legacy", "History"].map((m) => (
+        {["Completed", "Partial", "Budget denied", "Provider error", "Legacy", "History", "Hybrid"].map((m) => (
           <button key={m} onClick={() => setMode(m)}>
             {m}
           </button>
@@ -110,12 +140,7 @@ function App() {
             <p role="alert">Otari denied spending. No provider bypass or automatic retry is allowed.</p>
           )}
           {mode === "Provider error" && <p role="alert">Provider unavailable. Saved work is partial.</p>}
-          <ResearchRunView
-            run={
-              mode === "Legacy" ? undefined : { ...run, budget: { ...run.budget, terminal: mode === "Budget denied" } }
-            }
-            partial={["Partial", "Budget denied", "Provider error"].includes(mode)}
-          />
+          <ResearchRunView run={scenarioRun} partial={["Partial", "Budget denied", "Provider error"].includes(mode)} />
         </>
       )}
     </main>

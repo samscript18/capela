@@ -36,6 +36,12 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
           quotes establish passage validity, not scientific truth.
         </p>
       </div>
+      {run.events.some((event) => event.provider === "vertex-ai") && (
+        <p role="status" className="rounded-xl border border-[#f2d66b]/30 p-4 text-xs leading-6 text-[#f2d66b]">
+          Hybrid investigation: direct Vertex AI review with Otari research tooling. Vertex is billed by Google; Otari
+          credits and hosted limits do not cover that call. This review ran outside Otari.
+        </p>
+      )}
       {partial && (
         <p role="status" className="rounded-xl border border-[#f2d66b]/30 p-4 text-xs text-[#f2d66b]">
           This investigation stopped before completion. Saved candidates are not a completed dossier.
@@ -182,7 +188,12 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
               #{e.sequence} {e.at} · {e.operation} · {e.status}
               <br />
               Correlation {e.correlationId}
-              {e.requestId && <> · Otari request {e.requestId}</>}
+              {e.requestId && (
+                <>
+                  {" "}
+                  · {e.provider === "vertex-ai" ? "Vertex response" : "Otari request"} {e.requestId}
+                </>
+              )}
               {e.model && (
                 <>
                   {" "}
@@ -194,6 +205,12 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
               {e.upstreamCode && <> · {e.upstreamCode}</>}
               {e.toolCallId && <> · tool {e.toolCallId}</>}
               {e.code && <> · {e.code}</>}
+              {e.finishReason && <> · finish {e.finishReason}</>}
+              {e.blockReason && <> · block {e.blockReason}</>}
+              {e.outputCharacters !== undefined && <> · {e.outputCharacters} response characters</>}
+              {e.outputTokens !== undefined && <> · {e.outputTokens} output tokens</>}
+              {e.thoughtTokens !== undefined && <> · {e.thoughtTokens} thinking tokens</>}
+              {e.claimIds?.length ? <> · claims {e.claimIds.join(", ")}</> : null}
             </li>
           ))}
         </ol>

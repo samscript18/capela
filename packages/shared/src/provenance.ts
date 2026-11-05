@@ -174,6 +174,14 @@ export type RunEvent = {
   upstreamCode?: string;
   toolCallId?: string;
   code?: string;
+  finishReason?: string;
+  blockReason?: string;
+  candidateCount?: number;
+  outputCharacters?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  thoughtTokens?: number;
+  claimIds?: string[];
 };
 export type ResearchRun = {
   version: "otari-evidence-v1";
@@ -206,6 +214,7 @@ export type ResearchRun = {
   limitations: string[];
   checkpoint?: string;
   dispatchUncertain?: boolean;
+  reviewRoute?: "vertex";
 };
 
 export const ResearchRunSchema = z
@@ -246,6 +255,14 @@ export const ResearchRunSchema = z
             upstreamCode: OptionalId,
             toolCallId: OptionalId,
             code: OptionalId,
+            finishReason: OptionalId,
+            blockReason: OptionalId,
+            candidateCount: z.number().int().nonnegative().optional(),
+            outputCharacters: z.number().int().nonnegative().optional(),
+            inputTokens: z.number().int().nonnegative().optional(),
+            outputTokens: z.number().int().nonnegative().optional(),
+            thoughtTokens: z.number().int().nonnegative().optional(),
+            claimIds: z.array(Id).max(60).optional(),
           })
           .strict(),
       )
@@ -280,5 +297,6 @@ export const ResearchRunSchema = z
     limitations: z.array(z.string()),
     checkpoint: Id.optional(),
     dispatchUncertain: z.boolean().optional(),
+    reviewRoute: z.literal("vertex").optional(),
   })
   .strict();

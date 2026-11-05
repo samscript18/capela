@@ -215,9 +215,21 @@ export class InvestigationsService {
         !!failed.molecule &&
         !!failed.papers?.length &&
         failed.papers.every((p) => prior.snapshots.some((source) => source.paperId === String(p.id)));
-      const needed = savedSources
-        ? (failed.papers.length + 1) * reservation + Math.max(10000, reservation)
-        : Math.max(60000, reservation) + 3 * reservation + Math.max(10000, reservation);
+      const resumeReview = savedSources && prior.checkpoint === "extracted" && prior.decisions.length > 0;
+      const vertexReview =
+        resumeReview &&
+        this.config.get<string>("OTARI_REVIEW_FALLBACK") === "vertex" &&
+        (prior.reviewRoute === "vertex" ||
+          (prior.events.at(-1)?.operation === "review" &&
+            (["OTARI_UPSTREAM_TIMEOUT", "OTARI_TRANSPORT_UNCERTAIN"].includes(failed.error?.code ?? "") ||
+              (failed.error?.code === "OTARI_PROVIDER_ERROR" &&
+                [502, 503, 504].includes(prior.events.at(-1)?.httpStatus ?? 0)))));
+      const pendingReviews = prior.decisions.filter((d) => !d.review || d.review.claimId !== d.candidate.id).length;
+      const needed = resumeReview
+        ? (vertexReview ? Math.ceil(pendingReviews / 2) * 100000 : reservation) + Math.max(10000, reservation)
+        : savedSources
+          ? (failed.papers.length + 1) * reservation + Math.max(10000, reservation)
+          : Math.max(60000, reservation) + 3 * reservation + Math.max(10000, reservation);
       if (cap - prior.budget.reportedMicrousd - prior.budget.reservedMicrousd < needed)
         throw new HttpException(
           {
@@ -232,10 +244,15 @@ export class InvestigationsService {
         ...prior,
         runId: randomUUID(),
         snapshots: savedSources ? prior.snapshots : [],
-        decisions: [],
-        events: [],
-        models: { distinct: false },
-        budget: { ...prior.budget, capMicrousd: cap, maxCalls: prior.budget.calls + 16, terminal: false },
+        decisions: resumeReview ? prior.decisions : [],
+        events: resumeReview ? prior.events : [],
+        models: resumeReview && prior.models.extraction ? { ...prior.models, distinct: false } : { distinct: false },
+        budget: {
+          ...prior.budget,
+          capMicrousd: cap,
+          maxCalls: prior.budget.calls + (this.config.get<string>("OTARI_REVIEW_FALLBACK") === "vertex" ? 24 : 16),
+          terminal: false,
+        },
         dispatchUncertain: false,
         limitations: [
           ...prior.limitations,
@@ -243,7 +260,10 @@ export class InvestigationsService {
         ],
       };
       // Mixed BSON fields can turn explicit undefined into null. Omit cleared fields entirely.
-      delete retryResearch.checkpoint;
+      if (resumeReview) retryResearch.checkpoint = "extracted";
+      else delete retryResearch.checkpoint;
+      delete retryResearch.reviewRoute;
+      if (vertexReview) retryResearch.reviewRoute = "vertex";
       delete retryResearch.audit;
     }
 

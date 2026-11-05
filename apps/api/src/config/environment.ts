@@ -1,4 +1,11 @@
 import { isAddress } from "viem";
+import { resolve } from "node:path";
+
+export function apiEnvironmentFiles(runtimeDirectory: string, mode?: string) {
+  return mode === "production"
+    ? [".env"]
+    : [resolve(runtimeDirectory, "../../../.env.local"), resolve(runtimeDirectory, "../../../.env"), ".env"];
+}
 
 const REQUIRED_PRODUCTION_KEYS = [
   "MONGODB_URI",
