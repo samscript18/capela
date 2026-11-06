@@ -385,7 +385,7 @@ test("explicit retry after timeout archives prior decisions and keeps unknown ch
   for (const key of ["calls", "reportedMicrousd", "reservedMicrousd", "unknownCostCalls"])
     assert.equal(next.budget[key], run.budget[key]);
   assert.equal(next.budget.capMicrousd, 20000000);
-  assert.equal(next.budget.maxCalls, 21);
+  assert.equal(next.budget.maxCalls, run.budget.maxCalls);
   assert.equal(next.dispatchUncertain, false);
   assert.equal(run.dispatchUncertain, true);
   assert.equal(update.$unset.molecule, undefined);
@@ -586,4 +586,31 @@ test("local API boot reads new root env flags without relying on an older dev pa
     else process.env.OTARI_REVIEW_FALLBACK = previous;
     await fs.rm(root, { recursive: true, force: true });
   }
+});
+
+test("retry cannot silently extend an exhausted original dispatch allowance", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const run = new OtariGatewayService({ get: () => undefined }).createRun("exhausted-calls");
+  run.budget.capMicrousd = 1000000;
+  run.budget.calls = 5;
+  run.budget.maxCalls = 5;
+  const record = {
+    _id: new Types.ObjectId(),
+    status: "failed",
+    access: { type: "free" },
+    research: run,
+    papers: [],
+    error: { code: "OTARI_MCP_UNAVAILABLE" },
+  };
+  let writes = 0;
+  const s = service({
+    findOne: () => query(record),
+    findOneAndUpdate: () => {
+      writes++;
+      throw Error("Must not queue");
+    },
+  });
+  await assert.rejects(s.retry("owner", record._id.toString()), /original dispatch allowance/);
+  assert.equal(writes, 0);
+  assert.equal(run.budget.maxCalls, 5);
 });

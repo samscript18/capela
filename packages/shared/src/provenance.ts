@@ -38,7 +38,7 @@ export function parseStoredResearchRun(value: unknown): ResearchRun {
       })
     : stored.decisions;
   const normalized: Record<string, unknown> = { ...stored, events, decisions };
-  for (const key of ["audit", "checkpoint"] as const) if (normalized[key] === null) delete normalized[key];
+  for (const key of ["audit", "checkpoint", "discovery"] as const) if (normalized[key] === null) delete normalized[key];
   return ResearchRunSchema.parse(normalized);
 }
 export const SourceSnapshotSchema = z
@@ -135,7 +135,7 @@ export function canRetryExtraction(run: ResearchRun | undefined, paperIds: strin
   )
     return false;
   if (
-    run.budget.calls + paperIds.length + 2 > run.budget.maxCalls ||
+    run.budget.calls + 2 * paperIds.length + 1 > run.budget.maxCalls ||
     run.budget.capMicrousd <= run.budget.reportedMicrousd + run.budget.reservedMicrousd
   )
     return false;
@@ -183,9 +183,20 @@ export type RunEvent = {
   thoughtTokens?: number;
   claimIds?: string[];
 };
+export const SearchDiscoverySchema = z
+  .object({
+    query: z.string().min(1).max(500),
+    completedAt: z.string().datetime(),
+    toolCallId: Id,
+    requestId: OptionalId,
+    urls: z.array(z.string().regex(/^https:\/\/pubmed\.ncbi\.nlm\.nih\.gov\/\d{1,10}\/$/)).max(15),
+  })
+  .strict();
+
 export type ResearchRun = {
   version: "otari-evidence-v1";
   runId: string;
+  discovery?: z.infer<typeof SearchDiscoverySchema>;
   snapshots: SourceSnapshot[];
   decisions: ClaimDecision[];
   events: RunEvent[];
@@ -221,6 +232,7 @@ export const ResearchRunSchema = z
   .object({
     version: z.literal("otari-evidence-v1"),
     runId: Id,
+    discovery: SearchDiscoverySchema.optional(),
     snapshots: z.array(SourceSnapshotSchema).max(5),
     decisions: z
       .array(

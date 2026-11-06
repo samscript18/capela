@@ -226,10 +226,25 @@ export class InvestigationsService {
                 [502, 503, 504].includes(prior.events.at(-1)?.httpStatus ?? 0)))));
       const pendingReviews = prior.decisions.filter((d) => !d.review || d.review.claimId !== d.candidate.id).length;
       const needed = resumeReview
-        ? (vertexReview ? Math.ceil(pendingReviews / 2) * 100000 : reservation) + Math.max(10000, reservation)
+        ? Math.ceil(pendingReviews / 2) * (vertexReview ? 100000 : reservation) + Math.max(10000, reservation)
         : savedSources
-          ? (failed.papers.length + 1) * reservation + Math.max(10000, reservation)
-          : Math.max(60000, reservation) + 3 * reservation + Math.max(10000, reservation);
+          ? 2 * failed.papers.length * reservation + Math.max(10000, reservation)
+          : (prior.discovery ? 0 : Math.max(60000, reservation)) + 3 * reservation + Math.max(10000, reservation);
+      const neededCalls = resumeReview
+        ? Math.ceil(pendingReviews / 2) + 1
+        : savedSources
+          ? 2 * failed.papers.length + 1
+          : prior.discovery
+            ? 4
+            : 5;
+      if (prior.budget.calls + neededCalls > prior.budget.maxCalls)
+        throw new HttpException(
+          {
+            code: "RETRY_CALL_LIMIT",
+            message: "The original dispatch allowance cannot fund this retry; it is not automatically extended.",
+          },
+          HttpStatus.CONFLICT,
+        );
       if (cap - prior.budget.reportedMicrousd - prior.budget.reservedMicrousd < needed)
         throw new HttpException(
           {
@@ -250,7 +265,7 @@ export class InvestigationsService {
         budget: {
           ...prior.budget,
           capMicrousd: cap,
-          maxCalls: prior.budget.calls + (this.config.get<string>("OTARI_REVIEW_FALLBACK") === "vertex" ? 24 : 16),
+          maxCalls: prior.budget.maxCalls,
           terminal: false,
         },
         dispatchUncertain: false,

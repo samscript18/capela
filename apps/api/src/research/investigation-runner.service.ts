@@ -145,6 +145,7 @@ export class InvestigationRunnerService implements OnModuleInit, OnModuleDestroy
         vertex_review: "Reviewing saved evidence through Vertex AI",
         publication_metadata: "Retrieving canonical publication metadata via hosted MCP",
         scientific_search: "Searching scientific literature through Otari",
+        scientific_search_tool: "Searching scientific literature through Otari",
       };
       await write({
         research,

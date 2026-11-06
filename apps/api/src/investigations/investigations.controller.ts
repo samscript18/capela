@@ -117,7 +117,7 @@ export class InvestigationsController {
   @ApiOperation({
     summary: "Retry a failed investigation",
     description:
-      "Requeues an owner-scoped failed run only when it has dispatched no paid Otari work. Paid attempts retain checkpoints and return PAID_REPLAY_BLOCKED to avoid duplicate charges.",
+      "Explicit owner retry preserves prior charges, reservations and dispatch limits. Validated search/source/review checkpoints are reused where available; no automatic paid replay occurs. Insufficient remaining allowance or dispatches blocks retry.",
   })
   @ApiParam({ name: "id", description: "MongoDB investigation ID", example: "66d2e2b59d8f09f1c2a7b431" })
   @ApiCreatedResponse({ type: InvestigationResponseDto, description: "Failed investigation reset and queued again." })

@@ -36,6 +36,23 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
           quotes establish passage validity, not scientific truth.
         </p>
       </div>
+      {run.discovery && (
+        <details className="rounded-xl border border-white/10 p-4 text-xs leading-6">
+          <summary className="cursor-pointer">{run.discovery.urls.length} canonical publications discovered</summary>
+          <p className="mt-3 text-[#a9b0a4]">
+            Search results are discovery records. Only retrieved abstracts can support findings.
+          </p>
+          <ul className="mt-3 space-y-2">
+            {run.discovery.urls.map((url) => (
+              <li key={url}>
+                <a className="break-all underline" href={sourceLink(url)} target="_blank" rel="noreferrer">
+                  {url}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       {run.events.some((event) => event.provider === "vertex-ai") && (
         <p role="status" className="rounded-xl border border-[#f2d66b]/30 p-4 text-xs leading-6 text-[#f2d66b]">
           Hybrid investigation: direct Vertex AI review with Otari research tooling. Vertex is billed by Google; Otari

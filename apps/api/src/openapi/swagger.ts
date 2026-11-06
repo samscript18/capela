@@ -17,7 +17,7 @@ export function buildOpenApiConfig() {
         "Protected operations require a current Privy access token in `Authorization: Bearer <token>`. The API derives the user identity from the verified token; it never trusts a client-supplied user ID.",
         "",
         "## Investigation lifecycle",
-        "Create an investigation, then poll its detail resource until `status` becomes `completed` or `failed`. Failed investigations with no dispatched paid work can be retried. Paid attempts retain partial checkpoints and reject automatic replay. Cancel stops future dispatch and fences late writes. A completed response may contain the full eight-section scientific dossier.",
+        "Create an investigation, then poll its detail resource until `status` becomes `completed` or `failed`. Explicit owner retries retain cumulative costs, original dispatch limits and available search/source/review checkpoints. Insufficient allowance blocks dispatch; paid calls are never automatically replayed. Cancel stops future dispatch and fences late writes. A completed response may contain the full eight-section scientific dossier.",
         "",
         "## Scientific contract",
         "Capela retrieves chemical and literature records before evidence extraction and synthesis. Evidence classifications distinguish direct and indirect experiments, computational predictions, literature reports, Capela inferences, and insufficient evidence.",

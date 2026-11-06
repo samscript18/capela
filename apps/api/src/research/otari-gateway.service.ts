@@ -56,7 +56,7 @@ export class OtariGatewayService {
         reportedMicrousd: 0,
         unknownCostCalls: 0,
         calls: 0,
-        maxCalls: this.value("OTARI_REVIEW_FALLBACK") === "vertex" ? 24 : 16,
+        maxCalls: this.integer("OTARI_RUN_MAX_CALLS", this.value("OTARI_REVIEW_FALLBACK") === "vertex" ? 24 : 16, 24),
         terminal: false,
       },
       limitations: [

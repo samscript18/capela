@@ -1684,3 +1684,168 @@ test("legacy Gemini compatibility also rejects a resolved lower model instead of
   );
   assert.equal(calls, 1);
 });
+
+test("hosted review batches retain checked reviews across a later timeout without replay", async () => {
+  const { s, c, r } = fixture("Aspirin altered a marker in mice.");
+  const run = gateway().createRun("review-batches");
+  run.snapshots = [s];
+  run.checkpoint = "extracted";
+  run.models.extraction = "fixture-extractor";
+  const candidates = [1, 2, 3].map((n) => ({ ...c, id: `${c.id}-${n}` }));
+  run.decisions = candidates.map((claim) => decide(claim, undefined, [s]));
+  const paper = { id: c.paperId, publicationTypes: [], studyType: "journal_article" };
+  const g = gateway();
+  let calls = 0,
+    saved,
+    fail = true,
+    audits = 0;
+  g.complete = async (role, prompt, input, retained, save, bounds) => {
+    assert.equal(role, "review");
+    assert.ok(input.claims.length <= 2);
+    assert.equal(input.papers.length, 1);
+    assert.equal(input.snapshots.length, 1);
+    assert.ok(bounds.maxOutputTokens <= 4000);
+    calls++;
+    if (calls === 2 && fail) throw new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Fixture timeout");
+    run.models.review = "fixture-reviewer";
+    run.models.distinct = true;
+    if (calls === 3) assert.deepEqual(input.expectedClaimIds, [candidates[2].id]);
+    return { reviews: input.claims.map((claim) => ({ ...r, claimId: claim.id })) };
+  };
+  g.request = async () => {
+    audits++;
+    return { data: { return_code: 0, stderr: "", stdout: JSON.stringify(localAudit(candidates, [s])) }, event: {} };
+  };
+  const service = new OtariEvidenceService(g, new EvidenceClassifierService());
+  const save = async () => {
+    saved = structuredClone(run);
+  };
+  await assert.rejects(service.extract([paper], {}, run, save), { code: "OTARI_UPSTREAM_TIMEOUT" });
+  assert.equal(calls, 2);
+  assert.equal(audits, 0);
+  assert.equal(saved.checkpoint, "extracted");
+  assert.equal(saved.decisions.filter((d) => d.review).length, 2);
+  fail = false;
+  const result = await service.extract([paper], {}, run, save);
+  assert.equal(calls, 3);
+  assert.equal(result.claims.length, 3);
+  assert.equal(audits, 1);
+});
+
+test("production and paired evaluator share exact passage-index extraction input", () => {
+  const { extractionInput } = require("../dist/research/otari-evidence.service");
+  const { s, c } = fixture("Aspirin 🧪 altered a marker. It did not demonstrate human efficacy.");
+  const paper = { id: c.paperId };
+  const input = extractionInput(paper, { preferredName: "aspirin" }, [s]);
+  assert.deepEqual(input.expectedPaperIds, [paper.id]);
+  assert.deepEqual(input.snapshots, [s]);
+  assert.equal(input.passageIndex[0].passages.length, 2);
+  for (const span of input.passageIndex[0].passages) assert.equal(s.text.slice(span.start, span.end), span.quote);
+});
+
+test("hosted review rejects wrong batch IDs before caching or a subsequent dispatch", async () => {
+  const { s, c, r } = fixture();
+  const run = gateway().createRun("wrong-review-ids");
+  run.snapshots = [s];
+  run.checkpoint = "extracted";
+  run.decisions = [decide(c, undefined, [s])];
+  const g = gateway();
+  let calls = 0;
+  g.complete = async () => {
+    calls++;
+    return { reviews: [{ ...r, claimId: "invented" }] };
+  };
+  g.request = async () => {
+    throw Error("Audit must not dispatch");
+  };
+  await assert.rejects(
+    new OtariEvidenceService(g, new EvidenceClassifierService()).extract([{ id: c.paperId }], {}, run, async () => {}),
+    { code: "INVALID_IDS" },
+  );
+  assert.equal(calls, 1);
+  assert.equal(run.decisions[0].review, undefined);
+});
+
+test("a later distinct model cannot conceal an earlier review batch using the extractor", async () => {
+  const { s, c, r } = fixture("Aspirin altered a marker in mice.");
+  const run = gateway().createRun("role-collapse");
+  run.snapshots = [s];
+  run.checkpoint = "extracted";
+  run.models.extraction = "fixture-extractor";
+  const candidates = [1, 2, 3].map((n) => ({ ...c, id: `${c.id}-${n}` }));
+  run.decisions = candidates.map((claim) => decide(claim, undefined, [s]));
+  const g = gateway();
+  let calls = 0;
+  g.complete = async (role, prompt, input) => {
+    const model = ++calls === 1 ? "fixture-extractor" : "fixture-reviewer";
+    run.models.review = model;
+    run.models.distinct = model !== run.models.extraction;
+    run.events.push({
+      sequence: calls,
+      at: new Date().toISOString(),
+      correlationId: `fixture-${calls}`,
+      operation: role,
+      status: "completed",
+      model,
+    });
+    return { reviews: input.claims.map((claim) => ({ ...r, claimId: claim.id })) };
+  };
+  g.request = async () => ({
+    data: { return_code: 0, stderr: "", stdout: JSON.stringify(localAudit([], [s])) },
+    event: {},
+  });
+  const result = await new OtariEvidenceService(g, new EvidenceClassifierService()).extract(
+    [{ id: c.paperId, publicationTypes: [], studyType: "journal_article" }],
+    {},
+    run,
+    async () => {},
+  );
+  assert.equal(run.models.distinct, false);
+  assert.equal(result.claims.length, 0);
+  assert.equal(run.decisions.filter((d) => d.status === "unresolved").length, 3);
+});
+
+test("configured dispatch ceilings bound a qualifying verification run", () => {
+  const g = new OtariGatewayService({ get: (k) => (k === "OTARI_RUN_MAX_CALLS" ? "5" : config.get(k)) });
+  const run = g.createRun("five-call-run");
+  assert.equal(run.budget.maxCalls, 5);
+  for (let n = 0; n < 5; n++) reserve(run, 1);
+  assert.throws(() => reserve(run, 1), { code: "RUN_BUDGET_EXHAUSTED" });
+  assert.equal(run.budget.calls, 5);
+});
+
+test("validated hosted search checkpoint is durable and reused without paid search", async () => {
+  const { hostedScientificSearch } = require("../dist/research/otari-search");
+  const run = gateway().createRun("saved-search");
+  const g = gateway();
+  let calls = 0,
+    saved;
+  g.request = async () => {
+    calls++;
+    return { data: toolSearchResponse({}, "aspirin"), event: { requestId: "fixture-request" } };
+  };
+  const save = async () => {
+    saved = structuredClone(run);
+  };
+  const first = await hostedScientificSearch(g, { preferredName: "aspirin" }, run, save);
+  assert.equal(calls, 1);
+  assert.equal(saved.discovery.toolCallId, "otari_ws_test");
+  assert.deepEqual(
+    saved.discovery.urls,
+    first.results.map((r) => r.url),
+  );
+  const reloaded = ResearchRunSchema.parse(saved);
+  const second = await hostedScientificSearch(g, { preferredName: "aspirin" }, reloaded, save);
+  assert.equal(calls, 1);
+  assert.deepEqual(
+    second.results.map((r) => r.url),
+    saved.discovery.urls,
+  );
+  await assert.rejects(hostedScientificSearch(g, { preferredName: "curcumin" }, reloaded, save), {
+    code: "SEARCH_CHECKPOINT_MISMATCH",
+  });
+  assert.equal(calls, 1);
+  assert.throws(() =>
+    ResearchRunSchema.parse({ ...saved, discovery: { ...saved.discovery, urls: ["http://127.0.0.1/private"] } }),
+  );
+});

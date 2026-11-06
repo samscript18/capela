@@ -76,12 +76,12 @@ export class OtariRetrievalService {
     if (reservation < 1) throw new ResearchError("OTARI_CONFIGURATION", "A positive dispatch reservation is required.");
     // Keep allowance for extraction, review and audit before selecting paid metadata calls.
     const available = run.budget.capMicrousd - run.budget.reportedMicrousd - run.budget.reservedMicrousd;
-    const processing = reservation + Math.max(10000, reservation); // One review plus audit.
+    const processing = Math.max(10000, reservation); // One final audit.
     const affordable = Math.max(
       0,
       Math.min(
-        Math.floor((available - processing) / (2 * reservation)), // Metadata + extraction per source.
-        Math.floor((run.budget.maxCalls - run.budget.calls - 2) / 2),
+        Math.floor((available - processing) / (3 * reservation)), // Metadata + extraction + review per source.
+        Math.floor((run.budget.maxCalls - run.budget.calls - 1) / 3),
       ),
     );
     const urls = discoveredUrls.slice(0, Math.min(requested, affordable));

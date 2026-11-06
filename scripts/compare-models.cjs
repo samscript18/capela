@@ -3,10 +3,14 @@ require("reflect-metadata");
 const fs = require("node:fs");
 const path = require("node:path");
 const { ConfigService } = require("@nestjs/config");
-const { z } = require("zod");
 const { ExtractionSchema } = require("@capela/shared");
 const { OtariGatewayService } = require("../apps/api/dist/research/otari-gateway.service");
-const { OtariEvidenceService, EXTRACTION_PROMPT } = require("../apps/api/dist/research/otari-evidence.service");
+const {
+  OtariEvidenceService,
+  EXTRACTION_PROMPT,
+  REVIEW_PROMPT,
+  extractionInput,
+} = require("../apps/api/dist/research/otari-evidence.service");
 const { EvidenceClassifierService } = require("../apps/api/dist/research/evidence-classifier.service");
 const { snapshot, exactIds, referenceValid } = require("../apps/api/dist/research/provenance");
 async function main() {
@@ -33,7 +37,7 @@ async function main() {
   fs.mkdirSync(dir, { recursive: true });
   const lock = fs.openSync(path.join(dir, "comparison.lock"), "wx");
   try {
-    const gateway = new OtariGatewayService(new ConfigService(process.env));
+    const gateway = new OtariGatewayService(new ConfigService({ ...process.env, OTARI_REVIEW_FALLBACK: "disabled" }));
     gateway.assertConfigured();
     const run = gateway.createRun(require("node:crypto").randomUUID());
     run.budget.capMicrousd = Math.min(run.budget.capMicrousd, cap);
@@ -57,7 +61,16 @@ async function main() {
     };
     const molecule = { preferredName: process.env.EVAL_MOLECULE_NAME, synonyms: [] };
     const report = {
-      version: "paired-pilot-v1",
+      version: "paired-pilot-v2",
+      commit: require("node:child_process").execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+      datasetHash: require("node:crypto")
+        .createHash("sha256")
+        .update(fs.readFileSync("evaluation/pilot.json"))
+        .digest("hex"),
+      prompts: { extraction: EXTRACTION_PROMPT, review: REVIEW_PROMPT },
+      qualifyingMode: "hosted-only; Vertex excluded",
+      attemptedPairs: 1,
+      completedPairs: 0,
       humanReview: "pending",
       scientificQualityClaim: "withheld",
       sourceId: record.id,
@@ -73,25 +86,20 @@ async function main() {
     try {
       const started = Date.now();
       const baseline = ExtractionSchema.parse(
-        await gateway.complete(
-          "extraction",
-          EXTRACTION_PROMPT,
-          {
-            schema: z.toJSONSchema(ExtractionSchema),
-            expectedPaperIds: [paper.id],
-            molecule,
-            papers: [paper],
-            snapshots: [source],
-          },
-          run,
-          save,
-        ),
+        await gateway.complete("extraction", EXTRACTION_PROMPT, extractionInput(paper, molecule, [source]), run, save, {
+          maxOutputTokens: 2000,
+          reasoningEffort: "low",
+        }),
       );
       exactIds(
         [paper.id],
         baseline.papers.map((p) => p.paperId),
       );
-      const claims = baseline.papers.flatMap((p) => p.claims);
+      const claims = baseline.papers.flatMap((p) => {
+        if (p.claims.some((c) => c.paperId !== p.paperId) || p.claims.length > 2)
+          throw new Error("Baseline violates production paper grouping or claim bound.");
+        return p.claims;
+      });
       exactIds(
         claims.map((c) => c.id),
         [...new Set(claims.map((c) => c.id))],
@@ -111,6 +119,7 @@ async function main() {
         run,
         save,
       );
+      report.completedPairs = 1;
       report.twoRole = {
         published: result.claims,
         elapsedMs: Date.now() - next,

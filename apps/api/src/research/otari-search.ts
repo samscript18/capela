@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { MoleculeSnapshot, ResearchRun } from "@capela/shared";
+import { SearchDiscoverySchema, type MoleculeSnapshot, type ResearchRun } from "@capela/shared";
 import type { OtariGatewayService, SaveRun } from "./otari-gateway.service";
 import { ResearchError, scientificUrl } from "./provenance";
 
@@ -44,6 +44,12 @@ export async function hostedScientificSearch(
   const policy = gateway.value("OTARI_EXTRACTION_POLICY");
   if (!policy) throw new ResearchError("OTARI_CONFIGURATION", "Configure a hosted policy for scientific search.");
   const query = `${molecule.preferredName.slice(0, 200)} biological activity mechanism study`;
+  if (run.discovery) {
+    const retained = SearchDiscoverySchema.parse(run.discovery);
+    if (retained.query !== query)
+      throw new ResearchError("SEARCH_CHECKPOINT_MISMATCH", "Saved search belongs to a different molecule query.");
+    return { results: retained.urls.map((url) => ({ title: "", url, snippet: "" })) };
+  }
   const { data, event } = await gateway.request(
     "/chat/completions",
     {
@@ -102,6 +108,13 @@ export async function hostedScientificSearch(
       `Hosted search returned ${parsed.results.length} source records despite requesting three; selection remains bounded. The requested result count is not a verified hosted ceiling.`,
     );
   event.toolCallId = parsed.toolCallId;
+  run.discovery = {
+    query,
+    completedAt: new Date().toISOString(),
+    toolCallId: parsed.toolCallId,
+    ...(event.requestId ? { requestId: event.requestId } : {}),
+    urls: [...new Set(parsed.results.map((r) => r.url))],
+  };
   if (parsed.assistantTruncated)
     run.limitations.push(
       "Search assistant response reached its output limit. Only the independently completed, validated Otari search metadata was used; assistant text was discarded. Publication abstracts still require canonical retrieval and passage verification. No paid replay was attempted.",
