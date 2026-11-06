@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-06T16:14:50.510Z",
+  "checks": [
+    {
+      "mode": "routing",
+      "exitCode": 2,
+      "status": "blocked",
+      "requestsSent": 0,
+      "reason": "Dedicated isolated test key/policy and recorded operator configuration are missing. Working production settings are not modified."
+    },
+    {
+      "mode": "ceiling",
+      "exitCode": 2,
+      "status": "blocked",
+      "requestsSent": 0,
+      "reason": "Dedicated isolated test key/policy and recorded operator configuration are missing. Working production settings are not modified."
+    }
+  ],
+  "ledgerUnchanged": true,
+  "newPaidRequests": 0,
+  "totalExposureMicrousd": 1799451,
+  "explanation": "No dedicated isolated test keys/policy/ceiling metadata or administrative access configured; the normal application key is not substituted.",
+  "scriptHash": "57f437f04f50eee7bad8b208b65f9242ffa6e2eef474a68c7d7c0ddeb718a5b5",
+  "implementationCommit": "6abdac4"
+}

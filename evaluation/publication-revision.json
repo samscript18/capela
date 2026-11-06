@@ -1,0 +1,636 @@
+{
+  "version": "publication-revision-evidence-v1",
+  "date": "2026-11-06T16:21:45.753Z",
+  "implementationCommit": "6abdac466d5698e3557b60798a32a7529fda5cf6",
+  "diagnosis": {
+    "claimId": "32141677-claim-2",
+    "originalModelVerdict": "supported",
+    "originalAllChecksTrue": true,
+    "originalRevisedFinding": null,
+    "originalPublication": "accepted",
+    "cause": "Reviewer missed unsupported appended wording. Exact spans passed and no model support check was false. Later source-inspection concern was commentary, not an enforced publication hold.",
+    "fix": "Evidence-bound support holds now gate publication. Separate post-run revision withholds the complete candidate as unresolved; no keyword entailment rule or invented model correction."
+  },
+  "originalPreservation": {
+    "artifact": "evaluation/passage-live-verification.json",
+    "sha256": "0b77965b310efa7925947f23e4a8d537bf07888bbc4d61aca4db96d17291431f",
+    "unchangedFromB5ac1dc": true,
+    "privateOriginalRecordSha256": "cb97204dbe719fbe0de318e5e2a73a446862e030f32c01c090ef0d956163f999",
+    "localPersistence": {
+      "databaseScope": "isolated local verification only",
+      "originalUnchanged": true,
+      "originalStoredHash": "bdf8539015e256bd68aa38674edae0b495ce74d5accbee2f3175c5ab55a92aa2",
+      "originalRunId": "32c6b090-42f9-4141-b9fb-5dc2902fe028",
+      "revisionRunId": "pubrev_f6b2dd6ade6fe1628f772e7d9b6bde1070f66d28e9f398334fa326b1b874257a",
+      "ownerPreserved": true,
+      "newPublishedClaims": 1,
+      "unresolved": 1,
+      "newPaidCalls": 0
+    }
+  },
+  "revision": {
+    "metadata": {
+      "version": "publication-revision-v1",
+      "originalRunId": "32c6b090-42f9-4141-b9fb-5dc2902fe028",
+      "originalRecordHash": "d1e72fdc2055819c8b515d7eec6cb1775dcd7b35a197893472359a8ded577a3a",
+      "recordedAt": "2026-11-06T16:17:22.789Z",
+      "provenance": "post-run-source-inspection; no new inference",
+      "codeCommit": "6abdac466d5698e3557b60798a32a7529fda5cf6",
+      "originalAudit": {
+        "version": "span-audit-v1",
+        "programHash": "0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249",
+        "valid": true,
+        "accepted": 2,
+        "sources": 1,
+        "distribution": {
+          "literature_reported": 2
+        },
+        "invalidIds": [],
+        "remote": true,
+        "requestId": "75e1065c-5f13-436e-afa0-e4b0701163f6"
+      }
+    },
+    "holds": [
+      {
+        "version": "publication-hold-v1",
+        "id": "hold_315ee5731b57a11c91e0bb3587ba78e35fcd71ae1faea9ae7247b2a21c559a18",
+        "originalRunId": "32c6b090-42f9-4141-b9fb-5dc2902fe028",
+        "claimId": "32141677-claim-2",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "findingHash": "a1df0232e2603760dccdfac5ce9b7927cf63da63f880a4ef3c1ffd3549767919",
+        "reviewHash": "002c6ee36a8d63dbc5192f7f830612422377bde4e38f8bee5e39e4237b583f7a",
+        "actor": "assistant_source_inspection",
+        "recordedAt": "2026-11-06T16:17:22.789Z",
+        "verdict": "unsupported",
+        "reason": "The added clause ‘a key regulator of inflammation and cell survival’ is not stated by the selected passage. Withhold the complete finding pending adequate source support. The original reviewer returned supported with all checks true and did not flag this clause."
+      }
+    ],
+    "models": {
+      "extraction": "openai/gpt-oss-20b",
+      "review": "openai/gpt-oss-120b",
+      "distinct": true
+    },
+    "decisions": [
+      {
+        "candidate": {
+          "id": "32141677-claim-1",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+          "proposedClass": "literature_reported",
+          "kind": "activity",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": "contribution to cancer cell death",
+          "label": "Curcumin regulates ROS in tumor cells",
+          "relationship": "indirect_association",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"]
+          }
+        },
+        "review": {
+          "claimId": "32141677-claim-1",
+          "verdict": "supported",
+          "reason": "The abstract states that curcumin can regulate ROS and calcium levels in tumor cells, contributing to cancer cell death, matching the claim.",
+          "evidenceType": "literature_reported",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"],
+            "revisionPassageId": null
+          },
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          }
+        },
+        "status": "accepted",
+        "reason": "The abstract states that curcumin can regulate ROS and calcium levels in tumor cells, contributing to cancer cell death, matching the claim.",
+        "publishedFinding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+        "publishedClass": "literature_reported"
+      },
+      {
+        "candidate": {
+          "id": "32141677-claim-2",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+          "proposedClass": "literature_reported",
+          "kind": "activity",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": "inhibition of NF‑κB activity",
+          "label": "Curcumin inhibition of NF‑κB",
+          "relationship": "inhibition",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+              "start": 1146,
+              "end": 1307,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"]
+          }
+        },
+        "review": {
+          "claimId": "32141677-claim-2",
+          "verdict": "supported",
+          "reason": "The abstract reports inhibition of NF‑κB activity by curcumin, directly supporting the claim.",
+          "evidenceType": "literature_reported",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+              "start": 1146,
+              "end": 1307,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"],
+            "revisionPassageId": null
+          },
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          }
+        },
+        "status": "unresolved",
+        "reason": "Publication withheld after assistant_source_inspection at 2026-11-06T16:17:22.789Z: The added clause ‘a key regulator of inflammation and cell survival’ is not stated by the selected passage. Withhold the complete finding pending adequate source support. The original reviewer returned supported with all checks true and did not flag this clause.. Original model verdict retained; no new model correction."
+      }
+    ],
+    "publishedEvidence": [
+      {
+        "id": "32141677-claim-1",
+        "paperId": "32141677",
+        "kind": "activity",
+        "activity": "curcumin regulates ros in tumor cells",
+        "originalActivity": "Curcumin regulates ROS in tumor cells",
+        "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+        "evidenceType": "literature_reported",
+        "confidence": "medium",
+        "studyType": "review",
+        "analyzedSource": "abstract",
+        "model": null,
+        "measuredOutcome": "contribution to cancer cell death",
+        "provenance": {
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "decisionId": "32141677-claim-1"
+        }
+      }
+    ],
+    "assessment": {
+      "overallStrength": "Limited",
+      "score": 15,
+      "biologicalActivityEvidence": "Limited",
+      "targetEvidence": "Insufficient",
+      "mechanisticEvidence": "Insufficient",
+      "consistency": "consistent",
+      "strongestEvidence": [],
+      "majorEvidenceGaps": [
+        "No direct experimental evidence was identified in the analyzed material.",
+        "No molecular target has direct experimental confirmation in the analyzed material.",
+        "The retrieved literature does not establish a sufficiently supported molecular mechanism.",
+        "Capela analyzed abstracts only; no full text was analyzed.",
+        "1 publication support hold(s): unsupported wording is withheld. Original model agreement did not establish complete source support."
+      ],
+      "conflicts": [],
+      "explanation": "Evidence strength is limited based on 0 direct experimental, 0 indirect experimental, and 0 computational source papers; mechanism status is insufficient evidence.",
+      "basis": {
+        "papersAnalyzed": 1,
+        "abstractOnlyPapers": 1,
+        "directExperimentalPapers": 0,
+        "indirectExperimentalPapers": 0,
+        "computationalPapers": 0,
+        "literatureReportedPapers": 1,
+        "directlyConfirmedTargets": 0,
+        "mechanismStatus": "insufficient_evidence"
+      }
+    },
+    "dossier": {
+      "generatedAt": "2026-11-06T16:17:22.789Z",
+      "overview": {
+        "molecule": {
+          "pubchemCid": 969516,
+          "preferredName": "Curcumin",
+          "synonyms": [
+            "458-37-7",
+            "Diferuloylmethane",
+            "Natural yellow 3",
+            "Kacha haldi",
+            "Curcumin I",
+            "Curcuma",
+            "Haldar",
+            "Indian saffron",
+            "Gelbwurz",
+            "Yellow Ginger",
+            "(1E,6E)-1,7-Bis(4-hydroxy-3-methoxyphenyl)hepta-1,6-diene-3,5-dione",
+            "Souchet",
+            "Haidr",
+            "Halad",
+            "Halud",
+            "Terra Merita",
+            "C.I. Natural Yellow 3",
+            "Safran d'Inde",
+            "Yo-Kin",
+            "Yellow puccoon"
+          ],
+          "molecularFormula": "C21H20O6",
+          "molecularWeight": "368.4",
+          "canonicalSmiles": "COC1=C(C=CC(=C1)C=CC(=O)CC(=O)C=CC2=CC(=C(C=C2)O)OC)O",
+          "isomericSmiles": "COC1=C(C=CC(=C1)/C=C/C(=O)CC(=O)/C=C/C2=CC(=C(C=C2)O)OC)O",
+          "inchi": "InChI=1S/C21H20O6/c1-26-20-11-14(5-9-18(20)24)3-7-16(22)13-17(23)8-4-15-6-10-19(25)21(12-15)27-2/h3-12,24-25H,13H2,1-2H3/b7-3+,8-4+",
+          "inchiKey": "VFLDPWHFBUODDF-FCXRPNKRSA-N",
+          "structure2dUrl": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/969516/PNG?record_type=2d&image_size=large",
+          "pubchemUrl": "https://pubchem.ncbi.nlm.nih.gov/compound/969516",
+          "description": {
+            "text": "Curcumin is a beta-diketone that is methane in which two of the hydrogens are substituted by feruloyl groups. A natural dyestuff found in the root of Curcuma longa. It has a role as a geroprotector, a metabolite, a biological pigment, an antineoplastic agent, a flavouring agent, an antifungal agent, a lipoxygenase inhibitor, a dye, an iron chelator, an EC 1.1.1.21 (aldehyde reductase) inhibitor, a radical scavenger, a contraceptive drug, an EC 1.6.5.2 [NAD(P)H dehydrogenase (quinone)] inhibitor, a nutraceutical, an immunomodulator, a ligand, an EC 1.1.1.205 (IMP dehydrogenase) inhibitor, an EC 3.5.1.98 (histone deacetylase) inhibitor, a hepatoprotective agent, a neuroprotective agent, an EC 1.8.1.9 (thioredoxin reductase) inhibitor, an anti-inflammatory agent, an EC 2.7.10.2 (non-specific protein-tyrosine kinase) inhibitor, a food colouring and an EC 1.1.1.25 (shikimate dehydrogenase) inhibitor. It is a polyphenol, an aromatic ether, an enone, a beta-diketone and a diarylheptanoid. It is functionally related to a trans-ferulic acid.",
+            "sourceName": "ChEBI",
+            "sourceUrl": "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:3962"
+          }
+        }
+      },
+      "sources": {
+        "items": [],
+        "paperIds": [],
+        "evidenceIds": []
+      },
+      "biologicalActivity": {
+        "items": [
+          {
+            "name": "curcumin regulates ros in tumor cells",
+            "originalNames": ["Curcumin regulates ROS in tumor cells"],
+            "summary": "1 extracted finding across 1 paper; 0 experimental and 0 computational.",
+            "strength": "Limited",
+            "supportingEvidenceIds": ["32141677-claim-1"],
+            "supportingPaperIds": ["32141677"],
+            "studyModels": [],
+            "experimentalCount": 0,
+            "computationalCount": 0,
+            "conflicts": []
+          }
+        ],
+        "paperIds": ["32141677"],
+        "evidenceIds": ["32141677-claim-1"]
+      },
+      "molecularTargets": {
+        "items": [],
+        "paperIds": [],
+        "evidenceIds": []
+      },
+      "mechanism": {
+        "status": "insufficient_evidence",
+        "summary": "The retrieved literature does not establish a sufficiently supported molecular mechanism.",
+        "edges": [],
+        "evidenceIds": [],
+        "paperIds": []
+      },
+      "literature": {
+        "items": [
+          {
+            "id": "32141677",
+            "source": "PUBMED",
+            "title": "Molecular mechanism of curcumin action in signaling pathways: Review of the latest research.",
+            "authors": ["Liczbiński P", "Michałowicz J", "Bukowska B"],
+            "journal": "Phytotherapy research : PTR",
+            "year": 2020,
+            "doi": "10.1002/ptr.6663",
+            "pmid": "32141677",
+            "abstract": "Recently, many studies have been conducted trying to explain the molecular mechanism of curcumin action in various pathological states of the cell and the organism. Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine, apoptosis of the human papilloma and the activity of the 26S proteasome, and p53 level. Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells. Curcumin can also arrest of the cell cycle in the G2/M phase leading to apoptosis and/or reduction in cancer cells proliferation. Moreover, curcumin is capable of crossing the blood-brain barrier, and thus it may protect the neurons from oxidative stress and inflammation. Finally, curcumin may play a role in cardiological protection and it is possible to use it in the protection of liver and spleen against oxidative and inflammatory injury. Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+            "publicationTypes": ["Review", "Journal Article"],
+            "studyType": "review",
+            "fullTextAvailable": false,
+            "openAccess": false,
+            "externalUrl": "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+            "relevanceScore": 0,
+            "relevanceReasons": ["Selected from hosted Otari scientific search; canonical metadata via hosted MCP"],
+            "matchedQueries": ["Curcumin"],
+            "analyzedSource": "abstract",
+            "evidenceIds": ["32141677-claim-1"],
+            "evidenceTypes": ["literature_reported"],
+            "extractedFindings": [
+              "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death"
+            ]
+          }
+        ],
+        "paperIds": ["32141677"],
+        "evidenceIds": ["32141677-claim-1"]
+      },
+      "evidenceVsPrediction": {
+        "distribution": {
+          "direct_experimental": 0,
+          "indirect_experimental": 0,
+          "computational_prediction": 0,
+          "literature_reported": 1,
+          "capela_inference": 0,
+          "insufficient": 0
+        },
+        "examples": [
+          {
+            "id": "32141677-claim-1",
+            "paperId": "32141677",
+            "kind": "activity",
+            "activity": "curcumin regulates ros in tumor cells",
+            "originalActivity": "Curcumin regulates ROS in tumor cells",
+            "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+            "evidenceType": "literature_reported",
+            "confidence": "medium",
+            "studyType": "review",
+            "analyzedSource": "abstract",
+            "model": null,
+            "measuredOutcome": "contribution to cancer cell death",
+            "provenance": {
+              "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+              "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+              "spans": [
+                {
+                  "blockId": "abstract",
+                  "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+                  "start": 382,
+                  "end": 700,
+                  "convention": "utf16-zero-based-end-exclusive"
+                }
+              ],
+              "decisionId": "32141677-claim-1"
+            }
+          }
+        ],
+        "paperIds": ["32141677"],
+        "evidenceIds": ["32141677-claim-1"]
+      },
+      "researchAssessment": {
+        "overallStrength": "Limited",
+        "score": 15,
+        "biologicalActivityEvidence": "Limited",
+        "targetEvidence": "Insufficient",
+        "mechanisticEvidence": "Insufficient",
+        "consistency": "consistent",
+        "strongestEvidence": [],
+        "majorEvidenceGaps": [
+          "No direct experimental evidence was identified in the analyzed material.",
+          "No molecular target has direct experimental confirmation in the analyzed material.",
+          "The retrieved literature does not establish a sufficiently supported molecular mechanism.",
+          "Capela analyzed abstracts only; no full text was analyzed.",
+          "1 publication support hold(s): unsupported wording is withheld. Original model agreement did not establish complete source support."
+        ],
+        "conflicts": [],
+        "explanation": "Evidence strength is limited based on 0 direct experimental, 0 indirect experimental, and 0 computational source papers; mechanism status is insufficient evidence.",
+        "basis": {
+          "papersAnalyzed": 1,
+          "abstractOnlyPapers": 1,
+          "directExperimentalPapers": 0,
+          "indirectExperimentalPapers": 0,
+          "computationalPapers": 0,
+          "literatureReportedPapers": 1,
+          "directlyConfirmedTargets": 0,
+          "mechanismStatus": "insufficient_evidence"
+        },
+        "paperIds": ["32141677"],
+        "evidenceIds": ["32141677-claim-1"]
+      }
+    },
+    "localAudit": {
+      "valid": true,
+      "accepted": 1,
+      "sources": 1,
+      "distribution": {
+        "literature_reported": 1
+      },
+      "invalidIds": [],
+      "version": "span-audit-v1",
+      "programHash": "0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249",
+      "remote": false
+    },
+    "originalEvents": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T15:50:37.866Z",
+        "operation": "scientific_search_tool",
+        "status": "completed",
+        "correlationId": "b7b68c55-29f8-464f-8694-08b0e535f889",
+        "requestId": "bf18cbd2-ed1e-4ce7-b53c-813a5cc97b6a",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 57035,
+        "durationMs": 2723,
+        "httpStatus": 200,
+        "toolCallId": "otari_ws_7718cd871ea649a786a6be84f0c6c652"
+      },
+      {
+        "sequence": 2,
+        "at": "2026-11-06T15:50:40.597Z",
+        "operation": "mcp_discovery",
+        "status": "completed",
+        "correlationId": "85fdbc3b-8f98-4a09-84b7-99de367a884b",
+        "requestId": "req_ff3c0ee93e914bd5a384e07b8faad447",
+        "durationMs": 767,
+        "httpStatus": 200
+      },
+      {
+        "sequence": 3,
+        "at": "2026-11-06T15:50:41.370Z",
+        "operation": "publication_metadata",
+        "status": "completed",
+        "correlationId": "a0deb21f-4f62-4357-8be2-fdc517b1185a",
+        "requestId": "req_940a6928d3a04734813f64da8a989560",
+        "durationMs": 15258,
+        "httpStatus": 200
+      },
+      {
+        "sequence": 4,
+        "at": "2026-11-06T15:50:56.650Z",
+        "operation": "extraction",
+        "status": "completed",
+        "correlationId": "224b9e1e-b224-4106-b292-1f5b9690e241",
+        "requestId": "9140a141-80e2-44d0-8282-d0a299a9a2a6",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 190,
+        "durationMs": 4110,
+        "httpStatus": 200
+      },
+      {
+        "sequence": 5,
+        "at": "2026-11-06T15:51:00.780Z",
+        "operation": "review",
+        "status": "completed",
+        "correlationId": "7901ed36-83e3-4892-bf66-788a3a644e87",
+        "requestId": "5c13cdfa-371a-4d80-958b-e987402656f3",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-120b",
+        "fallback": false,
+        "costMicrousd": 281,
+        "durationMs": 17839,
+        "httpStatus": 200
+      },
+      {
+        "sequence": 6,
+        "at": "2026-11-06T15:51:18.642Z",
+        "operation": "sandbox_audit",
+        "status": "completed",
+        "correlationId": "ee8ec06a-5260-42eb-8ad7-3203b3a709e2",
+        "requestId": "75e1065c-5f13-436e-afa0-e4b0701163f6",
+        "durationMs": 1024,
+        "httpStatus": 200
+      }
+    ],
+    "inheritedBudget": {
+      "currency": "USD",
+      "capMicrousd": 200000,
+      "reservedMicrousd": 20000,
+      "reportedMicrousd": 57506,
+      "unknownCostCalls": 2,
+      "calls": 5,
+      "maxCalls": 5,
+      "terminal": false
+    }
+  },
+  "sample": {
+    "html": "apps/web/public/samples/curcumin-2026-11-06.html",
+    "json": "apps/web/public/samples/curcumin-2026-11-06.json",
+    "publishedFindings": 1,
+    "unresolved": 1,
+    "htmlSha256": "6e67ac8a7074ab16ff06bbf4e95b39fcc510d70668fa6f4e4156c7850c536545",
+    "externallyPublished": false
+  },
+  "actualBrowser": {
+    "normalPrivyLogin": true,
+    "localAppNewResearchSpendingDisabled": true,
+    "separateRevisionLoaded": true,
+    "publishedEvidenceCards": 1,
+    "unsupportedClaimNotPublishedCard": true,
+    "originalModelVerdictsAndPostRunProvenanceVisible": true,
+    "downloadedExport": {
+      "sha256": "7289fe41fb3a0984a371806aad5edb30471757b9f3e08dd0f5e7a30529abc1bc",
+      "bytes": 1595810,
+      "width": 1098,
+      "height": 1834,
+      "visuallyInspected": true,
+      "shows": [
+        "1 evidence claim",
+        "Publication revision",
+        "1 candidate withheld",
+        "No new inference",
+        "Current evidence audited locally",
+        "Abstract-only limitations"
+      ]
+    },
+    "privatePngNotPublished": true,
+    "readOnlySample": {
+      "loaded": true,
+      "onePublishedFinding": true,
+      "unresolvedCandidate": true,
+      "originalSupportedVerdict": true,
+      "separateProvenance": true,
+      "visuallyInspected": true
+    }
+  },
+  "accounting": {
+    "newPaidCalls": 0,
+    "newReportedCostMicrousd": 0,
+    "existingConservativeExposureMicrousd": 1799451,
+    "existingLedgersRetained": true,
+    "noReservationReleased": true,
+    "originalEventAndBudgetEquality": true
+  },
+  "controlledCapabilities": {
+    "date": "2026-11-06T16:14:50.510Z",
+    "checks": [
+      {
+        "mode": "routing",
+        "exitCode": 2,
+        "status": "blocked",
+        "requestsSent": 0,
+        "reason": "Dedicated isolated test key/policy and recorded operator configuration are missing. Working production settings are not modified."
+      },
+      {
+        "mode": "ceiling",
+        "exitCode": 2,
+        "status": "blocked",
+        "requestsSent": 0,
+        "reason": "Dedicated isolated test key/policy and recorded operator configuration are missing. Working production settings are not modified."
+      }
+    ],
+    "ledgerUnchanged": true,
+    "newPaidRequests": 0,
+    "totalExposureMicrousd": 1799451,
+    "explanation": "No dedicated isolated test keys/policy/ceiling metadata or administrative access configured; the normal application key is not substituted.",
+    "scriptHash": "57f437f04f50eee7bad8b208b65f9242ffa6e2eef474a68c7d7c0ddeb718a5b5"
+  },
+  "sixCapabilitiesDemonstrated": false,
+  "checks": {
+    "node": "24.22.2",
+    "unit": {
+      "passed": 109,
+      "failed": 0
+    },
+    "integration": {
+      "passed": 4,
+      "failed": 0
+    },
+    "browserFixtures": {
+      "passed": 7,
+      "failed": 0
+    },
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "originalRunArtifactByteIdentical": true,
+    "privateValueScan": "passed",
+    "generatedFileGates": "typecheck/build sequential after preview shutdown",
+    "warnings": ["Existing viem/ox dynamic dependency", "Privy optional @farcaster/mini-app-solana import"]
+  }
+}

@@ -10,9 +10,11 @@
 - Direct/hosted MCP and the new passage-selection hosted-only nonempty run pass. Retain actual tool/model IDs, source/index hashes and the specific support limitation in claim 2. Controlled fallback and finite monetary denial still need dedicated configuration. Do not attach fixture tests as hosted proof.
 - Describe completed source-hash, exact-passage and reference checks, automated tests and actual hosted behavior with their recorded provenance. These checks are not scientific-accuracy evidence or proof that review improves correctness.
 - Answer organiser questions honestly from the recorded results; distinguish application behavior, offline tests and demonstrated hosted capabilities.
-- Sanitized dated read-only sample prepared: `apps/web/public/samples/curcumin-2026-11-06.html` and JSON. It preserves original model verdicts and the observed unsupported-clause concern, excludes owner IDs/tokens/mutation controls, and leaves private endpoints authenticated. It is available locally, not externally published.
+- Sanitized dated read-only sample prepared: `apps/web/public/samples/curcumin-2026-11-06.html` and JSON. It preserves original model verdicts and separately records the publication revision (one published finding, claim 2 unresolved after source inspection), excludes owner IDs/tokens/mutation controls, and leaves private endpoints authenticated. It is available locally, not externally published.
 - Owner attests current GitHub main `d9cc2501f44f140097b13d62f037b5b2295ad2a2` is deployed; runtime commit metadata/logs remain unavailable. Authorize any deployment of the newer tested branch separately.
 - Supply participant-recorded 3–5 minute demo link and feedback link/written responses. No AI video or audio.
 - Upstream issues/PRs: none opened in this task; do not invent any.
 - Review public repository for secrets, legacy compatibility, current README and reproducible test instructions.
 - Owner explicitly authorizes any future push/deploy/email/submission. None performed in this follow-up.
+
+- Controlled routing and monetary-ceiling readiness commands sent zero requests because isolated test configuration is absent. See CONTROLLED_HOSTED_CHECKS for exact dashboard setup and guarded commands. Do not claim those categories from offline tests or ordinary routing-policy resolution.

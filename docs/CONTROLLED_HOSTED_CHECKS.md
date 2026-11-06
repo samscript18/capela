@@ -1,19 +1,59 @@
-# Controlled hosted checks — prepared, not executed
+# Two remaining hosted checks
 
-Primary contracts rechecked November 6 at upstream [`bc43068`](https://github.com/mozilla-ai/otari/tree/bc43068f7a06470f65a812b8f0d1fd9a335b87ec): [routing](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/routing.md#failover), [budgets](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/budgets.md#reservations-are-taken-up-front). Neither local denial fixtures nor direct Vertex fallback qualifies.
+**Neither test has executed.** The normal Capela API key can run research, but it cannot create/manage the separate Otari test settings required here. No dedicated test keys/policies or administrative access are configured locally. The readiness commands returned `blocked`, zero requests; the spending ledger is unchanged. See [controlled-check-readiness.json](../evaluation/controlled-check-readiness.json).
 
-No dedicated policy/key or administrative access is configured locally. Existing runtime management reads were 401. The owner/operator must prepare isolated test configuration; this document does not authorize production changes.
+In plain terms, we need:
 
-## Routing
+1. A separate test route whose first model is made to fail before replying, so Otari demonstrably switches to its backup.
+2. A separate test key with a small finite dollar ceiling that rejects one priced request before execution. We must not drain the account or lower/change the working production key's limit.
 
-Create a dedicated extraction test policy using a supported hosted `select` + `on_failure` configuration. Have the operator induce one controlled **pre-response transient failure** on its test primary, with a working extraction fallback and a different open-weight review role. Do not assume an invented unavailable model ID triggers failover. Use the real fixed source snapshot and production `extractionInput`, strict native extraction schema, 2,000-token/low-reasoning bounds.
+Primary contracts were inspected November 6 at upstream [`bc43068`](https://github.com/mozilla-ai/otari/tree/bc43068f7a06470f65a812b8f0d1fd9a335b87ec): [routing](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/routing.md#in-the-dashboard), [budget holds/refusals](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/budgets.md#reservations-are-taken-up-front). A configured fallback alone does not prove recovery. An application cap or insufficient account funds is not a hosted monetary-ceiling denial.
 
-Before execution, record policy revision, target IDs/licenses, source hash, code commit/hash and a small reservation allocated from the retained task ledger. Send once. Retain actual response IDs, `Otari-Fallback`, resolved model and operator/dashboard attempted-model trace. Validate output and use it in the investigation. A successful policy alias, application-level retry or Vertex fallback is insufficient. Stop on denial or uncertain charge; do not automatically replay.
+## Owner/operator dashboard setup
 
-## Finite monetary ceiling
+Use isolated test configuration; leave `capela-extraction`, `capela-review`, their production credentials and working ceilings unchanged.
 
-Create a dedicated non-exempt test key with a finite dollar budget smaller than the documented priced request hold. A priced model with a tiny bounded prompt/output limit can then be refused **before dispatch**, without spending the account balance. Confirm the hosted UI accepts the chosen finite amount and that it is below the computed hold; do not guess zero-limit semantics. Ensure pricing exists and distinguish provider/account funds from the scoped cap.
+- **Routing → Create policy → Fallback**: create a test-only policy, choose a primary and a distinct working backup under **If unavailable, use**. The operator must arrange a controlled transient primary failure before response bytes are sent. Do not use a guessed nonexistent model or assume that disabling a provider/using a bad credential produces the required failure. If the hosted dashboard does not expose failure injection, ask the Otari operator for an isolated test policy. Retain its configuration revision and actual attempted-model trace. The backup must support Capela's structured extraction schema.
+- **Organization → Spend & budgets**: prepare a separate finite dollar budget and bind it to a dedicated test key/scope. Upstream also documents assigning a budget directly to a key under API keys. The key must be non-exempt. With configured pricing, choose a positive ceiling below the documented hold for the single small test request. Confirm the accepted value and request hold in the hosted UI/operator trace; do not guess zero-limit behavior or prices. Keep account funds intact.
+- Supply test credentials only through ignored local environment variables `OTARI_ROUTING_TEST_API_KEY` and `OTARI_CEILING_TEST_API_KEY`. Never send keys in chat or put them in the configuration metadata below.
 
-Use one bounded non-streaming chat request with that key, no tools, no retry. Expect HTTP 403 and `Otari-Error-Code: budget_exceeded`; retain safe request ID and `Otari-Budget-Scope` plus scoped budget configuration. Verify Capela marks terminal denial, keeps saved partial work/uncertainty, and sends no subsequent provider request. Insufficient funds, pricing-required, a token/request limit, local allowance exhaustion or a 429 do not prove this monetary-ceiling category.
+## Concrete local execution
 
-Retain existing task ledgers and reserve the smallest possible exposure before sending. If the test unexpectedly succeeds, record its actual settlement/unknown cost and stop; do not repeat until money is consumed. Never raise the main ceiling or buy credits to obtain a demonstration.
+`node scripts/controlled-hosted-checks.cjs routing` and `... ceiling` are single-shot tools. They refuse missing isolated configuration before network access, never use the normal key as a substitute, and never edit hosted settings. Each records at most one $0.01/one-call allocation inside the retained $20 task authorization. Existing costs/reservations/counters remain; repeated execution of the same mode is refused. Unknown costs retain reservations.
+
+After real operator setup, write ignored `.local-evaluation/controlled-test-config.json`. Fields below are a schema example, **not usable settings**; zero holds intentionally block dispatch until replaced by verified positive micro-USD amounts:
+
+```json
+{
+  "routing": {
+    "isolated": true,
+    "policy": "OPERATOR_SUPPLIED_TEST_POLICY",
+    "configurationReference": "OPERATOR_SUPPLIED_REVISION_ID",
+    "controlledFailureReference": "OPERATOR_SUPPLIED_FAILURE_SETUP_ID",
+    "expectedFallbackModel": "VERIFIED_BACKUP_MODEL_ID",
+    "requestHoldMicrousd": 0
+  },
+  "ceiling": {
+    "isolated": true,
+    "policy": "VERIFIED_PRICED_TEST_MODEL_OR_POLICY",
+    "configurationReference": "OPERATOR_SUPPLIED_KEY_BUDGET_REFERENCE",
+    "hostedLimitMicrousd": 0,
+    "requestHoldMicrousd": 0,
+    "nonExempt": true
+  }
+}
+```
+
+Nonsecret references must be short identifiers, not credential-bearing URLs. The script retains only these whitelisted metadata fields. The routing request hold must fit its $0.01 allocation; the ceiling test limit must be positive and below its verified hold.
+
+```bash
+npm run build:api
+./node_modules/.bin/dotenv -e .env.local -- node scripts/controlled-hosted-checks.cjs routing
+./node_modules/.bin/dotenv -e .env.local -- node scripts/controlled-hosted-checks.cjs ceiling
+```
+
+Routing uses the actual fixed source and production passage-selection extraction payload. Success requires an observed `Otari-Fallback: true`, the expected resolved model and valid nonempty hydrated extraction. It remains an isolated controlled role check until connected to an application demonstration; retain the actual dashboard attempted-model trace, not just setup metadata.
+
+The ceiling request is one non-streaming 16-output-token chat, no tools. A qualifying refusal is HTTP 403, `Otari-Error-Code: budget_exceeded`, and recorded `Otari-Budget-Scope`, backed by the finite-dollar configuration. The adapter becomes terminal; a subsequent attempted dispatch is rejected locally before HTTP. Insufficient funds, missing pricing, 429, local allowance exhaustion or a different response do not pass. An unexpected successful call is recorded and stops; never repeat to consume the balance. A denial/uncertain charge is never bypassed or automatically retried.
+
+No additional paid request, account setting change or credit purchase occurred during preparation. Four capabilities retain actual hosted application evidence; these two categories remain unverified until the isolated setup and executions exist.
