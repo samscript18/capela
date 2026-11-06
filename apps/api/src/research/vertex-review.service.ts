@@ -3,9 +3,16 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { randomUUID } from "node:crypto";
-import { ReviewSchema, type ResearchRun, type RunEvent } from "@capela/shared";
+import {
+  ReviewSchema,
+  CandidateClaimSchema,
+  SourceSnapshotSchema,
+  type ResearchRun,
+  type RunEvent,
+} from "@capela/shared";
 import { reserve, roleWireSchema, type SaveRun } from "./otari-gateway.service";
 import { ResearchError, strictOutput } from "./provenance";
+import { hydrateReviews } from "./passage-references";
 
 // This is a direct Google Cloud call. It never represents hosted Otari execution.
 @Injectable()
@@ -86,7 +93,7 @@ export class VertexReviewService {
         config: {
           systemInstruction: system,
           responseMimeType: "application/json",
-          responseJsonSchema: roleWireSchema("review"),
+          responseJsonSchema: roleWireSchema("review", run.inferenceContract),
           temperature: 0,
           maxOutputTokens: Math.min(maxOutputTokens, configuredOutput, 8000),
           thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
@@ -151,7 +158,14 @@ export class VertexReviewService {
       } catch {
         throw new ResearchError("VERTEX_INVALID_JSON", "Vertex review is not valid JSON.");
       }
-      const parsed = strictOutput(ReviewSchema, data);
+      const context = input as { claims?: unknown; snapshots?: unknown };
+      const parsed = run.inferenceContract
+        ? hydrateReviews(
+            data,
+            CandidateClaimSchema.array().parse(context.claims),
+            SourceSnapshotSchema.array().parse(context.snapshots),
+          )
+        : strictOutput(ReviewSchema, data);
       event.status = "completed";
       run.models.review = event.model;
       run.models.distinct = !!run.models.extraction && run.models.extraction !== event.model;

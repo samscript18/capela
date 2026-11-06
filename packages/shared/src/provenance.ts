@@ -14,6 +14,27 @@ export const SupportSpanSchema = z
   })
   .strict();
 
+export const PassageIndexSchema = z
+  .object({
+    version: z.literal("passage-index-v1"),
+    snapshotId: Id,
+    snapshotHash: z.string().regex(/^[a-f0-9]{64}$/),
+    normalization: z.literal("NFC-LF-v1"),
+    segmenter: z.literal("intl-en-sentence-v1"),
+    runtime: z.string().max(200),
+    hash: z.string().regex(/^[a-f0-9]{64}$/),
+    passages: z.array(z.object({ id: Id, span: SupportSpanSchema }).strict()).max(500),
+  })
+  .strict();
+export const PassageSelectionSchema = z
+  .object({
+    version: z.literal("passage-selection-v1"),
+    indexHash: z.string().regex(/^[a-f0-9]{64}$/),
+    passageIds: z.array(Id).min(1).max(4),
+    revisionPassageId: Id.nullable().optional(),
+  })
+  .strict();
+
 // Normalize absent optional persisted metadata without weakening required evidence fields.
 // Keep the public schema transform-free for OpenAPI/JSON Schema generation.
 export function parseStoredResearchRun(value: unknown): ResearchRun {
@@ -56,6 +77,7 @@ export const SourceSnapshotSchema = z
     parserVersion: z.literal("publication-abstract-v1"),
     truncated: z.boolean(),
     coverage: z.literal("abstract-only"),
+    passageIndex: PassageIndexSchema.optional(),
   })
   .strict();
 export const CandidateClaimSchema = z
@@ -74,6 +96,7 @@ export const CandidateClaimSchema = z
     label: Text,
     relationship: TargetRelationshipSchema.nullable(),
     spans: z.array(SupportSpanSchema).min(1).max(4),
+    passageSelection: PassageSelectionSchema.optional(),
   })
   .strict();
 export const ExtractionSchema = z
@@ -103,6 +126,7 @@ export const ReviewSchema = z
             evidenceType: EvidenceTypeSchema,
             revisedFinding: Text.nullable(),
             spans: z.array(SupportSpanSchema).min(1).max(4),
+            passageSelection: PassageSelectionSchema.optional(),
             checks: z
               .object({
                 molecule: z.boolean(),
@@ -112,6 +136,55 @@ export const ReviewSchema = z
                 sourceLimitations: z.boolean(),
               })
               .strict(),
+          })
+          .strict(),
+      )
+      .max(60),
+  })
+  .strict();
+// Inference-only v2 shapes: models select immutable passage IDs, never quotes/offsets.
+export const ExtractionSelectionSchema = z
+  .object({
+    version: z.literal("passage-selection-v1"),
+    papers: z
+      .array(
+        z
+          .object({
+            paperId: Id,
+            claims: z
+              .array(
+                CandidateClaimSchema.omit({
+                  snapshotId: true,
+                  snapshotHash: true,
+                  analyzedSource: true,
+                  spans: true,
+                  passageSelection: true,
+                })
+                  .extend({ passageIds: z.array(Id).min(1).max(4) })
+                  .strict(),
+              )
+              .max(2),
+            limitations: z.array(Text).max(8),
+          })
+          .strict(),
+      )
+      .max(5),
+  })
+  .strict();
+export const ReviewSelectionSchema = z
+  .object({
+    version: z.literal("passage-selection-v1"),
+    reviews: z
+      .array(
+        ReviewSchema.shape.reviews.element
+          .omit({
+            spans: true,
+            passageSelection: true,
+            revisedFinding: true,
+          })
+          .extend({
+            passageIds: z.array(Id).min(1).max(4),
+            revisionPassageId: Id.nullable(),
           })
           .strict(),
       )
@@ -196,6 +269,7 @@ export const SearchDiscoverySchema = z
 export type ResearchRun = {
   version: "otari-evidence-v1";
   runId: string;
+  inferenceContract?: "passage-selection-v1";
   discovery?: z.infer<typeof SearchDiscoverySchema>;
   snapshots: SourceSnapshot[];
   decisions: ClaimDecision[];
@@ -232,6 +306,7 @@ export const ResearchRunSchema = z
   .object({
     version: z.literal("otari-evidence-v1"),
     runId: Id,
+    inferenceContract: z.literal("passage-selection-v1").optional(),
     discovery: SearchDiscoverySchema.optional(),
     snapshots: z.array(SourceSnapshotSchema).max(5),
     decisions: z

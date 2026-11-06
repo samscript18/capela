@@ -3,7 +3,11 @@ require("reflect-metadata");
 const fs = require("node:fs");
 const path = require("node:path");
 const { ConfigService } = require("@nestjs/config");
-const { ExtractionSchema } = require("@capela/shared");
+const {
+  hydrateExtraction,
+  indexedSource,
+  INFERENCE_CONTRACT,
+} = require("../apps/api/dist/research/passage-references");
 const { OtariGatewayService } = require("../apps/api/dist/research/otari-gateway.service");
 const {
   OtariEvidenceService,
@@ -41,7 +45,8 @@ async function main() {
     gateway.assertConfigured();
     const run = gateway.createRun(require("node:crypto").randomUUID());
     run.budget.capMicrousd = Math.min(run.budget.capMicrousd, cap);
-    const source = snapshot(record.pmid, record.canonicalUrl, record.text);
+    const source = indexedSource(snapshot(record.pmid, record.canonicalUrl, record.text));
+    run.inferenceContract = INFERENCE_CONTRACT;
     source.truncated = true;
     run.snapshots = [source];
     const paper = {
@@ -85,7 +90,7 @@ async function main() {
     await save();
     try {
       const started = Date.now();
-      const baseline = ExtractionSchema.parse(
+      const baseline = hydrateExtraction(
         await gateway.complete("extraction", EXTRACTION_PROMPT, extractionInput(paper, molecule, [source]), run, save, {
           maxOutputTokens: 2000,
           reasoningEffort: "low",

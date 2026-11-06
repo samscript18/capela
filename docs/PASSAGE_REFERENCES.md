@@ -1,0 +1,15 @@
+# Deterministic passage references
+
+New inference contract: `passage-selection-v1`; extraction prompt `extraction-v5`, reviewer prompt `adversarial-review-v3`. Stored candidates/reviews still contain explicit spans for inspection, exports and fixed sandbox validation. Historical explicit-span results are unchanged.
+
+Before any new inference, the backend hashes the normalized snapshot and persists a `passage-index-v1` table on that snapshot. Each entry stores its exact quote, block, UTF-16 zero-based end-exclusive offsets and a SHA-256 ID bound to the index version, snapshot ID/content hash, normalization version and full span. The table also stores its manifest hash, segmenter algorithm and Node/ICU versions. Reopening uses this complete frozen table; it never depends on a later sentence-segmentation result.
+
+Extraction generates finding, proposed class and study context, but outputs only supporting `passageIds`, never quotation text, offsets or snapshot hashes. Backend hydration resolves IDs only against the exact paper's supplied snapshot and index, validates content/index hashes and exact spans, and constructs source IDs/hash/scope and spans. Empty, duplicate, unknown, stale and cross-source references fail; there is no fuzzy matching or identifier repair.
+
+Review independently assesses the finding against the same immutable source and selects supporting passage IDs. An `overstated` verdict must select exactly one `revisionPassageId` from those references. The backend constructs its exact source wording. Other verdicts require null correction. Selecting a valid passage does not establish entailment, and cannot bypass rejection, uncertainty, study-context/negation/directness checks, class downgrade rules, distinct observed models or the remote/local audit gate.
+
+Stored `passageSelection` records retain contract version, selected IDs, table hash and, for review, correction ID. Resume validates the stored selection against its spans/table. Publication auditing uses the review's final support while retaining the original extraction candidate in the decision trail.
+
+Compatibility: old dossiers and previously rejected candidates reload without fabricated indexes, support or review histories. Explicitly resumed old review checkpoints retain their old span contract. New hosted and optional Vertex compatibility calls use the new selection contract; Vertex remains direct-provider hybrid and is excluded from qualifying verification. Evaluation and role-smoke payloads share the production builder/hydration and native wire schema. No paid repair loop is introduced.
+
+Limits remain two candidate findings per abstract, four selected passages per finding, five abstracts maximum subject to budget/call limits, and at most two claims per review batch. Mechanical sentences over the 1,500-character span bound are omitted from the selectable index; no candidate is invented to fill the gap.

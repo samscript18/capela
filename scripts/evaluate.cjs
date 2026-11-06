@@ -5,12 +5,18 @@ const dataset = JSON.parse(fs.readFileSync("evaluation/pilot.json", "utf8"));
 const hash = crypto.createHash("sha256").update(fs.readFileSync("evaluation/pilot.json")).digest("hex");
 const { EXTRACTION_PROMPT, REVIEW_PROMPT } = require("../apps/api/dist/research/otari-evidence.service");
 const { snapshot, sourcePassages } = require("../apps/api/dist/research/provenance");
+const { indexedSource, resolvePassages } = require("../apps/api/dist/research/passage-references");
 const sourceChecks = dataset.sources.map((s) => {
-  const normalized = snapshot(s.pmid, s.canonicalUrl, s.text);
+  const normalized = indexedSource(snapshot(s.pmid, s.canonicalUrl, s.text));
   return {
     id: s.id,
     storedHashValid: crypto.createHash("sha256").update(s.text).digest("hex") === s.hash,
     pipelineHash: normalized.hash,
+    passageIndexHash: normalized.passageIndex.hash,
+    passageIndexVersion: normalized.passageIndex.version,
+    selectedPassagesValid: normalized.passageIndex.passages.every(
+      (p) => resolvePassages([p.id], normalized)[0].quote === p.span.quote,
+    ),
     unchangedByNormalization: normalized.text === s.text,
     passageIndexValid: sourcePassages(normalized).every(
       (span) => normalized.text.slice(span.start, span.end) === span.quote,
@@ -95,6 +101,6 @@ console.log(
 if (
   resolvable !== rows.length ||
   exact !== rows.length ||
-  sourceChecks.some((s) => !s.storedHashValid || !s.passageIndexValid)
+  sourceChecks.some((s) => !s.storedHashValid || !s.passageIndexValid || !s.selectedPassagesValid)
 )
   process.exitCode = 1;

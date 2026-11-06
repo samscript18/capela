@@ -1,3 +1,4 @@
+const { selectionCandidate, selectionReview } = require("../test/passage-fixtures");
 require("reflect-metadata");
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
@@ -313,6 +314,8 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
         if (pathname === "/chat/completions") {
           const persisted = await Model.findById(current.id).lean();
           assert.equal(persisted.research.snapshots[0].hash, source.hash, "source durable before inference");
+          assert.ok(persisted.research.snapshots[0].passageIndex.hash, "index durable before inference");
+          assert.equal(persisted.research.inferenceContract, "passage-selection-v1");
           const extraction = JSON.parse(init.body).model === "extract-policy";
           return Response.json(
             {
@@ -322,8 +325,17 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
                   message: {
                     content: JSON.stringify(
                       extraction
-                        ? { papers: [{ paperId: "12345", claims: [claim], limitations: ["Synthetic fixture"] }] }
-                        : { reviews: [review] },
+                        ? {
+                            version: "passage-selection-v1",
+                            papers: [
+                              {
+                                paperId: "12345",
+                                claims: [selectionCandidate(claim, source)],
+                                limitations: ["Synthetic fixture"],
+                              },
+                            ],
+                          }
+                        : { version: "passage-selection-v1", reviews: [selectionReview(review, source)] },
                     ),
                   },
                 },
@@ -360,6 +372,8 @@ test("isolated real Mongo: lease concurrency, cancellation/deletion fencing, rec
       assert.ok(completed.evidence[0].provenance);
       assert.ok(completed.research.models.distinct);
       assert.ok(completed.research.audit.remote);
+      assert.ok(completed.research.decisions[0].candidate.passageSelection);
+      assert.ok(completed.research.decisions[0].review.passageSelection);
       assert.equal(completed.research.budget.calls, 5);
       assert.notEqual(completed.research.runId, completed.leaseToken);
       assert.equal(Object.keys(completed.dossier).length, 9);

@@ -1,7 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { randomUUID } from "node:crypto";
-import { ExtractionSchema, ReviewSchema, type ResearchRun, type RunEvent } from "@capela/shared";
+import {
+  ExtractionSelectionSchema,
+  ReviewSelectionSchema,
+  ExtractionSchema,
+  ReviewSchema,
+  type ResearchRun,
+  type RunEvent,
+} from "@capela/shared";
 import { z } from "zod";
 import { ResearchError } from "./provenance";
 
@@ -222,9 +229,13 @@ export class OtariGatewayService {
         response_format: {
           type: "json_schema",
           json_schema: {
-            name: role === "extraction" ? "capela_extraction_v1" : "capela_review_v1",
+            name: run.inferenceContract
+              ? `capela_${role}_passages_v1`
+              : role === "extraction"
+                ? "capela_extraction_v1"
+                : "capela_review_v1",
             strict: true,
-            schema: roleWireSchema(role),
+            schema: roleWireSchema(role, run.inferenceContract),
           },
         },
         messages: [
@@ -306,8 +317,16 @@ function knownErrorCode(value: unknown): string | undefined {
 }
 
 // Constrain shape on the provider; enforce bounds/patterns again with the full local Zod schema.
-export function roleWireSchema(role: "extraction" | "review") {
-  const full = z.toJSONSchema(role === "extraction" ? ExtractionSchema : ReviewSchema);
+export function roleWireSchema(role: "extraction" | "review", contract?: "passage-selection-v1") {
+  const full = z.toJSONSchema(
+    contract
+      ? role === "extraction"
+        ? ExtractionSelectionSchema
+        : ReviewSelectionSchema
+      : role === "extraction"
+        ? ExtractionSchema
+        : ReviewSchema,
+  );
   const strip = (value: unknown): unknown => {
     if (Array.isArray(value)) return value.map(strip);
     if (!value || typeof value !== "object") return value;

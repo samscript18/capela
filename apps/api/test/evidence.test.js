@@ -1,5 +1,7 @@
 require("reflect-metadata");
 const { test } = require("node:test");
+const { indexedSource } = require("../dist/research/passage-references");
+const { selectionCandidate, selectionReview } = require("./passage-fixtures");
 const assert = require("node:assert/strict");
 const { spawnSync } = require("node:child_process");
 const {
@@ -444,11 +446,17 @@ test("reference errors identify stage and counts without leaking returned identi
   );
 });
 test("invalid extraction coverage or global claim IDs stops before review or audit", async () => {
-  const { s, c } = fixture();
+  const { s, c } = fixture("Aspirin did not increase binding in mice.");
   const paper = { id: c.paperId };
   for (const [output, label] of [
-    [{ papers: [] }, /Extraction paper coverage/],
-    [{ papers: [{ paperId: c.paperId, claims: [c, c], limitations: [] }] }, /Extraction claim uniqueness/],
+    [{ version: "passage-selection-v1", papers: [] }, /Extraction paper coverage/],
+    [
+      {
+        version: "passage-selection-v1",
+        papers: [{ paperId: c.paperId, claims: [selectionCandidate(c, s), selectionCandidate(c, s)], limitations: [] }],
+      },
+      /Extraction claim uniqueness/,
+    ],
   ]) {
     const g = gateway(),
       run = g.createRun("test");
@@ -735,8 +743,11 @@ test("offline adapter integration builds eight dossier sections only from accept
     run.models[role] = role === "extraction" ? "fixture-a" : "fixture-b";
     run.models.distinct = !!run.models.review;
     return role === "extraction"
-      ? { papers: [{ paperId: c.paperId, claims: [c], limitations: ["Fixture only"] }] }
-      : { reviews: [r] };
+      ? {
+          version: "passage-selection-v1",
+          papers: [{ paperId: c.paperId, claims: [selectionCandidate(c, s)], limitations: ["Fixture only"] }],
+        }
+      : { version: "passage-selection-v1", reviews: [selectionReview(r, s)] };
   };
   fake.request = async (path) => {
     assert.equal(path, "/code/execute");
@@ -773,7 +784,7 @@ test("offline adapter integration builds eight dossier sections only from accept
 });
 test("extraction is one bounded abstract per call and retains completed batches on later timeout", async () => {
   const { ResearchError } = require("../dist/research/provenance");
-  const { s, c } = fixture();
+  const { s, c } = fixture("Aspirin did not increase binding in mice.");
   const run = gateway().createRun("batch-fixture");
   run.snapshots = [s, { ...s, paperId: "second-paper", id: "second-snapshot" }];
   let calls = 0,
@@ -785,7 +796,10 @@ test("extraction is one bounded abstract per call and retains completed batches 
     assert.equal(input.snapshots.length, 1);
     assert.equal(bounds.maxOutputTokens, 2000);
     if (++calls === 2) throw new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Fixture 504");
-    return { papers: [{ paperId: c.paperId, claims: [c], limitations: [] }] };
+    return {
+      version: "passage-selection-v1",
+      papers: [{ paperId: c.paperId, claims: [selectionCandidate(c, s)], limitations: [] }],
+    };
   };
   await assert.rejects(
     new OtariEvidenceService(g, new EvidenceClassifierService()).extract(
@@ -1434,7 +1448,10 @@ test("hybrid review fallback and checkpoint resume retain exact-span validation 
       if (role === "extraction") {
         extractionCalls++;
         run.models.extraction = "fixture-extractor";
-        return { papers: [{ paperId: c.paperId, claims: [c], limitations: [] }] };
+        return {
+          version: "passage-selection-v1",
+          papers: [{ paperId: c.paperId, claims: [selectionCandidate(c, s)], limitations: [] }],
+        };
       }
       otariReviewCalls++;
       throw new ResearchError("OTARI_UPSTREAM_TIMEOUT", "Synthetic 504");
@@ -1449,7 +1466,9 @@ test("hybrid review fallback and checkpoint resume retain exact-span validation 
       return {
         candidates: [{ finishReason: "STOP" }],
         modelVersion: "gemini-3.8-flash-001",
-        text: JSON.stringify({ reviews: [r] }),
+        text: JSON.stringify(
+          resume ? { reviews: [r] } : { version: "passage-selection-v1", reviews: [selectionReview(r, s)] },
+        ),
       };
     });
     const service = new OtariEvidenceService(g, new EvidenceClassifierService(), vertex);
@@ -1736,11 +1755,13 @@ test("production and paired evaluator share exact passage-index extraction input
   const { extractionInput } = require("../dist/research/otari-evidence.service");
   const { s, c } = fixture("Aspirin 🧪 altered a marker. It did not demonstrate human efficacy.");
   const paper = { id: c.paperId };
-  const input = extractionInput(paper, { preferredName: "aspirin" }, [s]);
+  const indexed = indexedSource(s);
+  const input = extractionInput(paper, { preferredName: "aspirin" }, [indexed]);
   assert.deepEqual(input.expectedPaperIds, [paper.id]);
-  assert.deepEqual(input.snapshots, [s]);
-  assert.equal(input.passageIndex[0].passages.length, 2);
-  for (const span of input.passageIndex[0].passages) assert.equal(s.text.slice(span.start, span.end), span.quote);
+  assert.deepEqual(input.snapshots, [indexed]);
+  assert.equal(input.passageIndex[0].index.passages.length, 2);
+  for (const { span } of input.passageIndex[0].index.passages)
+    assert.equal(s.text.slice(span.start, span.end), span.quote);
 });
 
 test("hosted review rejects wrong batch IDs before caching or a subsequent dispatch", async () => {

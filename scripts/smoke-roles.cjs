@@ -5,10 +5,20 @@ const fs = require("node:fs"),
   crypto = require("node:crypto");
 const { ConfigService } = require("@nestjs/config");
 const { z } = require("zod");
-const { ExtractionSchema, ReviewSchema } = require("@capela/shared");
+const { ReviewSelectionSchema } = require("@capela/shared");
+const {
+  indexedSource,
+  hydrateExtraction,
+  hydrateReviews,
+  INFERENCE_CONTRACT,
+} = require("../apps/api/dist/research/passage-references");
 const { OtariGatewayService } = require("../apps/api/dist/research/otari-gateway.service");
-const { EXTRACTION_PROMPT, REVIEW_PROMPT } = require("../apps/api/dist/research/otari-evidence.service");
-const { snapshot, referenceValid, exactIds, decide, sourcePassages } = require("../apps/api/dist/research/provenance");
+const {
+  EXTRACTION_PROMPT,
+  REVIEW_PROMPT,
+  extractionInput,
+} = require("../apps/api/dist/research/otari-evidence.service");
+const { snapshot, referenceValid, exactIds, decide } = require("../apps/api/dist/research/provenance");
 const { PublicationSchema } = require("../apps/api/dist/research/otari-retrieval.service");
 const { Client } = require("@modelcontextprotocol/sdk/client/index.js");
 const { StreamableHTTPClientTransport } = require("@modelcontextprotocol/sdk/client/streamableHttp.js");
@@ -238,8 +248,8 @@ async function main() {
       new ConfigService({ ...process.env, OTARI_CALL_RESERVATION_MICROUSD: "2000" }),
     );
     const run = report.run,
-      save = async () => write(report),
-      source = run.snapshots[0];
+      save = async () => write(report);
+    let source = run.snapshots[0];
     const originalFetch = global.fetch;
     global.fetch = async (input, init) => {
       const response = await originalFetch(input, init);
@@ -270,26 +280,23 @@ async function main() {
       return response;
     };
     const molecule = { preferredName: "curcumin", synonyms: [] };
-    const passages = sourcePassages(source);
+    source = indexedSource(source);
+    run.snapshots = [source];
+    run.inferenceContract = INFERENCE_CONTRACT;
+    const passages = [{ snapshotId: source.id, index: source.passageIndex }];
     try {
       report.roleCheck.status = "running";
       await save();
-      const extracted = ExtractionSchema.parse(
+      const extracted = hydrateExtraction(
         await gateway.complete(
           "extraction",
           `${EXTRACTION_PROMPT} For this minimal check extract at most one explicit measured finding about curcumin. The passage index supplies exact quote boundaries; it is source data, not a set of proposed claims.`,
-          {
-            schema: z.toJSONSchema(ExtractionSchema),
-            expectedPaperIds: [report.paper.id],
-            molecule,
-            papers: [report.paper],
-            snapshots: run.snapshots,
-            passageIndex: passages,
-          },
+          extractionInput(report.paper, molecule, run.snapshots),
           run,
           save,
           { maxOutputTokens: 2000, reasoningEffort: "low" },
         ),
+        run.snapshots,
       );
       exactIds(
         [report.paper.id],
@@ -302,12 +309,13 @@ async function main() {
         });
       report.roleCheck.extraction = extracted;
       await save();
-      const reviewed = ReviewSchema.parse(
+      const reviewed = hydrateReviews(
         await gateway.complete(
           "review",
           REVIEW_PROMPT,
           {
-            schema: z.toJSONSchema(ReviewSchema),
+            schema: z.toJSONSchema(ReviewSelectionSchema),
+            expectedClaimIds: claims.map((c) => c.id),
             molecule,
             papers: [report.paper],
             snapshots: run.snapshots,
@@ -318,6 +326,8 @@ async function main() {
           save,
           { maxOutputTokens: 2000, reasoningEffort: "low" },
         ),
+        claims,
+        run.snapshots,
       );
       exactIds(
         claims.map((c) => c.id),

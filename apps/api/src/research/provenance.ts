@@ -90,9 +90,38 @@ export function spansValid(spans: SupportSpan[], source: SourceSnapshot): boolea
     )
   );
 }
+function selectionValid(selection: CandidateClaim["passageSelection"], spans: SupportSpan[], source: SourceSnapshot) {
+  if (!selection) return true; // Historical explicit-span contracts remain readable.
+  const index = source.passageIndex;
+  return (
+    !!index &&
+    selection.version === "passage-selection-v1" &&
+    selection.indexHash === index.hash &&
+    selection.passageIds.length === spans.length &&
+    new Set(selection.passageIds).size === selection.passageIds.length &&
+    selection.passageIds.every((id, i) => {
+      const p = index.passages.find((p) => p.id === id)?.span,
+        span = spans[i];
+      return (
+        !!p &&
+        !!span &&
+        p.blockId === span.blockId &&
+        p.quote === span.quote &&
+        p.start === span.start &&
+        p.end === span.end &&
+        p.convention === span.convention
+      );
+    })
+  );
+}
 export function referenceValid(c: CandidateClaim, sources: SourceSnapshot[]): boolean {
   const source = sources.find((s) => s.id === c.snapshotId && s.paperId === c.paperId && s.hash === c.snapshotHash);
-  return !!source && digest(source.text) === source.hash && spansValid(c.spans, source);
+  return (
+    !!source &&
+    digest(source.text) === source.hash &&
+    spansValid(c.spans, source) &&
+    selectionValid(c.passageSelection, c.spans, source)
+  );
 }
 export function exactIds(expected: string[], actual: string[], context = "Output") {
   if (
@@ -124,7 +153,11 @@ export function decide(
   if (!referenceValid(candidate, sources)) return reject("Candidate source or exact passage is invalid.");
   if (!review) return reject("Review unavailable; exact passage is not entailment.", "unresolved");
   const source = sources.find((s) => s.id === candidate.snapshotId)!;
-  if (review.claimId !== candidate.id || !spansValid(review.spans, source))
+  if (
+    review.claimId !== candidate.id ||
+    !spansValid(review.spans, source) ||
+    !selectionValid(review.passageSelection, review.spans, source)
+  )
     return reject("Reviewer reference is invalid.");
   if (!canDowngrade(candidate.proposedClass, review.evidenceType))
     return reject("Reviewer attempted an evidence-class upgrade or incomparable class change.");
