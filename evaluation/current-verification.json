@@ -1,0 +1,659 @@
+{
+  "version": "verification-reconciliation-v1",
+  "date": "2026-11-06",
+  "startingCommit": "d9cc2501f44f140097b13d62f037b5b2295ad2a2",
+  "branch": "feat/otari-completion-verification",
+  "liveCodeVersion": "starting commit plus uncommitted review batching and dispatch-limit changes; exact pre-dispatch tree hash not captured; later search-checkpoint fix not live-replayed",
+  "deployedVersions": {
+    "web": null,
+    "api": null,
+    "reason": "No verified deployment commit metadata/access"
+  },
+  "authorization": {
+    "totalMicrousd": 20000000,
+    "ownerReconfirmed": "2026-11-06",
+    "currency": "USD",
+    "conservativeExposureBeforeMicrousd": 1577700,
+    "additionalReportedMicrousd": 57036,
+    "conservativeExposureAfterMicrousd": 1634736,
+    "overlap": "Task and application ledgers summed conservatively; overlaps may be double-counted",
+    "originalTaskCountersRetained": true
+  },
+  "attempt": {
+    "mode": "actual participant Privy sign-in; Node 24.22.2 Next/Nest; isolated Mongo; Vertex excluded; one abstract selected maximum",
+    "molecule": {
+      "name": "Curcumin",
+      "cid": 969516
+    },
+    "status": "failed",
+    "errorCode": "OTARI_MCP_UNAVAILABLE",
+    "snapshots": 0,
+    "candidates": 0,
+    "completedQualifyingInvestigations": {
+      "numerator": 0,
+      "denominator": 1
+    },
+    "budget": {
+      "currency": "USD",
+      "capMicrousd": 250000,
+      "reservedMicrousd": 0,
+      "reportedMicrousd": 57036,
+      "unknownCostCalls": 0,
+      "calls": 1,
+      "maxCalls": 5,
+      "terminal": false
+    },
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T14:54:09.136Z",
+        "operation": "scientific_search_tool",
+        "status": "completed",
+        "correlationId": "2e5e9156-345e-49e9-9260-c7e7ce02817a",
+        "httpStatus": 200,
+        "requestId": "30aa8bd5-b97d-4dd1-bc09-adfb6c87f673",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 57036,
+        "durationMs": 3257,
+        "toolCallId": "otari_ws_ca665e4a00b54eb4a26b2fb500da62be"
+      },
+      {
+        "sequence": 2,
+        "at": "2026-11-06T14:54:12.403Z",
+        "operation": "mcp_discovery",
+        "status": "failed",
+        "correlationId": "f5d2534c-278f-4988-9332-aa51d6dd5c93",
+        "httpStatus": 502,
+        "requestId": "req_fcede5bdf20049de8c3cc8eed13b324b",
+        "code": "OTARI_MCP_UNAVAILABLE",
+        "durationMs": 5529
+      },
+      {
+        "sequence": 3,
+        "at": "2026-11-06T14:54:18.154Z",
+        "operation": "mcp_discovery",
+        "status": "failed",
+        "correlationId": "8195d440-f1b6-4013-a84a-d4cd355d64dd",
+        "httpStatus": 502,
+        "requestId": "req_4b49d41674474f0998d532bbaae3d7d6",
+        "code": "OTARI_MCP_UNAVAILABLE",
+        "durationMs": 5308
+      }
+    ],
+    "limitations": [
+      "Stopped before canonical source retrieval; no candidate/reviewer output, audit, dossier or export.",
+      "No paid replay. Free MCP discovery had one bounded automatic retry.",
+      "Historical empty/hybrid dossiers are not substituted for a meaningful qualifying demonstration."
+    ]
+  },
+  "readOnlyDiagnostic": [
+    {
+      "operation": "direct authenticated MCP initialize",
+      "status": "transport_failed_or_timeout",
+      "elapsedMs": 30006
+    },
+    {
+      "operation": "hosted read-only MCP discovery",
+      "status": 502,
+      "requestId": "req_e5f5d681e7ee444b8788f7ba4680a611"
+    }
+  ],
+  "historicalRecords": [
+    {
+      "record": 0,
+      "status": "completed",
+      "updatedAt": "2026-11-05T09:00:22.177Z",
+      "papers": 5,
+      "dossier": true,
+      "checkpoint": "completed",
+      "models": {
+        "distinct": true,
+        "extraction": "openai/gpt-oss-20b",
+        "review": "gemini-3.8-flash"
+      },
+      "budget": {
+        "currency": "USD",
+        "capMicrousd": 20000000,
+        "reservedMicrousd": 470000,
+        "reportedMicrousd": 115194,
+        "unknownCostCalls": 11,
+        "calls": 19,
+        "maxCalls": 32,
+        "terminal": false
+      },
+      "decisions": [
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected"
+        }
+      ],
+      "events": [
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "72d7c4dc-6da6-4035-bbfa-4d1f8f1f9786",
+          "at": "2026-11-05T08:58:44.110Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "e0f8e683-023a-4b63-80ce-2cd251418bf7",
+          "at": "2026-11-05T08:58:53.445Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "39edd40d-46f4-488c-898c-3393623e2994",
+          "at": "2026-11-05T08:58:59.479Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "549b68e3-f6ae-4949-b38c-fcb7f988f9b9",
+          "at": "2026-11-05T08:59:08.336Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "6d6d3706-3670-4941-a0e7-314e435f2667",
+          "at": "2026-11-05T08:59:17.780Z"
+        },
+        {
+          "operation": "review",
+          "status": "failed",
+          "http": 504,
+          "code": "OTARI_UPSTREAM_TIMEOUT",
+          "at": "2026-11-05T08:59:25.133Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "jUXsatXGErbHmLAPob2U4Aw",
+          "at": "2026-11-05T08:59:56.072Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "k0XsaurSDofSmLAP-IzUoQ4",
+          "at": "2026-11-05T09:00:02.633Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "mEXsatdZnYWYsA-t8JbABg",
+          "at": "2026-11-05T09:00:07.427Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "nEXsavGGLdzomLAPydio0Q8",
+          "at": "2026-11-05T09:00:12.148Z"
+        },
+        {
+          "operation": "sandbox_audit",
+          "status": "completed",
+          "http": 200,
+          "requestId": "13a7121e-4131-40cf-8486-4b4decd64e3c",
+          "at": "2026-11-05T09:00:18.126Z"
+        }
+      ]
+    },
+    {
+      "record": 1,
+      "status": "completed",
+      "updatedAt": "2026-11-05T08:49:07.898Z",
+      "papers": 5,
+      "dossier": true,
+      "checkpoint": "completed",
+      "models": {
+        "extraction": "openai/gpt-oss-20b",
+        "distinct": true,
+        "review": "gemini-3.8-flash"
+      },
+      "budget": {
+        "currency": "USD",
+        "capMicrousd": 20000000,
+        "reservedMicrousd": 630000,
+        "reportedMicrousd": 117107,
+        "unknownCostCalls": 17,
+        "calls": 40,
+        "maxCalls": 60,
+        "terminal": false
+      },
+      "decisions": [
+        {
+          "status": "rejected",
+          "verdict": "overstated"
+        },
+        {
+          "status": "rejected",
+          "verdict": "overstated"
+        },
+        {
+          "status": "accepted",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected"
+        },
+        {
+          "status": "rejected"
+        }
+      ],
+      "events": [
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "1a91184f-ba26-4f1e-a348-2d9ae10ae8bc",
+          "at": "2026-11-05T07:49:58.072Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "216f6d0d-d24a-47a5-ac73-ab6bfa7b1be2",
+          "at": "2026-11-05T07:50:03.490Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "09a32d5e-6b6c-4cf6-899c-0dfbbfcc2fb7",
+          "at": "2026-11-05T07:50:07.516Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "112322d7-39d9-4790-b07f-124c4ccaee30",
+          "at": "2026-11-05T07:50:12.588Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "a05f2a3e-26f5-4655-b18a-32f9a091e4d2",
+          "at": "2026-11-05T07:50:28.672Z"
+        },
+        {
+          "operation": "review",
+          "status": "failed",
+          "http": 504,
+          "code": "OTARI_UPSTREAM_TIMEOUT",
+          "at": "2026-11-05T07:50:33.826Z"
+        },
+        {
+          "operation": "review",
+          "status": "failed",
+          "http": 504,
+          "code": "OTARI_UPSTREAM_TIMEOUT",
+          "at": "2026-11-05T08:11:38.172Z"
+        },
+        {
+          "operation": "review",
+          "status": "started",
+          "at": "2026-11-05T08:13:38.504Z"
+        },
+        {
+          "operation": "review",
+          "status": "failed",
+          "http": 504,
+          "code": "OTARI_UPSTREAM_TIMEOUT",
+          "at": "2026-11-05T08:16:49.159Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "failed",
+          "code": "VERTEX_INVALID_COMPLETION",
+          "at": "2026-11-05T08:17:20.649Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "failed",
+          "code": "VERTEX_INVALID_COMPLETION",
+          "at": "2026-11-05T08:28:46.918Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "6kLsauDPEOmsvdIPo__ouA8",
+          "at": "2026-11-05T08:48:41.175Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "70LsasSUO-DrxN8PxJf10A4",
+          "at": "2026-11-05T08:48:47.384Z"
+        },
+        {
+          "operation": "vertex_review",
+          "status": "completed",
+          "model": "gemini-3.8-flash",
+          "requestId": "9ULsaoSRCZWf28oPxLyEkQg",
+          "at": "2026-11-05T08:48:52.582Z"
+        },
+        {
+          "operation": "sandbox_audit",
+          "status": "completed",
+          "http": 200,
+          "requestId": "ca858b15-ed84-4f1e-bc1f-492c2117a937",
+          "at": "2026-11-05T08:49:02.704Z"
+        }
+      ]
+    },
+    {
+      "record": 2,
+      "status": "completed",
+      "updatedAt": "2026-11-03T21:30:58.762Z",
+      "papers": 3,
+      "dossier": true,
+      "checkpoint": "completed",
+      "models": {
+        "distinct": true,
+        "extraction": "openai/gpt-oss-20b",
+        "review": "openai/gpt-oss-120b"
+      },
+      "budget": {
+        "currency": "USD",
+        "capMicrousd": 100000,
+        "reservedMicrousd": 40000,
+        "reportedMicrousd": 7899,
+        "unknownCostCalls": 4,
+        "calls": 9,
+        "maxCalls": 16,
+        "terminal": false
+      },
+      "decisions": [
+        {
+          "status": "unresolved",
+          "verdict": "supported"
+        },
+        {
+          "status": "unresolved",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected"
+        },
+        {
+          "status": "unresolved",
+          "verdict": "supported"
+        },
+        {
+          "status": "rejected"
+        }
+      ],
+      "events": [
+        {
+          "operation": "scientific_search_tool",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "e861c132-5e90-4713-9150-1790583124ab",
+          "toolCallId": "otari_ws_45730eb886454852962f123e9313c3a0",
+          "at": "2026-11-03T21:29:36.601Z"
+        },
+        {
+          "operation": "mcp_discovery",
+          "status": "completed",
+          "http": 200,
+          "requestId": "req_5c318e73c0644332a32fc77e2191a82e",
+          "at": "2026-11-03T21:29:41.581Z"
+        },
+        {
+          "operation": "publication_metadata",
+          "status": "completed",
+          "http": 200,
+          "requestId": "req_9c900e8039dc4969af563de118702d27",
+          "at": "2026-11-03T21:29:43.286Z"
+        },
+        {
+          "operation": "publication_metadata",
+          "status": "completed",
+          "http": 200,
+          "requestId": "req_51640734194441ca819b34be02498cf4",
+          "at": "2026-11-03T21:29:46.552Z"
+        },
+        {
+          "operation": "publication_metadata",
+          "status": "completed",
+          "http": 200,
+          "requestId": "req_7e771900a04d438a9bc71f66d49fca24",
+          "at": "2026-11-03T21:29:48.385Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "a538bc6f-5a84-4eb1-ab91-caee0e028299",
+          "at": "2026-11-03T21:29:51.009Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "62db12d9-d86b-4c31-9502-1b166ea79882",
+          "at": "2026-11-03T21:29:58.013Z"
+        },
+        {
+          "operation": "extraction",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-20b",
+          "requestId": "51c2e92f-7318-44d0-845c-9c9ab6f74e2f",
+          "at": "2026-11-03T21:30:08.022Z"
+        },
+        {
+          "operation": "review",
+          "status": "completed",
+          "http": 200,
+          "model": "openai/gpt-oss-120b",
+          "requestId": "75e61f09-bdb9-4cdb-bb1d-e9b0bea8ae5b",
+          "at": "2026-11-03T21:30:20.226Z"
+        },
+        {
+          "operation": "sandbox_audit",
+          "status": "completed",
+          "http": 200,
+          "requestId": "199501da-2042-4ae0-8860-687b5cc02510",
+          "at": "2026-11-03T21:30:50.632Z"
+        }
+      ]
+    }
+  ],
+  "browser": {
+    "ordinaryParticipantLogin": true,
+    "newInvestigationSubmittedThroughUI": true,
+    "partialAndRetryVisible": true,
+    "partialReopen": true,
+    "historyList": true,
+    "historyListNote": "Actual saved failed curcumin run visible after session restoration.",
+    "completePassageReviewJourney": false,
+    "exportFileCaptured": false,
+    "cancellationJourney": false,
+    "legacyCompatibility": "Historical deployed browser checks and current offline fixtures; not repeated in this local empty database"
+  },
+  "scientificEvaluation": {
+    "humanReviewedCases": 0,
+    "totalPilotCases": 30,
+    "pairedRunsAttempted": 0,
+    "supportPrecision": null,
+    "reviewImprovement": null
+  },
+  "sixCapabilitiesDemonstrated": false,
+  "offlineImplementationCommit": "389e863fa8ac82081b952b463c74800a95ce94f3",
+  "offlineCodeHashes": {
+    "apps/api/src/research/otari-evidence.service.ts": "2666d6c62328e4eb4724f216696db932353de80c633d70328c1b21117f73a37f",
+    "apps/api/src/research/otari-search.ts": "5735e8618c23d878ab0fdfb5ac900f29eff0982a4fae17941bbc8d562f8a0cc9",
+    "apps/api/src/research/otari-gateway.service.ts": "417fa5751dacb3cb3083e085046191cb2b13f955ed1dc7c333ed713ce0412398",
+    "packages/shared/src/provenance.ts": "fb05203879c0d8d0dc699c6e0fa6ddf78f6c8846fa80eec496b1de762c62f05d",
+    "scripts/compare-models.cjs": "833506f30a8e3284569371c0d95389fbfc2487327259aeaddf133a397933f1d4",
+    "scripts/evaluate.cjs": "46cd6f7d4bb5bc2fc704599bca645b4b9d22383e808968f44120d30312925385"
+  },
+  "upstreamContracts": {
+    "retrievedAt": "2026-11-06T14:58:03.751Z",
+    "commit": "bc43068f7a06470f65a812b8f0d1fd9a335b87ec",
+    "docs": [
+      {
+        "name": "tools",
+        "status": 200,
+        "sha256": "eb4269e0d4e78f2139b8c28805923d0bd623f7a6014f519d6fbcef5aa6f0bfa4"
+      },
+      {
+        "name": "mcp",
+        "status": 200,
+        "sha256": "3e8b92e9cded68872d85a808f3de7c15b1ec0325df795d16448ded1ee6a4cdaa"
+      },
+      {
+        "name": "routing",
+        "status": 200,
+        "sha256": "d72755470a65670cdd3dc77c15ca3c034be52cb4dedc72d27096b2c574803d2e"
+      },
+      {
+        "name": "guardrails",
+        "status": 200,
+        "sha256": "7925b4ee023dd724fc7281cd14fd4fbbabaaec007e8f922af690d7a42d7d8d0c"
+      },
+      {
+        "name": "access-control",
+        "status": 200,
+        "sha256": "834ef9d45d572f658d7aee6bb184e93484a6980ef71cf12a743a6a6b6d503ed3"
+      },
+      {
+        "name": "models",
+        "status": 200,
+        "sha256": "9893a8e51b14ec8f45802e02a5f65e932382188f2f2ff50b27bbc2914d51b79b"
+      },
+      {
+        "name": "traces",
+        "status": 200,
+        "sha256": "98e8b070059101a8841619792ffb2998c2850284a063787e8fa04c4378b37af1"
+      },
+      {
+        "name": "api-reference",
+        "status": 200,
+        "sha256": "9f051c9337384b59d11811cfdf8233ba5ac366bd3cb929027ae18fe422a9255b"
+      },
+      {
+        "name": "hosted-providers",
+        "status": 200,
+        "sha256": "2c9cf45cf821c99503324fdcd97f5ba50dfb3a95c7fef1433db9b00fb082fe54"
+      },
+      {
+        "name": "code-execution-protocol",
+        "status": 200,
+        "sha256": "b4fdd0e9eed94fceee0c1c62c7aa1ffdee103f8bc3cf2ea3461a38a75185f077"
+      }
+    ]
+  },
+  "offlineChecks": {
+    "node": "24.22.2",
+    "unit": {
+      "passed": 91,
+      "failed": 0
+    },
+    "integration": {
+      "passed": 4,
+      "failed": 0
+    },
+    "browserFixtures": {
+      "passed": 7,
+      "failed": 0
+    },
+    "mechanicalEvaluation": {
+      "sourceHashes": {
+        "numerator": 10,
+        "denominator": 10
+      },
+      "references": {
+        "numerator": 30,
+        "denominator": 30
+      },
+      "passages": {
+        "numerator": 30,
+        "denominator": 30
+      },
+      "humanReviewed": {
+        "numerator": 0,
+        "denominator": 30
+      }
+    },
+    "format": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "generatedFileGates": "sequential; actual app stopped before final build"
+  }
+}

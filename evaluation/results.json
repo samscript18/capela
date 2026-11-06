@@ -1,12 +1,97 @@
 {
-  "version": "pilot-mechanical-v1",
-  "date": "2026-11-03T19:34:33.958Z",
-  "commit": "5b07ebb4fc39acac0c944189d34735d08f1f8a9a",
+  "version": "pilot-mechanical-v2",
+  "pipeline": {
+    "extractionPromptHash": "4b21350695ae67e78a6c52cd76ff884d091930c952b6a11c43a5392d9170aeb5",
+    "reviewPromptHash": "1a01e703b3bbfe2377f588b4e17ed5342bc25f2f8e20535c12446e53ecfad783",
+    "offsets": "utf16-zero-based-end-exclusive",
+    "sourceChecks": [
+      {
+        "id": "pubmed-42505335",
+        "storedHashValid": true,
+        "pipelineHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42397814",
+        "storedHashValid": true,
+        "pipelineHash": "39a74bfdc828200a36dc0dd5de5b42b0b16c2a916ceb922e1830431057d370d9",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42347487",
+        "storedHashValid": true,
+        "pipelineHash": "5d5bb0ef5c79ce45e21800b243f4d78fe58b69691fd9f1b5b2579834ba893b7d",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42954735",
+        "storedHashValid": true,
+        "pipelineHash": "1dd2e327fb3712c632a4888f409e3e5b84e2f6336948fb991e86b3ee2670fb69",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42654293",
+        "storedHashValid": true,
+        "pipelineHash": "9a57d1a11fe87eba35b98a94ac04bc1e06ce5f49f748ae17391774a2800d835f",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42280140",
+        "storedHashValid": true,
+        "pipelineHash": "43a84d5158b2880b85514a44aa6ccbaed4fe229da5144547d1a4c3a14327a819",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42792674",
+        "storedHashValid": true,
+        "pipelineHash": "340db0937c983416d26fd00d1807c4960ad10f6dbb5bf2eeeb4e90341e5f0664",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42009901",
+        "storedHashValid": true,
+        "pipelineHash": "73d13e45daad310fb5c7399b5d4cb4749a73e175c06764b73c772f83db6fb022",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-41859571",
+        "storedHashValid": true,
+        "pipelineHash": "b0b12c276e0f40cc43eb0b99fc5fecba27f8323b97b1d425f4aaa33b7debccf3",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      },
+      {
+        "id": "pubmed-42756119",
+        "storedHashValid": true,
+        "pipelineHash": "de1dc00908e5fe7c3c73b379bd51376be7656c64e745893a3b84ce7f43d50089",
+        "unchangedByNormalization": true,
+        "passageIndexValid": true
+      }
+    ]
+  },
+  "date": "2026-11-06T15:07:23.314Z",
+  "commit": "389e863fa8ac82081b952b463c74800a95ce94f3",
   "datasetHash": "98e7e7ac8b56a79c2da33fad2a446cf892d109fffa0625553409f25daf776500",
   "sourceCount": 10,
   "cases": 30,
   "heldOut": 12,
   "metrics": {
+    "sourceHashes": {
+      "numerator": 10,
+      "denominator": 10
+    },
+    "humanReviewedCases": {
+      "numerator": 0,
+      "denominator": 30
+    },
     "resolvableReferences": {
       "numerator": 30,
       "denominator": 30

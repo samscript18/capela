@@ -1,15 +1,15 @@
-# Implementation plan
+# Implementation checkpoints
 
-Baseline: clean `main`, `ffab39f117aa4d07cf40417ac75b30919c500583`, 2026-11-03.
-Working branch: `feat/mozilla-otari-capela`. Node declared 24; installed runtime 26.4.0.
+Current branch `feat/otari-completion-verification`; starting clean `main` at `d9cc2501f44f140097b13d62f037b5b2295ad2a2`. Node 24.22.2. BUILD_STATUS is the current task checkpoint; evidence is separated by offline, isolated hosted and actual authenticated application scope.
 
-1. A: inspect rules and pinned upstream contracts; record missing hosted credentials/cap.
-2. B: strict additive provenance contracts, immutable snapshots, one bounded Otari gateway.
-3. C: extraction and adversarial review roles, exact UTF-16 spans, conservative deterministic publication.
-4. D: direct hosted search, read-only remote MCP publication metadata, fixed Python audit, spend reservation, Mongo lease/fencing and interruption handling.
-5. E: inspectable review/source/cost UI, legacy compatibility, offline regressions and provisional real-source evaluation.
-6. F: gates, documented live blockers, setup and participant recording/submission checklists.
+The original A–E implementation is present: gateway, immutable abstract snapshots, exact provenance, extraction/review, conservative decisions, fixed audit, reservations/leases, evidence UI and legacy compatibility. Direct provider details are archival in LEGACY_ARCHITECTURE.
 
-No paid requests without finite local authorization. No deploy, push, account registration, email or submission. Preserve authentication and payments. Source coverage stays at most five abstracts. Rejection and empty evidence are valid outcomes. Hosted feature settings are never proof of execution.
+November 6 execution:
 
-Follow-up checkpoint (2026-11-03, branch `feat/otari-live-verification`, base `45bba94`): Node 24 gates repeated; strict native role schema and low reasoning effort fixed observed malformed output; exact sentence indexes are shared with the production path. Minimal distinct role pair and nonempty hosted sandbox audit verified. Search is genuinely blocked by missing hosted search-tool configuration, remote MCP discovery recovered after 502 and invocation/hash checks passed. Continue with hosted invocation, complete signed-in investigation, controlled fallback/ceiling denial and reviewed held-out comparison after these dependencies are resolved; do not reset the shared $0.05 ledger. BUILD_STATUS is the current checkpoint.
+1. Reconcile saved runs and task accounting; owner reconfirms $20 total. Preserve unknown reservations and take a conservative overlap-inclusive exposure bound.
+2. Bound and persist hosted review batches; share production extraction input with the paired evaluator; preserve distinct actual model identities.
+3. Run one signed-in local Node 24 investigation with Vertex excluded, one abstract, $0.25/five paid calls. Search succeeds; remote MCP discovery fails 502. Diagnose direct endpoint timeout without paid replay.
+4. Retain validated discovery URLs before future MCP calls; preserve original retry dispatch limits and proportional review reservations. Verify offline; no retrospective fabricated URLs or claim of live repair.
+5. Run regressions and sequential gates, mechanically evaluate frozen pilot sources, reconcile evidence and prepare participant recording/submission handoff.
+
+Remaining dependencies: remote MCP service restoration, meaningful all-Otari completion and captured export/public sample, dedicated controlled routing/finite monetary-denial configuration, human labels and explicitly allocated held-out paired evaluation. No production changes, deployment, push, email, submission or credit purchase is authorized. New local implementation and ordinary offline checks proceed without phase approvals.
