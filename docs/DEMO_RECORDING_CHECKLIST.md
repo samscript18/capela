@@ -11,7 +11,7 @@ Suggested factual 3–5 minute sequence:
 - 1:15–2:30: one exact passage, original candidate, actual reviewer decision/correction or rejection; uncertainty and study model.
 - 2:30–3:30: eight-section dossier, gaps, history/reopen; accepted evidence only.
 - 3:30–4:30: observed distinct model IDs, real tool/route traces, sandbox audit and estimated/reported costs. Show a real controlled fallback or budget denial only if it was executed and documented.
-- End: actual limits and implementation versus live-verification status. No awarded-score claim.
+- End: completed source-hash, exact-passage and reference checks, automated tests, actual limits and implementation versus live-verification status. Integrity checks do not establish scientific accuracy or prove that review improves correctness. No awarded-score claim.
 
 Feedback, separately: onboarding permits 3–5 minute screen recording, written responses or both. If video, same participant screen/audio/no-AI rule. Participant should describe what worked, friction/reproduction, missing features, temptation to bypass Otari, what they built themselves and whether they would keep using it. These are participant experiences, not an AI-scripted testimonial.
 

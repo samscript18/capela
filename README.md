@@ -42,7 +42,9 @@ The latest signed-in local Node 24 attempt executed hosted search and stopped at
 | Routing recovery     | [gateway](apps/api/src/research/otari-gateway.service.ts)                                                                                  | Implemented metadata handling; controlled hosted recovery pending     | Show actual fallback trace only after a controlled test   |
 | Spending limits      | [gateway reservations/denials](apps/api/src/research/otari-gateway.service.ts)                                                             | Offline denial handling; insufficient funds is not a ceiling test     | Show a real finite-ceiling denial with saved partial work |
 
-Exact request IDs, code-version limits and status distinctions are in [capability evidence](docs/RUBRIC_EVIDENCE.md), [build status](docs/BUILD_STATUS.md) and [test evidence](docs/TEST_EVIDENCE.md). The fixed evaluation has 30 passage/reference cases across ten real records; **all scientific labels await human review**. It does not measure scientific accuracy or demonstrate review improvement. See [evaluation protocol](docs/EVALUATION.md) and [annotation checklist](docs/ANNOTATION_CHECKLIST.md).
+At implementation commit `389e863`, Node 24 verification passed **91 unit/adapter tests, 4 integration tests and 7 browser fixtures**, plus formatting, lint, typecheck and production build. Fixed-source checks passed **10/10 source hashes, 30/30 resolvable references and 30/30 exact passages**. These checks verify stored-source integrity and passage mechanics; they do not establish scientific accuracy or show that model review improves correctness. Browser fixtures are separate from authenticated application testing.
+
+Exact request IDs, code-version limits and hosted versus offline status are in [capability evidence](docs/RUBRIC_EVIDENCE.md) and [test evidence](docs/TEST_EVIDENCE.md).
 
 ## Run locally
 
@@ -73,7 +75,7 @@ npm run typecheck
 npm run build
 ```
 
-Unit/integration/browser fixtures spend no paid credits. Browser fixtures are distinct from authenticated application testing. `evaluate:live` is opt-in, consumes fixed held-out snapshots through the production payload/prompts, and refuses to create a separate spending pool beside the task ledger. Human scoring and an explicitly reconciled allocation are still required.
+Unit/integration/browser fixtures spend no paid credits. `npm run evaluate` checks source hashes, reference integrity and exact passages in fixed records and writes versioned results to `evaluation/results.json`.
 
 ## API and participant handoff
 

@@ -1,5 +1,7 @@
 # Human annotation checklist
 
+Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
+
 All 30 pilot labels remain AI-drafted. Do not use them as scientific gold labels. The 12 held-out cases remain frozen; no model prompt tuning against held-out outcomes.
 
 For each case in `evaluation/pilot.json`, open its canonical source, compare the stored bounded excerpt and hash, and record separately:

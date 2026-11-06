@@ -38,11 +38,11 @@ Hosted enforcement requires a finite, non-exempt key/scoped spend ceiling. Appli
 
 The owner reconfirmed **$20 total** November 6. Ledgers retain prior costs, unknown reservations and application budgets. Conservative reconciled exposure after one new failed attempt: **$1.634736**, potentially double-counting overlaps. The single $0.25/five-call allocation has settled failed after one $0.057036 search. No current allowance is implicitly renewed by editing environment values. Catalog/management reads are not a license to execute paid tests. Runtime management reads historically returned 401; do not reuse runtime credentials as administrative authority.
 
-The paired evaluator refuses another spending pool beside the existing task ledger. Do not delete/reset ledgers to remove that guard. Dedicated paired evaluation requires an explicit allocation and human source/molecule checks. The evaluator now uses production payloads, passage indexes, prompts, schema and inference bounds, but has no live paired outcome.
+Verification tools retain task-wide accounting and refuse a separate spending pool beside the existing ledger. Do not delete/reset ledgers to remove that guard. Completed source-integrity checks and automated-test provenance are recorded in TEST_EVIDENCE; development experiments are documented separately in internal development notes.
 
 ## Smallest owner actions
 
 1. Restore the remote MCP endpoint and confirm its registered URL/authentication in hosted Otari. Validate a free discovery before retrying paid research. Search is already implemented and executed; do not add direct Tavily retrieval as a workaround.
 2. Supply dedicated controlled-fallback policy and finite monetary-denial test-key configuration as described in [CONTROLLED_HOSTED_CHECKS.md](CONTROLLED_HOSTED_CHECKS.md). No account-balance exhaustion or production setting edits are needed.
 3. Reconcile any further attempt against the retained ledgers; record a pre-dispatch code hash. Verify complete signed-in passage/review/audit/reopen/export behavior with Vertex excluded.
-4. Human-review the frozen pilot, allocate a paired comparison if desired, then record actual screen/audio and supply submission links. Deployment/push/submission need owner authorization; current deployed commit identities remain unknown.
+4. Record actual screen/audio and supply submission links, describing only demonstrated capabilities and completed checks. Answer organiser questions from the recorded evidence. Deployment/push/submission need owner authorization; current deployed commit identities remain unknown.

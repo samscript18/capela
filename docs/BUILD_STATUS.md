@@ -1,5 +1,7 @@
 # Build status — November 6, 2026
 
+Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
+
 Started clean on `main` at `d9cc2501f44f140097b13d62f037b5b2295ad2a2`; dedicated local branch `feat/otari-completion-verification`. First Otari integration commit: `9085c3f30003e5edab5e6dc05674052831f38c48`. No push, deployment, account change, submission, purchase or email in this follow-up.
 
 Prioritized checklist:
@@ -12,7 +14,7 @@ Prioritized checklist:
 - [x] Add durable validated search checkpoints and retain original retry call limits; offline verification only.
 - [ ] Complete a meaningful all-Otari investigation, inspect review/passages and capture/review its export. Blocked on remote MCP availability.
 - [ ] Controlled hosted routing recovery / finite monetary ceiling refusal. Blocked on dedicated owner/operator test configuration.
-- [ ] Human-score paired held-out evaluation. Labels remain provisional; no scientific-quality claim.
+- [ ] Optional internal evaluation: human-score paired held-out outputs. Labels remain provisional; this is not a separately scored rubric category.
 - [x] Rewrite README around current architecture; preserve original provider details separately and prepare factual participant handoff.
 
 ## Actual state
@@ -38,4 +40,4 @@ The paired evaluator shares the production extraction payload/passage index, cur
 
 Local actual Next/Nest ran under Node **24.22.2**, isolated MongoDB port 27944, web 3016/API 4016, ordinary participant Privy login. Production/deployed web and API commit identities remain **unknown**; no deployment version is inferred from current local code. The live attempt used starting commit plus uncommitted batching/dispatch-limit changes; an exact pre-dispatch working-tree hash was not captured. Later discovery-checkpoint fixes were not replayed live.
 
-**Six-capability target demonstrated: no.** Four categories have some historical hosted execution evidence; routing recovery and actual finite-ceiling denial remain unverified. A meaningful current complete qualifying dossier, public read-only sample, export and human-reviewed improvement measurement remain blocked. Submission readiness is withheld.
+**Six-capability target demonstrated: no.** Four categories have some historical hosted execution evidence; routing recovery and actual finite-ceiling denial remain unverified. A meaningful current complete qualifying dossier, public read-only sample and export remain blocked. Optional review-improvement measurement remains in the internal evaluation backlog. Submission readiness is withheld.

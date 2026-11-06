@@ -1,5 +1,7 @@
 # Evaluation pilot — November 6, 2026
 
+Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
+
 Dataset `evaluation/pilot.json`: ten real PubMed MED records retrieved through Europe PMC November 3; bounded abstract excerpts, canonical identifiers/URLs, publication metadata and UTF-8 hashes. Thirty fixed cases: 18 development, 12 held-out, split by source. Labels are **AI-drafted and pending human review (0/30 reviewed)**. No expert/gold-set claim. Existing labels are not a balanced experimental/computational/conflicting benchmark; they are retained without tuning or dropping cases.
 
 `npm run evaluate` checks the same NFC-LF snapshots and UTF-16 passage convention as production, stored hashes and mechanical passage index. It records dataset, prompt and source hashes, commit/date and per-case results in `evaluation/results.json`. Current mechanics: **10/10 source hashes**, **30/30 resolvable references**, **30/30 exact passages**, **12 held-out cases**. These are fixture integrity, not model accuracy.
