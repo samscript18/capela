@@ -44,7 +44,16 @@ export function parseStoredResearchRun(value: unknown): ResearchRun {
     ? stored.events.map((event: unknown) => {
         if (!event || typeof event !== "object" || Array.isArray(event)) return event;
         const normalized = { ...event } as Record<string, unknown>;
-        for (const key of ["requestId", "provider", "model", "upstreamCode", "budgetScope", "toolCallId", "code"])
+        for (const key of [
+          "requestId",
+          "provider",
+          "model",
+          "requestedPolicy",
+          "upstreamCode",
+          "budgetScope",
+          "toolCallId",
+          "code",
+        ])
           if (normalized[key] === null) delete normalized[key];
         return normalized;
       })
@@ -240,6 +249,7 @@ export type RunEvent = {
   requestId?: string;
   provider?: string;
   model?: string;
+  requestedPolicy?: string;
   fallback?: boolean;
   costMicrousd?: number;
   durationMs?: number;
@@ -381,6 +391,7 @@ export const ResearchRunSchema = z
             requestId: OptionalId,
             provider: OptionalId,
             model: OptionalId,
+            requestedPolicy: OptionalId,
             fallback: z.boolean().optional(),
             costMicrousd: z.number().int().optional(),
             durationMs: z.number().optional(),

@@ -94,6 +94,14 @@ export class OtariGatewayService {
     const amount = reservationMicrousd ?? this.integer("OTARI_CALL_RESERVATION_MICROUSD", 10000, 100000000);
     if (!Number.isSafeInteger(amount) || amount <= 0 || amount > 100000000)
       throw new ResearchError("OTARI_CONFIGURATION", "Invalid dispatch reservation.");
+    const requestedPolicy = operation === "extraction" || operation === "review" ? body?.model : undefined;
+    if (
+      requestedPolicy !== undefined &&
+      (typeof requestedPolicy !== "string" ||
+        !/^[a-zA-Z0-9._:/-]{1,200}$/.test(requestedPolicy) ||
+        /bearer|tk-|https?:/i.test(requestedPolicy))
+    )
+      throw new ResearchError("OTARI_CONFIGURATION", "Invalid role policy identifier.");
     if (paid) reserve(run, amount);
     if (run.budget.terminal) throw new ResearchError("RUN_BUDGET_EXHAUSTED", "No further spending is allowed.");
     if (run.events.length >= 100) throw new ResearchError("RUN_EVENT_LIMIT", "Run event bound reached.");
@@ -104,6 +112,9 @@ export class OtariGatewayService {
       status: "started",
       correlationId: randomUUID(),
     };
+    // Configuration is distinct from observed resolution; retain it before dispatch,
+    // including denied calls. Never infer attempted providers from this alias.
+    if (typeof requestedPolicy === "string") event.requestedPolicy = requestedPolicy;
     run.events.push(event);
     run.dispatchUncertain = paid;
     await save(); // Durable reservation and fencing check BEFORE dispatch.

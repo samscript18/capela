@@ -232,7 +232,9 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
                   · {e.provider}:{e.model}
                 </>
               )}
+              {e.requestedPolicy && <> · requested policy {e.requestedPolicy}</>}
               {e.fallback === true && <> · fallback observed</>}
+              {e.budgetScope && <> · denying hosted budget scope {e.budgetScope}</>}
               {e.httpStatus && <> · HTTP {e.httpStatus}</>}
               {e.upstreamCode && <> · {e.upstreamCode}</>}
               {e.toolCallId && <> · tool {e.toolCallId}</>}

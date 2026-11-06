@@ -701,8 +701,40 @@ test("observed fallback metadata preserves role identity without inventing attem
   await g.complete("review", "", {}, r, async () => {});
   assert.ok(r.models.distinct);
   assert.equal(r.events[0].fallback, true);
+  assert.equal(r.events[0].requestedPolicy, "extract-policy");
+  assert.equal(r.events[1].requestedPolicy, "review-policy");
+  assert.equal(ResearchRunSchema.parse(r).events[0].requestedPolicy, "extract-policy");
   assert.equal(r.events[0].requestId, undefined);
   assert.equal(r.budget.reportedMicrousd, 20);
+});
+test("role policy is durable before denial; invalid credential-like policy never reserves or dispatches", async (t) => {
+  let sent = 0;
+  const g = gateway(),
+    r = g.createRun("policy-denial");
+  t.mock.method(global, "fetch", async () => {
+    sent++;
+    assert.equal(r.events[0].requestedPolicy, "extract-policy");
+    return Response.json(
+      {},
+      { status: 403, headers: { "Otari-Error-Code": "budget_exceeded", "Otari-Budget-Scope": "workspace" } },
+    );
+  });
+  await assert.rejects(
+    g.complete("extraction", "", {}, r, async () => {}),
+    { code: "OTARI_BUDGET_DENIED" },
+  );
+  assert.equal(r.events[0].requestedPolicy, "extract-policy");
+  assert.equal(r.events[0].model, undefined);
+  assert.equal(r.budget.terminal, true);
+  const invalid = g.createRun("invalid-policy");
+  await assert.rejects(
+    g.request("/chat/completions", { model: "https://example.invalid/secret" }, "review", invalid, async () => {}),
+    { code: "OTARI_CONFIGURATION" },
+  );
+  assert.equal(invalid.budget.calls, 0);
+  assert.equal(invalid.budget.reservedMicrousd, 0);
+  assert.equal(invalid.events.length, 0);
+  assert.equal(sent, 1);
 });
 test("same resolved model across policies cannot claim distinct roles", async (t) => {
   t.mock.method(global, "fetch", async () =>

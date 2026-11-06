@@ -21,4 +21,4 @@ The original models accepted both candidates. A later, separately recorded assis
 
 The local read-only sample is `/samples/curcumin-2026-11-06.html`; no account IDs or mutation controls. It has not been externally deployed. The downloaded private PNG contains a case suffix; inspect privacy before participant recording/sharing. Do not describe local code as deployed: the owner-attested remote API is still `d9cc250`.
 
-Four categories have completed-application evidence. Controlled hosted routing recovery and finite monetary ceiling refusal remain pending dedicated test configuration; omit demonstration claims for them. Record the real screen with the participant's own audio. No generated narration, staged interaction or score claim.
+Four categories have completed-application evidence. Actual policy selection is recorded, but backup recovery and finite hosted budget binding/use remain unverified; show those limitations. Record the real screen with the participant's own audio. No generated narration, staged interaction or score claim.

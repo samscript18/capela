@@ -1,0 +1,231 @@
+{
+  "version": "hosted-capability-access-v1",
+  "date": "2026-11-06",
+  "startingCommit": "12c21a2dfdcec3f8e74aa8faee3ee71289d6d217",
+  "hostedOpenapi": {
+    "version": "0.39.0+8779d66",
+    "url": "https://otari.ai/api/v1/openapi.json",
+    "sha256": "4f68eb7207c63ee479b6606ff8ab941d9cb2c2e2135f1368479c3a70eac21083"
+  },
+  "managementReads": [
+    {
+      "path": "/organizations/me/routing-policies?limit=20",
+      "status": 401
+    },
+    {
+      "path": "/scoped-budgets?limit=20",
+      "status": 401
+    },
+    {
+      "path": "/routing/me/status",
+      "status": 404
+    },
+    {
+      "path": "/organizations/me/automatic-fallbacks",
+      "status": 401
+    },
+    {
+      "path": "/organizations/me/spend-ceilings?limit=20",
+      "status": 401
+    },
+    {
+      "path": "/organizations/me/keys?limit=20",
+      "status": 401
+    },
+    {
+      "path": "/organizations/me/guardrails?limit=20",
+      "status": 401
+    },
+    {
+      "path": "/end-user-budgets",
+      "status": 403
+    }
+  ],
+  "models": [
+    {
+      "id": "openai/gpt-oss-20b",
+      "openWeights": true,
+      "capabilities": {
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "attachment": false,
+        "temperature": true
+      },
+      "offerings": [
+        {
+          "selector": "deepinfra:openai/gpt-oss-20b",
+          "provider": "deepinfra",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.03,
+            "output_price_per_million": 0.14,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        },
+        {
+          "selector": "ovhcloud:gpt-oss-20b",
+          "provider": "ovhcloud",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.05,
+            "output_price_per_million": 0.18,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-oss-120b",
+      "openWeights": true,
+      "capabilities": {
+        "reasoning": true,
+        "tool_call": true,
+        "structured_output": true,
+        "attachment": false,
+        "temperature": true
+      },
+      "offerings": [
+        {
+          "selector": "deepinfra:openai/gpt-oss-120b",
+          "provider": "deepinfra",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.037,
+            "output_price_per_million": 0.17,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        },
+        {
+          "selector": "ovhcloud:gpt-oss-120b",
+          "provider": "ovhcloud",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.09,
+            "output_price_per_million": 0.47,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        },
+        {
+          "selector": "fireworks:accounts/fireworks/models/gpt-oss-120b",
+          "provider": "fireworks",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.15,
+            "output_price_per_million": 0.6,
+            "cache_read_price_per_million": 0.015,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions", "/responses", "/messages"]
+        },
+        {
+          "selector": "nebius:openai/gpt-oss-120b",
+          "provider": "nebius",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.15,
+            "output_price_per_million": 0.6,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        },
+        {
+          "selector": "together:openai/gpt-oss-120b",
+          "provider": "together",
+          "credential": "hosted",
+          "pricing": {
+            "input_price_per_million": 0.15,
+            "output_price_per_million": 0.6,
+            "cache_read_price_per_million": null,
+            "cache_write_price_per_million": null,
+            "pricing_tiers": [],
+            "unit": "token"
+          },
+          "endpoints": ["/chat/completions"]
+        }
+      ]
+    }
+  ],
+  "ownerSuppliedDashboardObservation": {
+    "provenance": "Owner-supplied screenshot in conversation; no runtime management access or revision timestamp available",
+    "date": "2026-11-06",
+    "policies": [
+      {
+        "name": "capela-extraction",
+        "main": "deepinfra:openai/gpt-oss-20b",
+        "backupModel": "openai/gpt-oss-safeguard-120b",
+        "backupProvider": "Amazon Bedrock"
+      },
+      {
+        "name": "capela-review",
+        "main": "deepinfra:openai/gpt-oss-120b",
+        "backupModel": "openai/gpt-oss-safeguard-120b",
+        "backupProvider": "Amazon Bedrock"
+      }
+    ],
+    "automaticFallbackDisplayed": [
+      {
+        "model": "openai/gpt-oss-20b",
+        "requests": 71,
+        "fallbackPercent": 0
+      },
+      {
+        "model": "openai/gpt-oss-120b",
+        "requests": 14,
+        "fallbackPercent": 0
+      }
+    ],
+    "limits": [
+      "Current configuration observation, not a historical policy revision tied to the completed run",
+      "Shared safeguard backup does not preserve distinct scientific roles",
+      "No successful backup execution established",
+      "Displayed account balance is not a finite hosted ceiling"
+    ]
+  },
+  "alternatives": {
+    "inferenceGuardrails": "Management GET returned 401; no configured inference guardrail or blocking application event verified",
+    "perUserBudgets": "GET /end-user-budgets returned 403; current key cannot use this service-key management surface"
+  },
+  "paidRequests": 0,
+  "newReportedMicrousd": 0,
+  "conservativeExposureMicrousd": 1799451,
+  "ledgerSha256": "e8ac40929e78bab6588f4ed45b5842a75f19fc99baeb72f4db3b728cea4ddbb4",
+  "historicalArtifacts": {
+    "original": "0b77965b310efa7925947f23e4a8d537bf07888bbc4d61aca4db96d17291431f",
+    "publicationRevision": "5c367728e3c1a7b7094cd7ed0900e798708bdfc1bbf82987bb8c87a4ee342fba",
+    "sampleHtml": "6e67ac8a7074ab16ff06bbf4e95b39fcc510d70668fa6f4e4156c7850c536545",
+    "sampleJson": "21cc443b5f1d0dab176d0e192301c89bfed5d44d91afc1c37e860b33045bc960"
+  },
+  "status": "policy_selection_executed_fallback_config_observed_budget_binding_and_recovery_unverified",
+  "localImplementation": {
+    "requestedPolicy": "Additive role event persisted before dispatch, never substituted for observed model",
+    "budgetScope": "Existing denying scope now visible in technical view",
+    "sourceHashes": {
+      "apps/api/src/research/otari-gateway.service.ts": "5e1b039aff1fa1109927c62bda1c6804e2efe4812b3899c7037ce0e6ba601c3b",
+      "packages/shared/src/provenance.ts": "07bfeb6211861c8a53435d0a27d402f74c73710716b7d3aad3c5f8bfc19020e0",
+      "apps/api/test/evidence.test.js": "8d46d2fd2ec8101051d0dbbf6a9e501dd720920ff242848a71f2437b6265e4ac",
+      "apps/web/src/components/research-run-view.tsx": "04b57d829867949af53550657d391cf76a3da8a95a145dafe06afef079920434"
+    }
+  }
+}

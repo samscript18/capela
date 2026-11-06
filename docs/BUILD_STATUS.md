@@ -2,6 +2,22 @@
 
 Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
 
+## Routing/budget access follow-up — current checkpoint
+
+Started clean at `12c21a2dfdcec3f8e74aa8faee3ee71289d6d217` on `feat/otari-completion-verification` (contains `6abdac4`). Preserved original hosted output, publication hold, public sample/export and ledger. No historical outage investigation or paid replay.
+
+Current hosted OpenAPI is **0.39.0+8779d66** (public specification retrieved November 6). Runtime management reads with documented `Otari-Key` return 401 for policies, scoped ceilings, key identity, automatic-fallback traffic and inference guardrails. `/end-user-budgets` returns 403; this service-key alternative is unavailable with the current runtime key. No Otari connector was found. A temporary normal-login browser was offered; owner reports sign-in unavailable. No credential recovery or stored-session access.
+
+Owner then supplied a dashboard screenshot showing actual policy primaries (DeepInfra 20b extraction/120b review) and a **shared Bedrock safeguard-120b backup**. This is current configuration evidence, not an executed backup or a policy revision tied retrospectively to the old run. The shared safety model is unsuitable for the two scientific roles. Screenshot traffic reports 0% fallback for the two role models. Actual original application calls establish routing selection; successful fallback recovery and role preservation after fallback remain unverified.
+
+Prepared exact isolated policy bodies using freshly verified hosted catalog offerings: DeepInfra 20b → OVHcloud 20b; DeepInfra 120b → OVHcloud 120b. Prepared finite test budget/ceiling bodies using documented organization endpoints, with explicit real-ID placeholders. **Nothing applied**; no production policy/token/settings changed. See `evaluation/hosted-capability-preparation.json`. Catalog/schema checks do not establish backup output support. The single prerequisite is authenticated owner/admin Otari access; remaining $20 authorization cannot grant management authority.
+
+Gateway now retains each role's requested policy before dispatch alongside observed model/fallback/denial metadata. Invalid credential-like policy names stop before reservation/network. Additive storage compatibility and technical run display preserve legacy events without backfilling aliases. Focused regressions verify routing provenance survives a real adapter denial and never supplies invented resolved models.
+
+Corrected presentation: controlled fault/denial experiments are strong optional evidence methods, not extra organiser requirements. A real routed policy request demonstrates selection; a finite non-exempt binding plus counted real application spend can demonstrate budget use without deliberately exhausting it. Current runtime budget binding is still unverified. Four categories retain complete-application evidence; routing selection additionally has actual calls plus current configuration evidence, with recovery limitations. **Six fully evidenced categories: no.**
+
+New paid calls/cost **zero**; ledger unchanged, conservative cumulative exposure **$1.799451** including retained uncertainty. No new attempt allocation while required hosted configuration is inaccessible. Public sample and original/revision artifacts retain their hashes. `evaluation/hosted-capability-access.json` records sanitized read statuses, catalog metadata and screenshot observations without account identifiers. Release checks are recorded in TEST_EVIDENCE. No push or deployment.
+
 ## Publication hold and sample revision — current checkpoint
 
 Continued clean at `b5ac1dcf6f66a38ce4851c0ee0ce6d5b7405635f`; implementation `6abdac4`. Inspected the exact claim-2 finding, selected passage, review and final decision. The reviewer returned `supported`, all five checks true, no revised finding; there was **no failed support verdict ignored by the old policy**. The missed clause survived because the model failed to flag it and later source inspection remained commentary without a publication control.

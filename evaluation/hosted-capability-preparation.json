@@ -1,0 +1,54 @@
+{
+  "version": "hosted-capability-preparation-v1",
+  "applied": false,
+  "contractVersion": "0.39.0+8779d66",
+  "policyBodies": [
+    {
+      "name": "capela-extraction-isolated-v1",
+      "workspace_id": "REPLACE_WITH_VISIBLE_WORKSPACE_UUID",
+      "spec": {
+        "select": [
+          {
+            "default": "deepinfra:openai/gpt-oss-20b"
+          }
+        ],
+        "on_failure": ["ovhcloud:gpt-oss-20b"]
+      }
+    },
+    {
+      "name": "capela-review-isolated-v1",
+      "workspace_id": "REPLACE_WITH_VISIBLE_WORKSPACE_UUID",
+      "spec": {
+        "select": [
+          {
+            "default": "deepinfra:openai/gpt-oss-120b"
+          }
+        ],
+        "on_failure": ["ovhcloud:gpt-oss-120b"]
+      }
+    }
+  ],
+  "policyEndpoint": "/api/v1/organizations/me/routing-policies",
+  "budgetBody": {
+    "name": "capela-isolated-verification",
+    "max_budget": 0.01
+  },
+  "budgetEndpoint": "/api/v1/organizations/me/budgets",
+  "ceilingBody": {
+    "scope_type": "api_token",
+    "scope_id": "REPLACE_WITH_ISOLATED_TEST_KEY_ID",
+    "budget_id": "REPLACE_WITH_CREATED_BUDGET_ID",
+    "provider_key_id": null,
+    "name": "capela-isolated-test-key"
+  },
+  "ceilingEndpoint": "/api/v1/organizations/me/spend-ceilings",
+  "limits": [
+    "Unapplied request templates; replace identifiers only after authenticated account inspection",
+    "Catalog availability is not backup strict-schema verification",
+    "No fabricated model or deliberate account depletion for controlled failure",
+    "This separate $0.01 budget is a proposed hosted setting, not authorization or a local allocation",
+    "Do not change the working runtime key/policies; verify its own finite non-exempt budget binding read-only",
+    "For an optional denial use a separate positive ceiling below one verified priced request hold, not repeated balance consumption",
+    "Keep the total task authorization and all retained reservations; allocate before any paid call"
+  ]
+}

@@ -1,11 +1,29 @@
-# Two remaining hosted checks
+# Hosted routing and budget verification
 
-**Neither test has executed.** The normal Capela API key can run research, but it cannot create/manage the separate Otari test settings required here. No dedicated test keys/policies or administrative access are configured locally. The readiness commands returned `blocked`, zero requests; the spending ledger is unchanged. See [controlled-check-readiness.json](../evaluation/controlled-check-readiness.json).
+Current access follow-up: the runtime key receives **401** on policy, key, spend-ceiling, automatic-fallback and guardrail management reads; the service-key end-user-budget endpoint returns **403**. Both Bearer and the documented `Otari-Key` management authentication were checked. The owner cannot sign in to the temporary dashboard browser. No credential recovery or stored-session inspection was attempted. See [sanitized access evidence](../evaluation/hosted-capability-access.json).
 
-In plain terms, we need:
+An owner-supplied dashboard screenshot now confirms `capela-extraction` → DeepInfra 20b and `capela-review` → DeepInfra 120b, both with a shared Bedrock `gpt-oss-safeguard-120b` backup. That safety model is unsuitable for preserving two distinct scientific roles. The screenshot displays 0% automatic fallback for 20b and 120b. It establishes current configuration, without a historical revision or successful recovery trace. The original completed application's actual policy calls/model resolution remain evidence of routing selection.
 
-1. A separate test route whose first model is made to fail before replying, so Otari demonstrably switches to its backup.
-2. A separate test key with a small finite dollar ceiling that rejects one priced request before execution. We must not drain the account or lower/change the working production key's limit.
+**Controlled failure and ceiling refusal are optional strong evidence methods, not separately stated competition requirements.** Ordinary routing can be demonstrated by a real application call through a verified policy with observed resolution. Budget use can be demonstrated by a finite, non-exempt binding and real priced application request counted under it. Dashboard settings alone prove neither application use nor recovery/enforcement. Current evidence still cannot establish the runtime key's finite ceiling or successful fallback execution.
+
+**The single access blocker is an authenticated Otari owner/admin context** (normal dashboard session or locally configured management credential). The runtime key cannot grant itself that authority. No paid check or allocation was started while the binding is unknown. All retained costs/reservations remain unchanged.
+
+## Prepared configuration
+
+[Unapplied request templates](../evaluation/hosted-capability-preparation.json) use the current hosted OpenAPI `0.39.0+8779d66` and freshly read model offerings. They prepare isolated policies with disjoint model roles:
+
+- Extraction: `deepinfra:openai/gpt-oss-20b` → `ovhcloud:gpt-oss-20b`.
+- Review: `deepinfra:openai/gpt-oss-120b` → `ovhcloud:gpt-oss-120b`.
+
+These selectors are actually catalogued hosted offerings. Backup strict-schema behavior has not been tested. Use **Routing → Create policy**, create the two isolated names in the template and select those primary/backup offerings. Do not edit the working policies. The API equivalent is `POST /api/v1/organizations/me/routing-policies` with the recorded body after replacing the workspace placeholder with the actual visible UUID. Creation requires owner/admin access. No template was submitted.
+
+For budgets, first inspect the working runtime key's identity, exemption flag and all applicable finite USD ceilings. Record the binding and counters before/after one explicitly allocated application request. `POST /api/v1/organizations/me/budgets` and `/organizations/me/spend-ceilings` bodies are prepared for a separate $0.01 test-key cap; this proposal is not a local spending allocation or an applied setting. Replace only actual returned IDs. A denial experiment needs a separate verified positive ceiling below one priced request hold; do not reduce the working key's ceiling or deliberately consume its balance.
+
+Actual inference guardrails and per-user budgets were assessed as alternatives: neither has accessible configuration or an executed application event here. A per-user budget requires the documented service-key setup; `/end-user-budgets` refused the current key. Local validation and shared reservations are not substitutes.
+
+## Optional controlled experiments
+
+Neither optional test has executed. The guarded commands below deliberately demand stronger isolated setup because they are **failure/denial experiments**, not a universal rubric eligibility gate.
 
 Primary contracts were inspected November 6 at upstream [`bc43068`](https://github.com/mozilla-ai/otari/tree/bc43068f7a06470f65a812b8f0d1fd9a335b87ec): [routing](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/routing.md#in-the-dashboard), [budget holds/refusals](https://github.com/mozilla-ai/otari/blob/bc43068f7a06470f65a812b8f0d1fd9a335b87ec/docs/budgets.md#reservations-are-taken-up-front). A configured fallback alone does not prove recovery. An application cap or insufficient account funds is not a hosted monetary-ceiling denial.
 
@@ -13,7 +31,7 @@ Primary contracts were inspected November 6 at upstream [`bc43068`](https://gith
 
 Use isolated test configuration; leave `capela-extraction`, `capela-review`, their production credentials and working ceilings unchanged.
 
-- **Routing → Create policy → Fallback**: create a test-only policy, choose a primary and a distinct working backup under **If unavailable, use**. The operator must arrange a controlled transient primary failure before response bytes are sent. Do not use a guessed nonexistent model or assume that disabling a provider/using a bad credential produces the required failure. If the hosted dashboard does not expose failure injection, ask the Otari operator for an isolated test policy. Retain its configuration revision and actual attempted-model trace. The backup must support Capela's structured extraction schema.
+- **Routing → Create policy → Fallback**: create a test-only policy, choose a primary and a distinct working backup under **If unavailable, use**. For this optional recovery experiment, the operator must arrange a controlled primary failure before response bytes are sent. Do not use a guessed nonexistent model or change a production provider credential. The upstream contract permits unavailable/credential-rejected candidates to fall through, but any isolated experiment must record the actual failure and successful backup result. If the hosted dashboard does not expose failure injection, ask the Otari operator for an isolated test policy. Retain its configuration revision and actual attempted-model trace. The backup must support Capela's structured extraction schema.
 - **Organization → Spend & budgets**: prepare a separate finite dollar budget and bind it to a dedicated test key/scope. Upstream also documents assigning a budget directly to a key under API keys. The key must be non-exempt. With configured pricing, choose a positive ceiling below the documented hold for the single small test request. Confirm the accepted value and request hold in the hosted UI/operator trace; do not guess zero-limit behavior or prices. Keep account funds intact.
 - Supply test credentials only through ignored local environment variables `OTARI_ROUTING_TEST_API_KEY` and `OTARI_CEILING_TEST_API_KEY`. Never send keys in chat or put them in the configuration metadata below.
 
@@ -56,4 +74,4 @@ Routing uses the actual fixed source and production passage-selection extraction
 
 The ceiling request is one non-streaming 16-output-token chat, no tools. A qualifying refusal is HTTP 403, `Otari-Error-Code: budget_exceeded`, and recorded `Otari-Budget-Scope`, backed by the finite-dollar configuration. The adapter becomes terminal; a subsequent attempted dispatch is rejected locally before HTTP. Insufficient funds, missing pricing, 429, local allowance exhaustion or a different response do not pass. An unexpected successful call is recorded and stops; never repeat to consume the balance. A denial/uncertain charge is never bypassed or automatically retried.
 
-No additional paid request, account setting change or credit purchase occurred during preparation. Four capabilities retain actual hosted application evidence; these two categories remain unverified until the isolated setup and executions exist.
+No additional paid request, account setting change or credit purchase occurred during preparation. Four capabilities retain actual hosted application evidence; finite runtime budget binding and actual fallback recovery remain unverified. Controlled experiments are optional; application routing selection already has execution evidence.
