@@ -1,0 +1,117 @@
+{
+  "version": "hosted-ceiling-verification-v1",
+  "date": "2026-11-06",
+  "allocation": {
+    "id": "ecd492e3-af53-4b67-a5fe-08c473acfe1c",
+    "allocatedAt": "2026-11-06T16:59:45.782Z",
+    "authorization": "Owner-authorized bounded capability verification within the retained $20 total; one dispatch only.",
+    "capMicrousd": 20000,
+    "maxCalls": 1,
+    "conservativePriorExposureMicrousd": 1799451,
+    "authorizedTotalMicrousd": 20000000
+  },
+  "code": {
+    "startingCommit": "b71230a277ec857c7684aa2e5bc8a675181417c9",
+    "sourceHashes": {
+      "scripts/controlled-hosted-checks.cjs": "9784c960866c311fd2004327d810a5cdd37f1aa26634a2c546b6f744e6693966",
+      "apps/api/src/research/otari-gateway.service.ts": "5e1b039aff1fa1109927c62bda1c6804e2efe4812b3899c7037ce0e6ba601c3b"
+    }
+  },
+  "configuration": {
+    "provenance": "Owner created a separate capela-verification workspace and confirmed the setup in conversation; locally saved dedicated key is distinct from runtime key",
+    "hostedLimitMicrousd": 10000,
+    "currency": "USD",
+    "resets": "none (owner-directed setup)",
+    "scope": "workspace",
+    "providerRestriction": null,
+    "keyExemptionFlag": "Not directly readable; actual workspace-scope denial establishes effective enforcement for this request",
+    "mainRuntimeKeyBinding": "Unchanged and not established by this isolated test"
+  },
+  "freePreflight": [
+    {
+      "label": "models",
+      "path": "/models",
+      "status": 200
+    },
+    {
+      "label": "ceilings",
+      "path": "/organizations/me/spend-ceilings?limit=20",
+      "status": 401
+    },
+    {
+      "label": "policies",
+      "path": "/organizations/me/routing-policies?limit=20",
+      "status": 401
+    },
+    {
+      "label": "keys",
+      "path": "/organizations/me/keys?limit=20",
+      "status": 401
+    }
+  ],
+  "request": {
+    "endpoint": "/api/v1/chat/completions",
+    "requestedSelector": "deepinfra:Qwen/Qwen3.5-397B-A17B",
+    "requestedModel": "alibaba/qwen-3.5-397b-a17b",
+    "observedResolvedModel": null,
+    "maxOutputTokens": 4096,
+    "message": "Reply OK.",
+    "pricing": {
+      "input_price_per_million": 0.45,
+      "output_price_per_million": 3,
+      "cache_read_price_per_million": 0.22,
+      "cache_write_price_per_million": null,
+      "pricing_tiers": [],
+      "unit": "token"
+    },
+    "minimumOutputHoldMicrousd": 12288,
+    "pricingProvenance": "Actual isolated-key catalog offering immediately before dispatch; input adds to output-only lower bound"
+  },
+  "outcome": {
+    "status": "hosted_scoped_budget_denial_observed",
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T16:59:45.809Z",
+        "operation": "controlled_ceiling_denial",
+        "status": "failed",
+        "correlationId": "48dddf53-0e15-4199-81ef-5e5680a15564",
+        "httpStatus": 403,
+        "budgetScope": "workspace",
+        "requestId": "0876a3bb-e3b9-4870-9269-7dc91cfa1234",
+        "upstreamCode": "budget_exceeded",
+        "code": "OTARI_BUDGET_DENIED",
+        "durationMs": 1072
+      }
+    ],
+    "noSubsequentDispatch": true,
+    "actualHttpRequests": 1,
+    "noInferenceOutput": true,
+    "applicationTerminal": true,
+    "budget": {
+      "currency": "USD",
+      "capMicrousd": 20000,
+      "reservedMicrousd": 20000,
+      "reportedMicrousd": 0,
+      "unknownCostCalls": 1,
+      "calls": 1,
+      "maxCalls": 1,
+      "terminal": true
+    }
+  },
+  "accounting": {
+    "newReportedMicrousd": 0,
+    "retainedUnknownReservationMicrousd": 20000,
+    "conservativeCumulativeExposureMicrousd": 1819451,
+    "priorLedgerSha256": "e8ac40929e78bab6588f4ed45b5842a75f19fc99baeb72f4db3b728cea4ddbb4",
+    "postLedgerSha256": "b518e8a1442349b87b9affb4d5b265db9d00fc5920f309bf842cdc8caa081189"
+  },
+  "limitations": [
+    "Isolated real production-adapter check, not a new authenticated UI investigation",
+    "No model inference or extraction/review role is claimed for the denied request",
+    "No application allowance exhaustion, insufficient-funds or token-limit refusal substituted for hosted ceiling denial",
+    "Original runtime key ceiling and role-preserving fallback recovery remain unverified",
+    "No account depletion, credit purchase, production setting change or denial bypass"
+  ],
+  "originalRunPreserved": true
+}

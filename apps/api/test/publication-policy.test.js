@@ -179,3 +179,17 @@ test("controlled check commands refuse missing isolated configuration without a 
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
+test("one-cent hosted ceiling can refuse a priced hold under a separate two-cent single-call allocation", () => {
+  const { controlledAllocationCap } = require("../../../scripts/controlled-hosted-checks.cjs");
+  const settings = { hostedLimitMicrousd: 10000, requestHoldMicrousd: 12288, maxOutputTokens: 4096 };
+  assert.equal(controlledAllocationCap("ceiling", settings), 20000);
+  for (const patch of [
+    { requestHoldMicrousd: 10000 },
+    { requestHoldMicrousd: 20001 },
+    { hostedLimitMicrousd: 0 },
+    { maxOutputTokens: 4097 },
+    { maxOutputTokens: undefined },
+  ])
+    assert.equal(controlledAllocationCap("ceiling", { ...settings, ...patch }), undefined);
+  assert.equal(controlledAllocationCap("routing", { requestHoldMicrousd: 10001 }), undefined);
+});

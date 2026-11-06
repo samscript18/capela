@@ -8,6 +8,27 @@ const { OtariGatewayService } = require("../apps/api/dist/research/otari-gateway
 const { extractionInput, EXTRACTION_PROMPT } = require("../apps/api/dist/research/otari-evidence.service");
 const { hydrateExtraction } = require("../apps/api/dist/research/passage-references");
 const { referenceValid } = require("../apps/api/dist/research/provenance");
+function controlledAllocationCap(mode, settings) {
+  const cap = mode === "ceiling" ? 20000 : mode === "routing" ? 10000 : 0;
+  if (
+    !cap ||
+    !Number.isSafeInteger(settings?.requestHoldMicrousd) ||
+    settings.requestHoldMicrousd <= 0 ||
+    settings.requestHoldMicrousd > cap
+  )
+    return undefined;
+  if (
+    mode === "ceiling" &&
+    (!Number.isSafeInteger(settings.hostedLimitMicrousd) ||
+      settings.hostedLimitMicrousd <= 0 ||
+      settings.hostedLimitMicrousd >= settings.requestHoldMicrousd ||
+      !Number.isSafeInteger(settings.maxOutputTokens) ||
+      settings.maxOutputTokens < 16 ||
+      settings.maxOutputTokens > 4096)
+  )
+    return undefined;
+  return cap;
+}
 async function main() {
   const mode = process.argv[2];
   if (!["routing", "ceiling"].includes(mode)) throw Error("Choose routing or ceiling");
@@ -26,18 +47,18 @@ async function main() {
         "hostedLimitMicrousd",
         "requestHoldMicrousd",
         "nonExempt",
+        "maxOutputTokens",
       ].map((k) => [k, raw[k]]),
     );
   const safe = (v) => typeof v === "string" && /^[a-zA-Z0-9._:/-]{1,200}$/.test(v) && !/bearer|tk-|https?:/i.test(v);
   const key = process.env[mode === "routing" ? "OTARI_ROUTING_TEST_API_KEY" : "OTARI_CEILING_TEST_API_KEY"];
+  const cap = controlledAllocationCap(mode, settings);
   if (
     !key ||
     settings?.isolated !== true ||
     !safe(settings?.policy) ||
     !safe(settings?.configurationReference) ||
-    !Number.isSafeInteger(settings?.requestHoldMicrousd) ||
-    settings.requestHoldMicrousd <= 0 ||
-    settings.requestHoldMicrousd > 10000 ||
+    !cap ||
     key === process.env.OTARI_API_KEY ||
     (mode === "routing" && (!safe(settings.controlledFailureReference) || !safe(settings.expectedFallbackModel))) ||
     (mode === "ceiling" &&
@@ -74,7 +95,6 @@ async function main() {
       (n, v) => n + v.run.budget.reportedMicrousd + v.run.budget.reservedMicrousd,
       0,
     );
-    const cap = 10000;
     if (previousExposure + previousControlled + cap > auth.capMicrousd) throw Error("Authorized allowance unavailable");
     const gateway = new OtariGatewayService(
       new ConfigService({
@@ -90,10 +110,22 @@ async function main() {
     run.snapshots = structuredClone(original.snapshots);
     run.inferenceContract = "passage-selection-v1";
     const result = {
+      allocationId: crypto.randomUUID(),
+      allocatedAt: new Date().toISOString(),
+      authorization:
+        "Owner-authorized bounded capability verification within the retained $20 total; one dispatch only.",
+      conservativePriorExposureMicrousd: previousExposure + previousControlled,
+      authorizedTotalMicrousd: auth.capMicrousd,
       mode,
       status: "started",
       configuration: settings,
       commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+      sourceHashes: Object.fromEntries(
+        ["scripts/controlled-hosted-checks.cjs", "apps/api/src/research/otari-gateway.service.ts"].map((p) => [
+          p,
+          crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex"),
+        ]),
+      ),
       run,
     };
     ledger.controlledChecks ??= {};
@@ -136,7 +168,7 @@ async function main() {
             {
               model: settings.policy,
               stream: false,
-              max_tokens: 16,
+              max_tokens: settings.maxOutputTokens,
               messages: [{ role: "user", content: "Reply OK." }],
             },
             "controlled_ceiling_denial",
@@ -175,7 +207,9 @@ async function main() {
     fs.unlinkSync(dir + "/live-verification.lock");
   }
 }
-main().catch(() => {
-  console.error("Controlled check blocked/stopped. Private errors and credentials are not logged.");
-  process.exitCode = 1;
-});
+module.exports = { controlledAllocationCap };
+if (require.main === module)
+  main().catch(() => {
+    console.error("Controlled check blocked/stopped. Private errors and credentials are not logged.");
+    process.exitCode = 1;
+  });

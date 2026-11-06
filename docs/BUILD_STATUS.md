@@ -2,6 +2,20 @@
 
 Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
 
+## Isolated hosted monetary ceiling — current checkpoint
+
+Continued from clean `b71230a`; owner created `capela-verification`, configured the directed $0.01/no-reset workspace ceiling across providers, and saved a separate key locally. Existing runtime key/policies are unchanged. New isolated key catalog reads succeed; its ceiling/policy/key management reads still return 401. Owner setup is configuration provenance; the actual refusal below establishes effective enforcement without guessing an exemption flag.
+
+Fixed the controlled test's incompatible bounds: a $0.01 hosted ceiling cannot reject a hold constrained to at most $0.01. The ceiling experiment now allows a separately recorded **$0.02 / one-call application allocation**, while routing remains $0.01/one call. Explicit bounded output and integer hold checks reject invalid/oversized settings. Focused regression passed before dispatch. No application/hosted total cap was increased; allocation stays within the retained owner-authorized $20 total.
+
+One real production-gateway request pinned catalogued `deepinfra:Qwen/Qwen3.5-397B-A17B`, `max_tokens:4096`, with “Reply OK.” Input/output pricing was read with the test key; output reservation alone is **$0.012288**, above the $0.01 ceiling. Otari refused **HTTP 403 / `budget_exceeded` / scope `workspace`**, request **`0876a3bb-e3b9-4870-9269-7dc91cfa1234`**. No inference result/model identity is claimed. Capela persisted terminal denial; a subsequent attempted call was rejected locally with no second HTTP dispatch. No balance draining or provider bypass. The one-shot ledger prevents replay.
+
+**Hosted spending-ceiling enforcement now has genuine isolated application-adapter evidence.** It is not a new authenticated UI investigation or proof about the original runtime key's ceiling. Four categories retain the complete research run; this budget check adds a fifth with substantive execution evidence. Routing selection also has actual policy-call/configuration evidence; successful role-preserving fallback remains unverified, so the full recovery target remains incomplete. Controlled tests are optional rubric evidence methods; judges determine credit for selection/configured fallbacks.
+
+Reported new cost **$0.000000**; no usage settlement returned, so retain **$0.020000 unknown reservation**. Conservative cumulative exposure **$1.819451**, leaving $18.180549 under the task authorization (not account balance or further attempt permission). Original task/application counters, checkpoints, run, publication revision and sample/export remain unchanged. No further paid attempt is active or authorized implicitly.
+
+Evidence: `evaluation/hosted-ceiling-verification.json`, including allocation, exact pre-dispatch source hashes, actual request/scope, catalog prices and no-second-dispatch proof. Single remaining configuration task: create the prepared isolated role-preserving policies in the authenticated dashboard; existing shared safeguard backup is unsuitable. No production settings changed, no push or deployment. Release checks are recorded in TEST_EVIDENCE.
+
 ## Routing/budget access follow-up — current checkpoint
 
 Started clean at `12c21a2dfdcec3f8e74aa8faee3ee71289d6d217` on `feat/otari-completion-verification` (contains `6abdac4`). Preserved original hosted output, publication hold, public sample/export and ledger. No historical outage investigation or paid replay.
