@@ -1849,3 +1849,19 @@ test("validated hosted search checkpoint is durable and reused without paid sear
     ResearchRunSchema.parse({ ...saved, discovery: { ...saved.discovery, urls: ["http://127.0.0.1/private"] } }),
   );
 });
+
+test("a shortened source quote with unchanged sentence offsets stays rejected", () => {
+  // Regression from the live extraction boundary, expressed as synthetic source text.
+  const { s, c, r } = fixture("Aspirin 🧪 may alter markers, but human efficacy remains uncertain.");
+  const indexed = sourcePassages(s)[0];
+  const shortened = { ...c, spans: [{ ...indexed, quote: indexed.quote.slice(0, -1) }] };
+  assert.equal(referenceValid(shortened, [s]), false);
+  assert.equal(decide(shortened, r, [s]).status, "rejected");
+  assert.deepEqual(
+    shortened.spans[0],
+    { ...indexed, quote: indexed.quote.slice(0, -1) },
+    "validation never repairs model offsets",
+  );
+  const whole = { ...c, spans: [indexed] };
+  assert.equal(referenceValid(whole, [s]), true);
+});

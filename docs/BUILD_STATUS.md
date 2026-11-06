@@ -2,6 +2,26 @@
 
 Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
 
+## MCP recovery follow-up
+
+Continued at clean `99053da7a08e3060983931ee4516b6df2a2e59b2` on the same branch. **Direct and hosted MCP are now verified working.** Readiness HTTP 200/Mongo connected, unauthenticated MCP 401, authenticated SDK initialize/tools-list/publication retrieval passed. Hosted discovery `req_8356c737d4054683affabad29e32c93a`; invocation `req_31d55cb46bb4415abf23409e95c03df8`, matching canonical PMID 42505335 and source hash. No remote code, token or configuration change was made. Earlier timeout/502 root cause remains unconfirmed; do not attribute it to cold start or a token mismatch without logs.
+
+The owner attests latest GitHub main is deployed; `git ls-remote` resolves main to `d9cc2501f44f140097b13d62f037b5b2295ad2a2`. This is owner-attested deployment provenance, not runtime-reported metadata. No Render connector/CLI credentials or service logs are available. The MCP controller is unchanged between that commit and current local code. Successful direct and hosted authenticated invocation establishes functional authorization, without revealing or comparing either secret value.
+
+One new allocation was recorded before dispatch: $0.25 maximum across one hosted MCP check and one local application attempt, six paid calls total maximum. The signed-in Node 24 app used current clean commit `99053da`, retained source hashes before inference, excluded Vertex, selected one abstract and capped application work at $0.20/five calls. **It completed an empty dossier, not a meaningful qualifying two-model result.** Search, remote MCP, extraction and sandbox succeeded; two candidates were rejected for shortened quotes with unchanged sentence offsets. No valid candidates remained, so review was correctly not dispatched. The zero-claim remote audit agreed locally. No acceptance rule was weakened and no additional paid retry followed.
+
+Confirmed extraction boundary: source IDs/hashes match, and quotes occur at their supplied start offsets, but `text.slice(start,end) !== quote` because the quoted strings omit text/punctuation covered by their end offsets. Saved original candidates remain rejected. Extraction-v4 now explicitly requires copying complete indexed span objects verbatim; a new synthetic regression preserves rejection of shortened quotes. This prompt fix is offline-only, with no measured live improvement claim.
+
+Actual completed dossier/history/reopen and downloaded PNG inspection passed. Export shows one study, zero claims, insufficient evidence and abstract-only limits. A targeted card change states that no independent review completed when there is no completed review event; the updated actual downloaded PNG was inspected too. The private export contains a case suffix and is not published as a qualifying sample.
+
+New spend: $0.057209 reported plus $0.030000 retained unknown reservations (two MCP calls and sandbox). Conservative overlap-inclusive total exposure is **$1.721945**, leaving **$18.278055** under the $20 total, not an account balance or permission for repeated attempts. Recovery allocation settled `completed_nonqualifying`, with $0.162791 unused. All original task/application budgets, call counters and checkpoints remain; no active retry allocation.
+
+Sanitized evidence: `evaluation/mcp-recovery.json` (code/source hashes, original candidates, exact span failure, actual tool IDs, costs, audit and export hash). **Four categories have hosted execution evidence; routing recovery and finite hosted monetary-ceiling denial remain pending. Six-capability target remains undemonstrated.** A meaningful all-Otari result still needs valid candidates and a distinct observed reviewer; no new public sample is supplied. Remote deployment/configuration repair is not currently indicated by successful checks; read-only Render logs would be needed to explain the earlier outage.
+
+The dated record below describes the earlier attempt and is retained for provenance; its MCP-unavailable state is superseded by this recovery section.
+
+## Earlier November 6 checkpoint
+
 Started clean on `main` at `d9cc2501f44f140097b13d62f037b5b2295ad2a2`; dedicated local branch `feat/otari-completion-verification`. First Otari integration commit: `9085c3f30003e5edab5e6dc05674052831f38c48`. No push, deployment, account change, submission, purchase or email in this follow-up.
 
 Prioritized checklist:
@@ -41,3 +61,5 @@ The paired evaluator shares the production extraction payload/passage index, cur
 Local actual Next/Nest ran under Node **24.22.2**, isolated MongoDB port 27944, web 3016/API 4016, ordinary participant Privy login. Production/deployed web and API commit identities remain **unknown**; no deployment version is inferred from current local code. The live attempt used starting commit plus uncommitted batching/dispatch-limit changes; an exact pre-dispatch working-tree hash was not captured. Later discovery-checkpoint fixes were not replayed live.
 
 **Six-capability target demonstrated: no.** Four categories have some historical hosted execution evidence; routing recovery and actual finite-ceiling denial remain unverified. A meaningful current complete qualifying dossier, public read-only sample and export remain blocked. Optional review-improvement measurement remains in the internal evaluation backlog. Submission readiness is withheld.
+
+Final recovery verification: Node 24.22.2 `npm test` 92/92; focused SDK MCP integration 1/1; format, lint, typecheck and production build pass, with existing dependency warnings. Updated actual PNG inspected. No new paid replay, push, deployment or production change. Next operational step is a separately recorded bounded attempt using extraction-v4, if authorized; controlled routing/ceiling tests still require dedicated configuration. Read-only Render logs are needed only to establish the historical outage cause, not to prove current MCP operation.

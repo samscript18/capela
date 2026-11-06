@@ -180,7 +180,11 @@ export function DossierSummaryCard({ item }: { item: ApiInvestigation }) {
         <p className="mt-5 text-[10px] leading-5 text-white/55">
           Abstract-only, bounded source coverage. Evidence grades are heuristics, not efficacy probabilities.{" "}
           {item.research
-            ? "Model-assisted review is not proof of scientific truth."
+            ? item.research.events.some(
+                (event) => ["review", "vertex_review"].includes(event.operation) && event.status === "completed",
+              )
+              ? "Model-assisted review is not proof of scientific truth."
+              : "No independent review completed; inspect the saved validation decisions."
             : "Legacy record: passage verification was not performed."}
         </p>
         <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">

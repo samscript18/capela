@@ -17,3 +17,5 @@ November 6 execution:
 Remaining dependencies: remote MCP service restoration, meaningful all-Otari completion and captured export/public sample, dedicated controlled routing/finite monetary-denial configuration. No production changes, deployment, push, email, submission or credit purchase is authorized. New local implementation and ordinary offline checks proceed without phase approvals.
 
 Optional development evaluation: human labels and an explicitly allocated held-out paired comparison remain unfinished. This is a separate experimental backlog, not a prerequisite imposed by the retrieved rubric.
+
+November 6 recovery checkpoint: direct/hosted MCP now pass without remote changes; deployed API is owner-attested GitHub main `d9cc250`. One explicitly allocated application run completed search/retrieval/extraction/audit but rejected both malformed spans, skipping review. History/reopen and PNG inspection passed. Extraction-v4 clarifies complete indexed spans and export labels no completed review; targeted offline regression passes. No second paid attempt follows implicitly. BUILD_STATUS and mcp-recovery.json contain provenance/accounting.

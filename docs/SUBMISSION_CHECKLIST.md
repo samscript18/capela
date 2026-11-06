@@ -7,11 +7,11 @@
 - Owner sign-up email/thread, project sentence and Otari account email: owner supplies. No registration or email sent.
 - Confirm deadline timezone (page shows November 11, 11:59 PM without timezone); internal cutoff November 10, 18:00 Africa/Lagos.
 - Check [RUBRIC_EVIDENCE.md](RUBRIC_EVIDENCE.md): list only actually demonstrated hosted capabilities. Target remains six; historical role, search, remote MCP and sandbox evidence exists, but a meaningful current all-Otari application demonstration is pending.
-- Restore the remote MCP endpoint (November 6 discovery 502/direct initialize timeout), then complete a bounded qualifying investigation, controlled fallback, finite monetary denial and trace review. Do not attach fixture tests as hosted proof.
+- Direct and hosted MCP now pass. The latest bounded run completed an empty dossier after invalid-span rejection; complete a meaningful qualifying investigation, controlled fallback, finite monetary denial and trace review. Do not attach fixture tests as hosted proof.
 - Describe completed source-hash, exact-passage and reference checks, automated tests and actual hosted behavior with their recorded provenance. These checks are not scientific-accuracy evidence or proof that review improves correctness.
 - Answer organiser questions honestly from the recorded results; distinguish application behavior, offline tests and demonstrated hosted capabilities.
 - Publish a sanitized dated read-only sample only after a meaningful qualifying run succeeds. It must contain no owner IDs, tokens or mutation controls; existing authenticated endpoints remain protected. No current sample is supplied.
-- Identify deployed web/API commits and authorize any deployment of the tested version; local tests do not identify production releases.
+- Owner attests current GitHub main `d9cc2501f44f140097b13d62f037b5b2295ad2a2` is deployed; runtime commit metadata/logs remain unavailable. Authorize any deployment of the newer tested branch separately.
 - Supply participant-recorded 3–5 minute demo link and feedback link/written responses. No AI video or audio.
 - Upstream issues/PRs: none opened in this task; do not invent any.
 - Review public repository for secrets, legacy compatibility, current README and reproducible test instructions.

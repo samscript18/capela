@@ -1,0 +1,403 @@
+{
+  "version": "mcp-recovery-v1",
+  "date": "2026-11-06T15:27:31.399Z",
+  "diagnostic": {
+    "date": "2026-11-06T15:17:34.940Z",
+    "codeCommit": "99053da7a08e3060983931ee4516b6df2a2e59b2",
+    "endpoint": "https://capela-zix9.onrender.com/research-mcp",
+    "mode": "bounded read-only diagnostics; no hosted paid invocation or search",
+    "checks": [
+      {
+        "name": "health",
+        "status": 200,
+        "durationMs": 802,
+        "ready": true,
+        "database": "connected"
+      },
+      {
+        "name": "unauthenticated MCP",
+        "status": 401,
+        "durationMs": 354
+      },
+      {
+        "name": "authenticated initialize",
+        "status": "passed",
+        "durationMs": 831,
+        "server": {
+          "name": "capela-publication-metadata",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "name": "tools/list",
+        "status": "passed",
+        "tools": ["publication_abstract"],
+        "durationMs": 629
+      },
+      {
+        "name": "publication_abstract",
+        "status": "passed",
+        "durationMs": 1432,
+        "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42505335/",
+        "pmid": "42505335",
+        "abstractHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+        "abstractCharacters": 1313
+      }
+    ],
+    "deployment": {
+      "commit": "d9cc2501f44f140097b13d62f037b5b2295ad2a2",
+      "basis": "Owner attests deployed version is latest GitHub main; git ls-remote confirms this main SHA on November 6",
+      "runtimeReportedCommit": false,
+      "startupLogsAvailable": false,
+      "localMcpControllerUnchangedSinceDeployedCommit": true
+    },
+    "historicalFailureCause": "Not established: prior timeout/502 could not be reproduced; no code or production configuration changed to obtain recovery."
+  },
+  "hostedDiscovery": {
+    "date": "2026-11-06T15:18:21.895Z",
+    "operation": "read-only hosted discovery",
+    "status": 200,
+    "durationMs": 1298,
+    "requestId": "req_8356c737d4054683affabad29e32c93a",
+    "serverRevision": "ae4455d737aed4fcfcc5a36a18b1bb96",
+    "serverIdMatches": true,
+    "tools": [
+      {
+        "name": "publication_abstract",
+        "input_schema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "pattern": "^https:\\/\\/pubmed\\.ncbi\\.nlm\\.nih\\.gov\\/\\d{1,10}\\/$"
+            }
+          },
+          "required": ["url"],
+          "additionalProperties": false
+        }
+      }
+    ]
+  },
+  "hostedInvocation": {
+    "result": {
+      "status": "passed",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/42505335/",
+      "hash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+      "pmid": "42505335",
+      "requestId": "req_31d55cb46bb4415abf23409e95c03df8"
+    },
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T15:19:29.046Z",
+        "operation": "publication_metadata",
+        "status": "completed",
+        "correlationId": "d0ee1591-2fcd-4fdc-a668-78bf8e84183c",
+        "httpStatus": 200,
+        "requestId": "req_31d55cb46bb4415abf23409e95c03df8",
+        "durationMs": 2647
+      }
+    ],
+    "budget": {
+      "currency": "USD",
+      "capMicrousd": 10000,
+      "reservedMicrousd": 10000,
+      "reportedMicrousd": 0,
+      "unknownCostCalls": 1,
+      "calls": 1,
+      "maxCalls": 1,
+      "terminal": false
+    }
+  },
+  "application": {
+    "codeCommit": "99053da7a08e3060983931ee4516b6df2a2e59b2",
+    "codeHashes": {
+      "apps/api/src/research/otari-evidence.service.ts": "2666d6c62328e4eb4724f216696db932353de80c633d70328c1b21117f73a37f",
+      "apps/api/src/research/otari-search.ts": "5735e8618c23d878ab0fdfb5ac900f29eff0982a4fae17941bbc8d562f8a0cc9",
+      "apps/api/src/research/otari-gateway.service.ts": "417fa5751dacb3cb3083e085046191cb2b13f955ed1dc7c333ed713ce0412398",
+      "apps/api/src/research/otari-retrieval.service.ts": "6a3e6743106dd6de57b2f745d3fd84fc571fa5f95e35d6ccb16571d6fadf97b8",
+      "apps/api/src/research/evidence-audit.ts": "8b4f74787f4e2d8c18cab70472b1cbaca30e7ea1a30e6baa2c8e42c1e5b59a07",
+      "packages/shared/src/provenance.ts": "fb05203879c0d8d0dc699c6e0fa6ddf78f6c8846fa80eec496b1de762c62f05d"
+    },
+    "mode": "actual Node 24 Next/Nest; participant Privy login; isolated local Mongo; Vertex disabled; one abstract / five-call ceiling",
+    "identity": {
+      "name": "Curcumin",
+      "pubchemCid": 969516
+    },
+    "status": "completed",
+    "qualifying": false,
+    "qualificationReason": "Both candidate spans invalid; independent review not dispatched; no meaningful accepted evidence.",
+    "models": {
+      "distinct": false,
+      "extraction": "openai/gpt-oss-20b"
+    },
+    "budget": {
+      "currency": "USD",
+      "capMicrousd": 200000,
+      "reservedMicrousd": 20000,
+      "reportedMicrousd": 57209,
+      "unknownCostCalls": 2,
+      "calls": 4,
+      "maxCalls": 5,
+      "terminal": false
+    },
+    "discovery": {
+      "query": "Curcumin biological activity mechanism study",
+      "completedAt": "2026-11-06T15:23:31.541Z",
+      "toolCallId": "otari_ws_07b3b2e4c6c04516b069ba0d540c82b1",
+      "requestId": "8fbc9fa4-b6bf-4db3-9978-b098d4902603",
+      "urls": [
+        "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+        "https://pubmed.ncbi.nlm.nih.gov/37191432/",
+        "https://pubmed.ncbi.nlm.nih.gov/29097552/",
+        "https://pubmed.ncbi.nlm.nih.gov/40909997/",
+        "https://pubmed.ncbi.nlm.nih.gov/40918117/"
+      ]
+    },
+    "snapshots": [
+      {
+        "id": "src_ccabb44a1e22077e16737b69efdca511",
+        "paperId": "32141677",
+        "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+        "retrievedAt": "2026-11-06T15:23:34.350Z",
+        "hash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "text": "Recently, many studies have been conducted trying to explain the molecular mechanism of curcumin action in various pathological states of the cell and the organism. Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine, apoptosis of the human papilloma and the activity of the 26S proteasome, and p53 level. Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells. Curcumin can also arrest of the cell cycle in the G2/M phase leading to apoptosis and/or reduction in cancer cells proliferation. Moreover, curcumin is capable of crossing the blood-brain barrier, and thus it may protect the neurons from oxidative stress and inflammation. Finally, curcumin may play a role in cardiological protection and it is possible to use it in the protection of liver and spleen against oxidative and inflammatory injury. Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+        "scope": "abstract",
+        "mime": "text/plain",
+        "sourceKind": "canonical-publication-metadata",
+        "normalization": "NFC-LF-v1",
+        "parserVersion": "publication-abstract-v1",
+        "truncated": false,
+        "coverage": "abstract-only"
+      }
+    ],
+    "decisions": [
+      {
+        "candidate": {
+          "id": "32141677-claim-1",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine.",
+          "proposedClass": "literature_reported",
+          "kind": "activity",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": null,
+          "label": "Regulation of T-lymphocyte function",
+          "relationship": "unknown",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine",
+              "start": 165,
+              "end": 381,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ]
+        },
+        "review": null,
+        "status": "rejected",
+        "reason": "Candidate source or exact passage is invalid."
+      },
+      {
+        "candidate": {
+          "id": "32141677-claim-2",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+          "proposedClass": "literature_reported",
+          "kind": "activity",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": null,
+          "label": "Regulation of ROS and cytosolic calcium in tumor cells",
+          "relationship": "unknown",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ]
+        },
+        "review": null,
+        "status": "rejected",
+        "reason": "Candidate source or exact passage is invalid."
+      }
+    ],
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T15:23:26.023Z",
+        "operation": "scientific_search_tool",
+        "status": "completed",
+        "correlationId": "c09ff174-6255-46d9-8463-b2ee2c98f6bc",
+        "httpStatus": 200,
+        "requestId": "8fbc9fa4-b6bf-4db3-9978-b098d4902603",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 57036,
+        "durationMs": 5507,
+        "toolCallId": "otari_ws_07b3b2e4c6c04516b069ba0d540c82b1"
+      },
+      {
+        "sequence": 2,
+        "at": "2026-11-06T15:23:31.546Z",
+        "operation": "mcp_discovery",
+        "status": "completed",
+        "correlationId": "7180016e-8647-4b7b-adf0-eb2d3c857895",
+        "httpStatus": 200,
+        "requestId": "req_9b9b24214ab54886b3ea437552fb9a66",
+        "durationMs": 847
+      },
+      {
+        "sequence": 3,
+        "at": "2026-11-06T15:23:32.399Z",
+        "operation": "publication_metadata",
+        "status": "completed",
+        "correlationId": "6e36ecec-b266-4690-9391-2f88493b338f",
+        "httpStatus": 200,
+        "requestId": "req_bd4cf1fde39340a6894d16bea4807e19",
+        "durationMs": 1947
+      },
+      {
+        "sequence": 4,
+        "at": "2026-11-06T15:23:34.363Z",
+        "operation": "extraction",
+        "status": "completed",
+        "correlationId": "14658f64-7096-4d25-9a57-1b52242916a6",
+        "httpStatus": 200,
+        "requestId": "ab7f3a53-1ffa-45d9-b222-f020ad2d43a7",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 173,
+        "durationMs": 6561
+      },
+      {
+        "sequence": 5,
+        "at": "2026-11-06T15:23:40.945Z",
+        "operation": "sandbox_audit",
+        "status": "completed",
+        "correlationId": "0a4b3771-6f8e-4a27-9db6-1267c72d8b4e",
+        "httpStatus": 200,
+        "requestId": "b9fdc3cb-68ef-45db-a79e-06d26eda2141",
+        "durationMs": 1681
+      }
+    ],
+    "audit": {
+      "valid": true,
+      "accepted": 0,
+      "sources": 0,
+      "distribution": {},
+      "invalidIds": [],
+      "version": "span-audit-v1",
+      "programHash": "0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249",
+      "remote": true,
+      "requestId": "b9fdc3cb-68ef-45db-a79e-06d26eda2141"
+    },
+    "limitations": [
+      "At most five abstracts; no full-text or exhaustive coverage.",
+      "Model-assisted review is not proof of scientific truth.",
+      "Application reservations are estimates; hosted ceiling enforcement must be independently verified.",
+      "Direct PubChem/NCBI calls are external to Otari billing.",
+      "Hosted search returned 5 source records despite requesting three; selection remains bounded. The requested result count is not a verified hosted ceiling.",
+      "Extraction examines at most two findings per abstract."
+    ],
+    "validation": [
+      {
+        "id": "32141677-claim-1",
+        "sourceReferenceValid": false,
+        "spans": [
+          {
+            "quoteStartsAt": 165,
+            "modelStart": 165,
+            "modelEnd": 381,
+            "quoteLength": 127,
+            "actualSlice": "Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine, apoptosis of the human papilloma and the activity of the 26S proteasome, and p53 level."
+          }
+        ]
+      },
+      {
+        "id": "32141677-claim-2",
+        "sourceReferenceValid": false,
+        "spans": [
+          {
+            "quoteStartsAt": 382,
+            "modelStart": 382,
+            "modelEnd": 700,
+            "quoteLength": 317,
+            "actualSlice": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells."
+          }
+        ]
+      }
+    ],
+    "dossierPresent": true,
+    "evidenceCount": 0
+  },
+  "browser": {
+    "historyCompletedRecordVisible": true,
+    "reopenCompletedDossier": true,
+    "downloadCaptured": true,
+    "export": {
+      "mime": "image/png",
+      "bytes": 1562978,
+      "sha256": "941acc2c62d111c37267886354c7ac752bb661b98bc078d711e83cb21ddbd3f2",
+      "width": 1098,
+      "height": 1814,
+      "visuallyInspected": true,
+      "limitations": ["Insufficient evidence", "one study / zero claims", "abstract-only coverage"],
+      "containsPrivateCaseSuffix": true,
+      "published": false
+    }
+  },
+  "accounting": {
+    "currency": "USD",
+    "allocationMicrousd": 250000,
+    "priorConservativeExposureMicrousd": 1634736,
+    "additionalReportedMicrousd": 57209,
+    "additionalReservedMicrousd": 30000,
+    "totalConservativeExposureMicrousd": 1721945,
+    "totalAuthorizedMicrousd": 20000000,
+    "unusedAllocationMicrousd": 162791,
+    "noCounterReset": true,
+    "noPaidReplay": true
+  },
+  "offlineFix": {
+    "extractionPrompt": "extraction-v4; copy complete indexed spans verbatim; no offset/quote repair or acceptance relaxation",
+    "export": "Label no completed independent review when no completed review event exists",
+    "liveReplayed": false,
+    "sourceHashes": {
+      "apps/api/src/research/otari-evidence.service.ts": "938d35613be4b44aff6195ec9996080d32d38e7d4594cc077f746a5a04c4a22a",
+      "apps/api/test/evidence.test.js": "0a8be621c534f3e26f129c4b93c027b6ce3f9e5c16d0755d0b0abdf8b1a20a48",
+      "apps/web/src/components/dossier-summary-card.tsx": "4820c4c4085818174e05c4bdfd86a9d1be6ead2dacd0da785f9c5644160c9dbb"
+    }
+  },
+  "sixCapabilitiesDemonstrated": false,
+  "offlineChecks": {
+    "node": "24.22.2",
+    "unit": {
+      "passed": 92,
+      "failed": 0
+    },
+    "focusedMcpIntegration": {
+      "passed": 1,
+      "failed": 0,
+      "canonicalUpstream": "mocked"
+    },
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "warnings": ["Existing viem/ox dynamic dependency", "Privy optional @farcaster/mini-app-solana import"],
+    "actualExportInspection": "passed; updated PNG downloaded and visually inspected",
+    "noPaidPromptReplay": true
+  }
+}
