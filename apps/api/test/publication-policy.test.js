@@ -193,3 +193,27 @@ test("one-cent hosted ceiling can refuse a priced hold under a separate two-cent
     assert.equal(controlledAllocationCap("ceiling", { ...settings, ...patch }), undefined);
   assert.equal(controlledAllocationCap("routing", { requestHoldMicrousd: 10001 }), undefined);
 });
+test("isolated routing check refuses the working key before ledger access and validates complete source coverage", () => {
+  const { spawnSync } = require("node:child_process"),
+    path = require("node:path");
+  const p = spawnSync(process.execPath, [path.resolve(__dirname, "../../../scripts/verify-isolated-routing.cjs")], {
+    cwd: require("node:os").tmpdir(),
+    encoding: "utf8",
+    env: { ...process.env, OTARI_API_KEY: "same-test-fixture", OTARI_CEILING_TEST_API_KEY: "same-test-fixture" },
+  });
+  assert.equal(p.status, 2);
+  assert.equal(JSON.parse(p.stdout).requestsSent, 0);
+  const { verifySelection } = require("../../../scripts/verify-isolated-routing.cjs");
+  const { selectionCandidate } = require("./passage-fixtures");
+  const source = recorded.snapshots[0],
+    candidate = recorded.decisions[0].candidate;
+  const output = {
+    version: "passage-selection-v1",
+    papers: [{ paperId: source.paperId, claims: [selectionCandidate(candidate, source)], limitations: [] }],
+  };
+  assert.equal(verifySelection(output, [source], source.paperId)[0].spans[0].quote, candidate.spans[0].quote);
+  assert.throws(() => verifySelection(output, [source], "wrong-paper"));
+  assert.throws(() =>
+    verifySelection({ ...output, papers: [...output.papers, ...output.papers] }, [source], source.paperId),
+  );
+});

@@ -1,0 +1,551 @@
+{
+  "version": "isolated-routing-verification-v1",
+  "date": "2026-11-06",
+  "allocation": {
+    "id": "3d4c16f4-c199-48ce-a169-33fcadaeda76",
+    "at": "2026-11-06T17:13:16.986Z",
+    "authorization": "Owner authorized bounded verification within retained $20 total and confirmed creating both isolated policies.",
+    "priorConservativeExposureMicrousd": 1819451,
+    "capMicrousd": 10000,
+    "maxCalls": 2
+  },
+  "code": {
+    "startingCommit": "8800557b39857978bddebb24bcd63a2c3c18c78a",
+    "sourceHashes": {
+      "scripts/verify-isolated-routing.cjs": "7d67b93aa93f0fd1ad94391dbcb6eb998c409eee7eafcfea9f524d4909d00ebc",
+      "apps/api/src/research/otari-gateway.service.ts": "5e1b039aff1fa1109927c62bda1c6804e2efe4812b3899c7037ce0e6ba601c3b",
+      "apps/api/src/research/otari-evidence.service.ts": "573b4707975d09539f9045719571b97fba31a5f3b926d385e1ebd20e28de8d8c",
+      "apps/api/src/research/passage-references.ts": "34e67bd682627ee0d39f82763a2126f8dbe9851fcf18945e8051c580a1070beb"
+    }
+  },
+  "configuration": {
+    "provenance": "Owner confirmed creating the prepared isolated policies in capela-verification; test-key catalog lists both names; policy spec administration remains 401",
+    "policies": {
+      "extraction": "capela-extraction-isolated-v1",
+      "review": "capela-review-isolated-v1"
+    },
+    "configuredBackups": {
+      "extraction": "ovhcloud:gpt-oss-20b",
+      "review": "ovhcloud:gpt-oss-120b"
+    },
+    "backupConfigurationProvenance": "Owner confirmation of supplied setup instructions, not management API inspection"
+  },
+  "status": "isolated_policy_roles_observed",
+  "events": [
+    {
+      "sequence": 1,
+      "at": "2026-11-06T17:13:17.018Z",
+      "operation": "extraction",
+      "status": "completed",
+      "correlationId": "45583c97-522d-481d-a3b8-f68d996131b5",
+      "requestedPolicy": "capela-extraction-isolated-v1",
+      "httpStatus": 200,
+      "requestId": "28e00537-a6d3-4b3f-89e8-4490c69cc88f",
+      "provider": "deepinfra",
+      "model": "openai/gpt-oss-20b",
+      "fallback": false,
+      "costMicrousd": 197,
+      "durationMs": 5666
+    },
+    {
+      "sequence": 2,
+      "at": "2026-11-06T17:13:22.699Z",
+      "operation": "review",
+      "status": "completed",
+      "correlationId": "0ed24125-230f-482d-90ad-2b16dad0b3fd",
+      "requestedPolicy": "capela-review-isolated-v1",
+      "httpStatus": 200,
+      "requestId": "537dd503-8469-401e-b515-d27544a74ddf",
+      "provider": "deepinfra",
+      "model": "openai/gpt-oss-120b",
+      "fallback": false,
+      "costMicrousd": 243,
+      "durationMs": 14947
+    }
+  ],
+  "models": {
+    "distinct": true,
+    "extraction": "openai/gpt-oss-20b",
+    "review": "openai/gpt-oss-120b"
+  },
+  "observedFallback": false,
+  "budget": {
+    "currency": "USD",
+    "capMicrousd": 10000,
+    "reservedMicrousd": 0,
+    "reportedMicrousd": 440,
+    "unknownCostCalls": 0,
+    "calls": 2,
+    "maxCalls": 2,
+    "terminal": false
+  },
+  "snapshots": [
+    {
+      "id": "src_ccabb44a1e22077e16737b69efdca511",
+      "paperId": "32141677",
+      "canonicalUrl": "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+      "retrievedAt": "2026-11-06T15:50:56.635Z",
+      "hash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+      "text": "Recently, many studies have been conducted trying to explain the molecular mechanism of curcumin action in various pathological states of the cell and the organism. Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine, apoptosis of the human papilloma and the activity of the 26S proteasome, and p53 level. Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells. Curcumin can also arrest of the cell cycle in the G2/M phase leading to apoptosis and/or reduction in cancer cells proliferation. Moreover, curcumin is capable of crossing the blood-brain barrier, and thus it may protect the neurons from oxidative stress and inflammation. Finally, curcumin may play a role in cardiological protection and it is possible to use it in the protection of liver and spleen against oxidative and inflammatory injury. Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+      "scope": "abstract",
+      "mime": "text/plain",
+      "sourceKind": "canonical-publication-metadata",
+      "normalization": "NFC-LF-v1",
+      "parserVersion": "publication-abstract-v1",
+      "truncated": false,
+      "coverage": "abstract-only",
+      "passageIndex": {
+        "version": "passage-index-v1",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "normalization": "NFC-LF-v1",
+        "segmenter": "intl-en-sentence-v1",
+        "runtime": "node-24.22.2;icu-78.3",
+        "hash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+        "passages": [
+          {
+            "id": "psg_b9a244db0099723aba7faee983abba27ee28161be9a9ba9c8314b3cc8a134c62",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Recently, many studies have been conducted trying to explain the molecular mechanism of curcumin action in various pathological states of the cell and the organism.",
+              "start": 0,
+              "end": 164,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_ab47d7650bd87656f7a063a1f3f9e13f77028d8b04528c0627d9fc5c985ba5ee",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Curcumin is considered to play a role in the regulation of T-lymphocytes function in the lymphoid tissue of the large intestine, apoptosis of the human papilloma and the activity of the 26S proteasome, and p53 level.",
+              "start": 165,
+              "end": 381,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_16f2dd511047166427ce7bdcf671764ceb12f2b7ea8999b14b775a7ca0cb18f1",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Curcumin can also arrest of the cell cycle in the G2/M phase leading to apoptosis and/or reduction in cancer cells proliferation.",
+              "start": 701,
+              "end": 830,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_ce3e0033c95737ff119ca086f78efac28e3eb7a237b882ef886566ccff34bbbb",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Moreover, curcumin is capable of crossing the blood-brain barrier, and thus it may protect the neurons from oxidative stress and inflammation.",
+              "start": 831,
+              "end": 973,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_222f94ad71c6d88e6f74a6f92ee9ead57b43ed3ce7d5de923c167c6cce67b328",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Finally, curcumin may play a role in cardiological protection and it is possible to use it in the protection of liver and spleen against oxidative and inflammatory injury.",
+              "start": 974,
+              "end": 1145,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          },
+          {
+            "id": "psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4",
+            "span": {
+              "blockId": "abstract",
+              "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+              "start": 1146,
+              "end": 1307,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "originalModelOutput": {
+    "extraction": {
+      "version": "passage-selection-v1",
+      "papers": [
+        {
+          "paperId": "32141677",
+          "claims": [
+            {
+              "id": "32141677-claim-1",
+              "paperId": "32141677",
+              "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumour cells, thereby contributing to cancer cell death",
+              "proposedClass": "literature_reported",
+              "kind": "target",
+              "studyType": "review",
+              "model": null,
+              "measuredOutcome": "contribution to cancer cell death",
+              "label": "Curcumin regulates ROS and calcium in tumour cells",
+              "relationship": "unknown",
+              "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"]
+            },
+            {
+              "id": "32141677-claim-2",
+              "paperId": "32141677",
+              "finding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+              "proposedClass": "literature_reported",
+              "kind": "mechanism",
+              "studyType": "review",
+              "model": null,
+              "measuredOutcome": "inhibition of NF‑κB activity",
+              "label": "Curcumin inhibits NF‑κB activity",
+              "relationship": "inhibition",
+              "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"]
+            }
+          ],
+          "limitations": []
+        }
+      ]
+    },
+    "review": {
+      "version": "passage-selection-v1",
+      "reviews": [
+        {
+          "claimId": "32141677-claim-1",
+          "verdict": "supported",
+          "reason": "The abstract states that curcumin can regulate ROS and cytosolic calcium levels in tumor cells and that this contributes to cancer cell death, matching the claim.",
+          "evidenceType": "literature_reported",
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          },
+          "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"],
+          "revisionPassageId": null
+        },
+        {
+          "claimId": "32141677-claim-2",
+          "verdict": "supported",
+          "reason": "The abstract reports that curcumin inhibits NF‑κB activity, aligning with the claim of NF‑κB inhibition.",
+          "evidenceType": "literature_reported",
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          },
+          "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"],
+          "revisionPassageId": null
+        }
+      ]
+    }
+  },
+  "originalModelAssistedDecisions": [
+    {
+      "candidate": {
+        "id": "32141677-claim-1",
+        "paperId": "32141677",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "analyzedSource": "abstract",
+        "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumour cells, thereby contributing to cancer cell death",
+        "proposedClass": "literature_reported",
+        "kind": "target",
+        "studyType": "review",
+        "model": null,
+        "measuredOutcome": "contribution to cancer cell death",
+        "label": "Curcumin regulates ROS and calcium in tumour cells",
+        "relationship": "unknown",
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+            "start": 382,
+            "end": 700,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"]
+        }
+      },
+      "review": {
+        "claimId": "32141677-claim-1",
+        "verdict": "supported",
+        "reason": "The abstract states that curcumin can regulate ROS and cytosolic calcium levels in tumor cells and that this contributes to cancer cell death, matching the claim.",
+        "evidenceType": "literature_reported",
+        "revisedFinding": null,
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+            "start": 382,
+            "end": 700,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"],
+          "revisionPassageId": null
+        },
+        "checks": {
+          "molecule": true,
+          "negation": true,
+          "studyContext": true,
+          "directness": true,
+          "sourceLimitations": true
+        }
+      },
+      "status": "accepted",
+      "reason": "The abstract states that curcumin can regulate ROS and cytosolic calcium levels in tumor cells and that this contributes to cancer cell death, matching the claim.",
+      "publishedFinding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumour cells, thereby contributing to cancer cell death",
+      "publishedClass": "literature_reported"
+    },
+    {
+      "candidate": {
+        "id": "32141677-claim-2",
+        "paperId": "32141677",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "analyzedSource": "abstract",
+        "finding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+        "proposedClass": "literature_reported",
+        "kind": "mechanism",
+        "studyType": "review",
+        "model": null,
+        "measuredOutcome": "inhibition of NF‑κB activity",
+        "label": "Curcumin inhibits NF‑κB activity",
+        "relationship": "inhibition",
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+            "start": 1146,
+            "end": 1307,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"]
+        }
+      },
+      "review": {
+        "claimId": "32141677-claim-2",
+        "verdict": "supported",
+        "reason": "The abstract reports that curcumin inhibits NF‑κB activity, aligning with the claim of NF‑κB inhibition.",
+        "evidenceType": "literature_reported",
+        "revisedFinding": null,
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+            "start": 1146,
+            "end": 1307,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"],
+          "revisionPassageId": null
+        },
+        "checks": {
+          "molecule": true,
+          "negation": true,
+          "studyContext": true,
+          "directness": true,
+          "sourceLimitations": true
+        }
+      },
+      "status": "accepted",
+      "reason": "The abstract reports that curcumin inhibits NF‑κB activity, aligning with the claim of NF‑κB inhibition.",
+      "publishedFinding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+      "publishedClass": "literature_reported"
+    }
+  ],
+  "postRunSourceInspection": {
+    "holds": [
+      {
+        "version": "publication-hold-v1",
+        "id": "hold_36d5cda400610096bb83e492fb7162e6c934357fe9c6382d7fbb50b4ebcc562d",
+        "originalRunId": "f858310e-0425-4eb5-ac5c-1d5856ee12ce",
+        "claimId": "32141677-claim-2",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "findingHash": "a1df0232e2603760dccdfac5ce9b7927cf63da63f880a4ef3c1ffd3549767919",
+        "reviewHash": "ce0722c90c0e68dbfdba98bfaa76dd1958140de55ad5586bab76b789ddacb7b8",
+        "actor": "assistant_source_inspection",
+        "recordedAt": "2026-11-06T17:14:37.750Z",
+        "verdict": "unsupported",
+        "reason": "The added clause ‘a key regulator of inflammation and cell survival’ is not stated by the selected passage; withhold the complete finding pending adequate support."
+      }
+    ],
+    "provenance": "Separate assistant inspection of actual isolated-run finding, passages and supported reviewer response; no model output changed",
+    "publicationDecisions": [
+      {
+        "candidate": {
+          "id": "32141677-claim-1",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumour cells, thereby contributing to cancer cell death",
+          "proposedClass": "literature_reported",
+          "kind": "target",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": "contribution to cancer cell death",
+          "label": "Curcumin regulates ROS and calcium in tumour cells",
+          "relationship": "unknown",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"]
+          }
+        },
+        "review": {
+          "claimId": "32141677-claim-1",
+          "verdict": "supported",
+          "reason": "The abstract states that curcumin can regulate ROS and cytosolic calcium levels in tumor cells and that this contributes to cancer cell death, matching the claim.",
+          "evidenceType": "literature_reported",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+              "start": 382,
+              "end": 700,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"],
+            "revisionPassageId": null
+          },
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          }
+        },
+        "status": "accepted",
+        "reason": "The abstract states that curcumin can regulate ROS and cytosolic calcium levels in tumor cells and that this contributes to cancer cell death, matching the claim.",
+        "publishedFinding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumour cells, thereby contributing to cancer cell death",
+        "publishedClass": "literature_reported"
+      },
+      {
+        "candidate": {
+          "id": "32141677-claim-2",
+          "paperId": "32141677",
+          "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+          "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+          "analyzedSource": "abstract",
+          "finding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+          "proposedClass": "literature_reported",
+          "kind": "mechanism",
+          "studyType": "review",
+          "model": null,
+          "measuredOutcome": "inhibition of NF‑κB activity",
+          "label": "Curcumin inhibits NF‑κB activity",
+          "relationship": "inhibition",
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+              "start": 1146,
+              "end": 1307,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"]
+          }
+        },
+        "review": {
+          "claimId": "32141677-claim-2",
+          "verdict": "supported",
+          "reason": "The abstract reports that curcumin inhibits NF‑κB activity, aligning with the claim of NF‑κB inhibition.",
+          "evidenceType": "literature_reported",
+          "revisedFinding": null,
+          "spans": [
+            {
+              "blockId": "abstract",
+              "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+              "start": 1146,
+              "end": 1307,
+              "convention": "utf16-zero-based-end-exclusive"
+            }
+          ],
+          "passageSelection": {
+            "version": "passage-selection-v1",
+            "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+            "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"],
+            "revisionPassageId": null
+          },
+          "checks": {
+            "molecule": true,
+            "negation": true,
+            "studyContext": true,
+            "directness": true,
+            "sourceLimitations": true
+          }
+        },
+        "status": "unresolved",
+        "reason": "Publication withheld after assistant_source_inspection at 2026-11-06T17:14:37.750Z: The added clause ‘a key regulator of inflammation and cell survival’ is not stated by the selected passage; withhold the complete finding pending adequate support.. Original model verdict retained; no new model correction."
+      }
+    ],
+    "publicationAllowed": false
+  },
+  "publicationAllowed": false,
+  "limitations": [
+    "Fixed recorded source, isolated role check. No new retrieval/sandbox/UI investigation or publication. Fallback recovery claimed only if an actual fallback header is observed.",
+    "Recorded fixed-source integrity does not establish entailment or reviewer improvement",
+    "Known unsupported clause reproduced and explicitly held by later source inspection; model verdict unchanged",
+    "Original working run/publication revision/sample/export are unchanged",
+    "Six capability categories have evidence of normal policy routing, MCP, search, sandbox, budget enforcement and distinct roles across separate checks; controlled routing recovery has not executed"
+  ],
+  "accounting": {
+    "reportedMicrousd": 440,
+    "newUnknownReservationMicrousd": 0,
+    "conservativeCumulativeExposureMicrousd": 1819891,
+    "ledgerSha256": "cc3d9902498e73b4859f05a3c033595e2e0370d8e3d308325d8ebbf4b4d1fae2"
+  },
+  "sourceReuse": {
+    "artifact": "evaluation/passage-live-verification.json",
+    "sha256": "0b77965b310efa7925947f23e4a8d537bf07888bbc4d61aca4db96d17291431f",
+    "newRetrieval": false
+  }
+}

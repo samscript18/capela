@@ -113,3 +113,15 @@ Real request `0876a3bb-e3b9-4870-9269-7dc91cfa1234`: HTTP **403**, `budget_excee
 New reported cost **$0**, unknown reservation **$0.02 retained**; cumulative conservative exposure **$1.819451**. SHA-256 confirms original run, publication revision, HTML/JSON sample unchanged; current ledger and live script hashes match the new evidence. Configured-secret scan passes. No account depletion, budget increase, denial bypass, production change, push or deployment. Routing recovery remains unverified.
 
 Final ceiling follow-up release gates: production build, format check and diff check pass; existing viem/ox and optional Privy dependency warnings remain. No new inference or additional ceiling request followed the single refusal.
+
+## Actual isolated policy roles — November 6
+
+Starting clean `8800557`; script/production source hashes in `evaluation/isolated-routing-verification.json`. New guard/source-coverage regression passed before dispatch (**9/9 focused**); one synthetic test fixture initially omitted required paper `limitations`, was corrected, and passed before live work. Full `npm test` **112/112** and lint pass under Node 24.22.2. This change adds a one-shot verification script; prior 4 integration/7 browser-fixture checks remain historical and were not rerun as a new authenticated journey.
+
+Free isolated catalog read lists both owner-created policies. Real extraction request `28e00537-a6d3-4b3f-89e8-4490c69cc88f`, requested isolated extraction policy, resolved DeepInfra `openai/gpt-oss-20b`, HTTP 200; real review request `537dd503-8469-401e-b515-d27544a74ddf`, requested isolated review policy, resolved DeepInfra `openai/gpt-oss-120b`, HTTP 200. Both `fallback:false`; no observed backup recovery. Production prompts/native schema and exact indexed-source hydration; two candidate/review references valid. No new retrieval/audit/UI investigation or publication.
+
+Reviewer again supported the known unsupported clause. Both new wire outputs remain unchanged. A separate dated assistant source-inspection hold bound to this new run makes claim 2 unresolved; one other model-assisted decision remains accepted, but **nothing from this isolated check is published**. Original hosted run, original publication revision, sample HTML/JSON and original export are untouched. No claim of improved model correctness.
+
+New allocation $0.01/two calls within the retained $20 total; reported cost $0.000440, no new reservation/uncertainty. Previous $0.02 uncertainty retained, conservative cumulative exposure **$1.819891**. One-shot ledger prevents another dispatch. No retry, production change, push, deployment or purchase. Final release and provenance checks follow.
+
+Final isolated-routing gates: Node 24.22.2 full 112 tests, lint and typecheck pass. Original/revision/sample, ledger and live-source hashes match; new artifact passes configured-secret scan. Production build passed; final formatting/diff checks pass. Existing dependency warnings remain. No further paid calls.

@@ -2,6 +2,20 @@
 
 Internal development note; unfinished evaluation work is retained here for continuity and is not part of the submission narrative or a rubric requirement.
 
+## Isolated role-preserving routing — current checkpoint
+
+Continued clean at `8800557`. Owner confirmed creating both prepared policies in `capela-verification`. The isolated key's free model catalog lists both exact names. Backups are owner-confirmed setup (20b → OVHcloud 20b, 120b → OVHcloud 120b), not management-API-read configuration; administration remains unavailable. Existing Default workspace policies are untouched.
+
+New one-shot `verify-isolated-routing.cjs` uses the production gateway/prompts/native passage schemas and actual frozen recorded source/index. A **$0.01/two-call allocation** was persisted before dispatch inside the retained $20 authorization. Refuses the working key, existing allocation replay, invalid source coverage and unexpected model identities. No new retrieval, sandbox, app-login journey, publication or Vertex call. Offline guard/coverage regression passed before paid dispatch.
+
+Both role calls succeeded: extraction `28e00537-a6d3-4b3f-89e8-4490c69cc88f`, requested `capela-extraction-isolated-v1`, observed DeepInfra `openai/gpt-oss-20b`, reported $0.000197; review `537dd503-8469-401e-b515-d27544a74ddf`, requested `capela-review-isolated-v1`, observed DeepInfra `openai/gpt-oss-120b`, reported $0.000243. Both HTTP 200, strict schemas/reference hydration passed, **both fallback headers false**. Actual policy selection is now directly recorded by policy/model/request metadata, not reconstructed from aliases. No recovery claim or additional replay.
+
+The test reproduced the original known unsupported claim-2 clause and a supported reviewer verdict. Preserve both wire outputs and original model-assisted decisions. Separate dated assistant source inspection applied a newly bound publication hold to this new run, leaving one accepted decision/one unresolved decision; **the isolated check publishes nothing**. Original run, prior publication revision, public sample and downloaded export remain unchanged. No scientific-quality or improvement claim.
+
+Evidence: `evaluation/isolated-routing-verification.json` includes actual calls, frozen index, outputs, separate hold and allocation/source hashes. **Six categories now have hosted execution evidence across the completed research run and isolated checks:** normal policy routing, MCP, search, sandbox, hosted budget enforcement and distinct roles. Actual backup recovery remains unverified; configured backups are not observed backup execution. This is category evidence coverage, not an awarded score or a requirement that optional fault injection be satisfied. Full recovery-test goal remains pending an operator-controlled pre-response fault; do not disrupt production or invent a failure.
+
+New spend **$0.000440**, no new unknown reservation. Prior $0.02 denial uncertainty remains. Conservative cumulative exposure **$1.819891**; unused routing allocation $0.009560 is not permission to replay. Previous ledger sections/counters preserved. Checks recorded in TEST_EVIDENCE; no push, deployment, purchase or production change.
+
 ## Isolated hosted monetary ceiling — current checkpoint
 
 Continued from clean `b71230a`; owner created `capela-verification`, configured the directed $0.01/no-reset workspace ceiling across providers, and saved a separate key locally. Existing runtime key/policies are unchanged. New isolated key catalog reads succeed; its ceiling/policy/key management reads still return 401. Owner setup is configuration provenance; the actual refusal below establishes effective enforcement without guessing an exemption flag.
