@@ -44,7 +44,7 @@ export function parseStoredResearchRun(value: unknown): ResearchRun {
     ? stored.events.map((event: unknown) => {
         if (!event || typeof event !== "object" || Array.isArray(event)) return event;
         const normalized = { ...event } as Record<string, unknown>;
-        for (const key of ["requestId", "provider", "model", "upstreamCode", "toolCallId", "code"])
+        for (const key of ["requestId", "provider", "model", "upstreamCode", "budgetScope", "toolCallId", "code"])
           if (normalized[key] === null) delete normalized[key];
         return normalized;
       })
@@ -245,6 +245,7 @@ export type RunEvent = {
   durationMs?: number;
   httpStatus?: number;
   upstreamCode?: string;
+  budgetScope?: string;
   toolCallId?: string;
   code?: string;
   finishReason?: string;
@@ -266,10 +267,53 @@ export const SearchDiscoverySchema = z
   })
   .strict();
 
+export const PublicationHoldSchema = z
+  .object({
+    version: z.literal("publication-hold-v1"),
+    id: Id,
+    originalRunId: Id,
+    claimId: Id,
+    snapshotId: Id,
+    snapshotHash: z.string().regex(/^[a-f0-9]{64}$/),
+    findingHash: z.string().regex(/^[a-f0-9]{64}$/),
+    reviewHash: z.string().regex(/^[a-f0-9]{64}$/),
+    actor: z.enum(["assistant_source_inspection", "owner_source_inspection"]),
+    recordedAt: z.string().datetime(),
+    verdict: z.enum(["unsupported", "uncertain"]),
+    reason: Text,
+  })
+  .strict();
+export const PublicationRevisionSchema = z
+  .object({
+    version: z.literal("publication-revision-v1"),
+    originalRunId: Id,
+    originalRecordHash: z.string().regex(/^[a-f0-9]{64}$/),
+    recordedAt: z.string().datetime(),
+    provenance: z.literal("post-run-source-inspection; no new inference"),
+    codeCommit: Id,
+    originalAudit: z
+      .object({
+        version: Id,
+        programHash: z.string(),
+        valid: z.boolean(),
+        accepted: z.number().int(),
+        sources: z.number().int(),
+        distribution: z.record(z.string(), z.number().int()),
+        invalidIds: z.array(Id),
+        remote: z.boolean(),
+        requestId: Id.optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+export type PublicationHold = z.infer<typeof PublicationHoldSchema>;
 export type ResearchRun = {
   version: "otari-evidence-v1";
   runId: string;
   inferenceContract?: "passage-selection-v1";
+  publicationHolds?: PublicationHold[];
+  publicationRevision?: z.infer<typeof PublicationRevisionSchema>;
   discovery?: z.infer<typeof SearchDiscoverySchema>;
   snapshots: SourceSnapshot[];
   decisions: ClaimDecision[];
@@ -307,6 +351,8 @@ export const ResearchRunSchema = z
     version: z.literal("otari-evidence-v1"),
     runId: Id,
     inferenceContract: z.literal("passage-selection-v1").optional(),
+    publicationHolds: z.array(PublicationHoldSchema).max(60).optional(),
+    publicationRevision: PublicationRevisionSchema.optional(),
     discovery: SearchDiscoverySchema.optional(),
     snapshots: z.array(SourceSnapshotSchema).max(5),
     decisions: z
@@ -340,6 +386,7 @@ export const ResearchRunSchema = z
             durationMs: z.number().optional(),
             httpStatus: z.number().int().min(100).max(599).optional(),
             upstreamCode: OptionalId,
+            budgetScope: OptionalId,
             toolCallId: OptionalId,
             code: OptionalId,
             finishReason: OptionalId,

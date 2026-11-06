@@ -120,6 +120,8 @@ export class OtariGatewayService {
       const requestId = safeHeader(response, "Otari-Request-ID");
       const provider = safeHeader(response, "Otari-Provider");
       const model = safeHeader(response, "Otari-Model");
+      const budgetScope = safeHeader(response, "Otari-Budget-Scope");
+      if (budgetScope) event.budgetScope = budgetScope;
       if (requestId) event.requestId = requestId;
       if (provider) event.provider = provider;
       if (model) event.model = model;

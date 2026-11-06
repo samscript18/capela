@@ -16,7 +16,7 @@ function main() {
     !record.dossier ||
     !run.models.distinct ||
     !run.audit?.valid ||
-    !run.audit.remote ||
+    !(run.audit.remote || run.publicationRevision?.originalAudit?.remote) ||
     run.events.some((e) => e.operation === "vertex_review") ||
     !record.evidence?.length
   )
@@ -38,6 +38,14 @@ function main() {
     )
   )
     throw Error("This exporter is pinned to the recorded Curcumin case and its observed limitation.");
+  if (
+    !run.publicationRevision ||
+    !run.publicationHolds?.length ||
+    run.decisions.some((d) => d.candidate.id === "32141677-claim-2" && ["accepted", "revised"].includes(d.status))
+  )
+    throw Error(
+      "The known unsupported wording must be withheld by an evidence-bound publication revision before sample export.",
+    );
   const sample = {
     label: "Recorded investigation — read-only sample",
     recordedAt: record.completedAt,
@@ -48,6 +56,9 @@ function main() {
     scope: "One review abstract; no full-text or clinical validation.",
     decisions: run.decisions,
     audit: run.audit,
+    publicationRevision: run.publicationRevision,
+    publicationHolds: run.publicationHolds,
+    publishedFindings: record.evidence.map((c) => ({ id: c.id, finding: c.finding, evidenceType: c.evidenceType })),
     sources: run.snapshots.map((s) => ({
       id: s.id,
       paperId: s.paperId,
@@ -70,10 +81,10 @@ function main() {
     })),
     assessment: record.dossier.researchAssessment,
     inspectionNote: {
-      author: "Assistant inspection, 2026-11-06; not expert annotation",
+      author: "Assistant source inspection; publication hold recorded separately from the original models",
       claimId: "32141677-claim-2",
       concern:
-        "The model-accepted claim adds ‘a key regulator of inflammation and cell survival’, which its selected passage does not state. Treat that added clause as unsupported by this passage. The original model verdict is retained rather than silently edited.",
+        "The model-accepted claim adds ‘a key regulator of inflammation and cell survival’, which its selected passage does not state. The complete candidate is withheld as unresolved in this post-run publication revision. The original model verdict remains supported; no corrected model result is invented.",
     },
   };
   const e = (v) =>
@@ -92,7 +103,8 @@ function main() {
       ${d.candidate.id === sample.inspectionNote.claimId ? `<aside aria-label="Observed support limitation"><strong>Observed limitation</strong><p>${e(sample.inspectionNote.concern)}</p></aside>` : ""}
       <details open><summary>Exact supporting passage and original review</summary>
       ${(d.review?.spans ?? d.candidate.spans).map((p) => `<figure><blockquote>${e(p.quote)}</blockquote><figcaption>Abstract · UTF-16 [${p.start}, ${p.end})</figcaption></figure>`).join("")}
-      <p>Reviewer: ${e(d.review?.verdict ?? "not reviewed")} — ${e(d.reason)}</p>
+      <p>Original model reviewer: ${e(d.review?.verdict ?? "not reviewed")} — ${e(d.review?.reason ?? "No model review")}</p>
+      <p>Current publication decision: ${e(d.status)} — ${e(d.reason)}</p>
       <p>Original finding: ${e(d.candidate.finding)}</p>
       <p><a href="${e(s.url)}" rel="noreferrer">Canonical PubMed source ${e(s.paperId)}</a></p>
       <p class="technical">Snapshot SHA-256: ${e(s.hash)}<br>Passage IDs: ${e(d.review?.passageSelection?.passageIds.join(", ") ?? "not recorded")}</p></details></article>`;
@@ -100,11 +112,11 @@ function main() {
     .join("");
   const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capela · recorded Curcumin investigation</title><style>
   :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#10150f;color:#edf1e4;font:17px/1.65 system-ui,sans-serif}main{max-width:960px;margin:auto;padding:32px 22px}h1{font-size:clamp(2rem,6vw,3.5rem);line-height:1.15}h2{font-size:1.25rem}a{color:#d5e9ad}a:focus-visible,summary:focus-visible{outline:3px solid #e9cd81;outline-offset:4px}article,aside,section{border:1px solid #6d7d5e;border-radius:16px;padding:22px;margin:24px 0}aside{background:#332b16;border-color:#dfbc6e}blockquote{margin:16px 0;border-left:3px solid #afc68d;padding:8px 20px}figcaption,.technical{font-size:.82rem;color:#c5cfbb}.technical{overflow-wrap:anywhere}summary{cursor:pointer;padding:8px 0}dt{font-weight:700}dd{margin:0 0 12px}li{margin:8px 0}@media print{body{background:white;color:black}a,.technical,figcaption{color:black}}
-  </style><main><header><p>Capela · recorded investigation · November 6, 2026</p><h1>${e(sample.molecule.name)}</h1><p>This read-only sample comes from an actual completed signed-in local application run. It contains recorded model decisions, not a staged replay. No account identifiers or authenticated actions are included.</p></header>
+  </style><main><header><p>Capela · recorded investigation · November 6, 2026</p><h1>${e(sample.molecule.name)}</h1><p>This read-only sample comes from an actual completed signed-in local application run. It contains the original recorded model output and a separately labeled post-run publication revision; no new inference was performed. No account identifiers or authenticated actions are included.</p></header>
   <aside><strong>Scope and limitations</strong><p>${e(sample.scope)} Findings are literature reported, not direct experiments or demonstrated human outcomes. Model-assisted review and valid passages do not prove scientific truth. The concrete support concern below remains visible.</p></aside>
-  <section><h2>Recorded workflow</h2><dl><dt>Extraction</dt><dd>${e(sample.models.extraction)}</dd><dt>Independent review</dt><dd>${e(sample.models.review)}</dd><dt>Coverage</dt><dd>One canonical PubMed review abstract; ${sample.decisions.length} model-accepted findings. No correction or rejection was staged.</dd><dt>Sandbox audit</dt><dd>${sample.audit.accepted} exact reference/span records, ${sample.audit.sources} source; hosted result agreed with local validation. This audit checks mechanics, not entailment.</dd><dt>Reported / reserved cost</dt><dd>$${(sample.budget.reportedMicrousd / 1e6).toFixed(6)} / $${(sample.budget.reservedMicrousd / 1e6).toFixed(6)} USD. Reserved costs are unreported estimates.</dd></dl></section>
+  <section><h2>Recorded workflow</h2><dl><dt>Extraction</dt><dd>${e(sample.models.extraction)}</dd><dt>Independent review</dt><dd>${e(sample.models.review)}</dd><dt>Coverage</dt><dd>One canonical PubMed review abstract; ${sample.publishedFindings.length} published finding; ${sample.decisions.filter((d) => d.status === "unresolved" || d.status === "rejected").length} candidate withheld after source inspection. The original run had two model-accepted findings.</dd><dt>Current publication audit</dt><dd>${sample.audit.accepted} retained record, ${sample.audit.sources} source, checked locally after the publication hold. No new hosted audit ran.</dd><dt>Original hosted sandbox audit</dt><dd>${sample.publicationRevision.originalAudit.accepted} original records; hosted result agreed locally before the hold. Its provenance is preserved, not relabeled as a new audit.</dd><dt>Publication revision</dt><dd>${e(sample.publicationRevision.recordedAt)} · assistant source inspection, no new model correction.</dd><dt>Reported / reserved cost</dt><dd>$${(sample.budget.reportedMicrousd / 1e6).toFixed(6)} / $${(sample.budget.reservedMicrousd / 1e6).toFixed(6)} USD, inherited from the original run; no new spending for this revision. Reserved costs are unreported estimates.</dd></dl></section>
   ${claims}<section><h2>Assessment and gaps</h2><p>${e(sample.assessment.explanation)} Scores are heuristics, not efficacy probabilities.</p><ul>${sample.assessment.majorEvidenceGaps.map((g) => `<li>${e(g)}</li>`).join("")}</ul></section>
-  <details><summary>Technical provenance</summary><p class="technical">Code commit: ${e(sample.codeCommit)}<br>Recorded completion: ${e(sample.recordedAt)}<br>Contract: ${e(sample.inferenceContract)}<br>Audit program hash: ${e(sample.audit.programHash)}</p><ul>${sample.events.map((v) => `<li class="technical">${e(v.operation)} · ${e(v.status)} · ${e(v.requestId ?? "no upstream ID returned")}</li>`).join("")}</ul></details>
+  <details><summary>Technical provenance</summary><p class="technical">Code commit: ${e(sample.codeCommit)}<br>Original model run: ${e(sample.publicationRevision.originalRunId)}<br>Publication revision code: ${e(sample.publicationRevision.codeCommit)}<br>Recorded revision: ${e(sample.recordedAt)}<br>Contract: ${e(sample.inferenceContract)}<br>Audit program hash: ${e(sample.audit.programHash)}</p><ul>${sample.events.map((v) => `<li class="technical">${e(v.operation)} · ${e(v.status)} · ${e(v.requestId ?? "no upstream ID returned")}</li>`).join("")}</ul></details>
   <footer><p>Static recorded sample. New research, private history and account actions require normal application authentication.</p></footer></main></html>`;
   fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, html);

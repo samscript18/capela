@@ -115,7 +115,9 @@ export function DossierSummaryCard({ item }: { item: ApiInvestigation }) {
           </div>
           <div className="grid justify-items-end gap-1 text-right">
             <span className="text-[10px] font-medium text-white/65">{formatDate(completedAt)}</span>
-            <small className="mono text-[8px] uppercase tracking-[.12em] text-white/30">Completed investigation</small>
+            <small className="mono text-[8px] uppercase tracking-[.12em] text-white/30">
+              {item.research?.publicationRevision ? "Publication revision" : "Completed investigation"}
+            </small>
           </div>
         </header>
 
@@ -187,6 +189,14 @@ export function DossierSummaryCard({ item }: { item: ApiInvestigation }) {
               : "No independent review completed; inspect the saved validation decisions."
             : "Legacy record: passage verification was not performed."}
         </p>
+        {item.research?.publicationRevision && (
+          <p className="mt-4 text-[10px] leading-5 text-[#e5cf8f]">
+            Post-run publication revision ·{" "}
+            {item.research.decisions.filter((d) => d.status === "unresolved" || d.status === "rejected").length}{" "}
+            candidate withheld. Original model output retained; no new inference. Current published evidence audited
+            locally.
+          </p>
+        )}
         <footer className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
           <span className="text-xs font-semibold tracking-[.02em] text-white/80">Evidence before conclusion.</span>
           <small className="mono text-[8px] uppercase tracking-[.1em] text-white/30">

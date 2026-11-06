@@ -18,6 +18,7 @@ import { OtariGatewayService, type SaveRun } from "./otari-gateway.service";
 import { decide, exactIds, referenceValid, ResearchError, strictOutput, canDowngrade } from "./provenance";
 import { EvidenceClassifierService, type ValidatedEvidenceResult } from "./evidence-classifier.service";
 import { remoteAudit } from "./evidence-audit";
+import { publicationDecisions } from "./publication-policy";
 import { indexedSource, hydrateExtraction, hydrateReviews, INFERENCE_CONTRACT } from "./passage-references";
 
 type ReviewInput = {
@@ -206,6 +207,7 @@ export class OtariEvidenceService {
         };
       return d;
     });
+    run.decisions = publicationDecisions(run);
     run.checkpoint = "reviewed";
     await save();
     const accepted = run.decisions.filter((d) => d.status === "accepted" || d.status === "revised");

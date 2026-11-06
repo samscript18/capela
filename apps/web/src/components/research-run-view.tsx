@@ -36,6 +36,14 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
           quotes establish passage validity, not scientific truth.
         </p>
       </div>
+      {run.publicationRevision && (
+        <p role="status" className="rounded-xl border border-[#f2d66b]/30 p-4 text-xs leading-6 text-[#f2d66b]">
+          Publication revision · {run.publicationRevision.recordedAt}. Post-run source inspection withheld unsupported
+          wording. Original model verdicts, events and costs are retained; this is not a new model result. Current
+          evidence was audited locally. Original hosted audit covered{" "}
+          {run.publicationRevision.originalAudit?.accepted ?? "unknown"} records.
+        </p>
+      )}
       {run.discovery && (
         <details className="rounded-xl border border-white/10 p-4 text-xs leading-6">
           <summary className="cursor-pointer">{run.discovery.urls.length} canonical publications discovered</summary>
@@ -138,6 +146,13 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
                   <span className="text-[#a9b0a4]">Review verdict: </span>
                   {d.review?.verdict ?? "Not reviewed"} · {d.reason}
                 </p>
+                {run.publicationHolds
+                  ?.filter((h) => h.claimId === d.candidate.id)
+                  .map((h) => (
+                    <p key={h.id} className="rounded-xl border border-[#f2d66b]/30 p-3 text-[#f2d66b]">
+                      Publication hold · {h.actor} · {h.recordedAt}: {h.reason}
+                    </p>
+                  ))}
                 {d.status === "revised" && (
                   <p className="text-[#c8d1aa]">
                     Published correction: {d.publishedFinding} · {d.publishedClass?.replaceAll("_", " ")}
