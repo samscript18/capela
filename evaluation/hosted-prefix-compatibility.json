@@ -1,0 +1,53 @@
+{
+  "version": "hosted-prefix-compatibility-v1",
+  "date": "2026-11-06",
+  "hostedContract": {
+    "version": "0.39.0+8779d66",
+    "providerCreateFields": ["provider", "name", "api_key", "api_base", "client_args", "zero_data_retention"],
+    "providerReadFields": [
+      "id",
+      "organization_id",
+      "provider",
+      "name",
+      "api_base",
+      "client_args",
+      "last4",
+      "is_org_default",
+      "zero_data_retention",
+      "usable",
+      "offered_count",
+      "serving_count",
+      "archived_at",
+      "created_at",
+      "updated_at"
+    ],
+    "source": "https://otari.ai/api/v1/openapi.json"
+  },
+  "upstream": {
+    "commit": "bc43068f7a06470f65a812b8f0d1fd9a335b87ec",
+    "schema": "src/gateway/schemas/providers.py",
+    "createHasSlug": true,
+    "readHasSlug": true,
+    "modelPricingUsesSelectorPrefix": true
+  },
+  "ownerUiObservations": {
+    "provenance": "Owner-provided screenshots in this conversation, November 6; personal identifiers/credentials not copied",
+    "endpointName": "capela-fault-primary",
+    "endpointProviderType": "OpenAI",
+    "apiBase": "https://api.deepinfra.com/v1/openai",
+    "model": "openai/gpt-oss-20b",
+    "rateOverrideKey": "capela-fault-primary:openai/gpt-oss-20b",
+    "duplicateOverrideRefused": true,
+    "modelRowStillUnpriced": true,
+    "serving": "0 of 1",
+    "pricingRefreshDidNotResolve": true,
+    "policyTargetUnavailable": true
+  },
+  "diagnosis": {
+    "level": "Advertised hosted/upstream contract gap plus observed pricing/availability mismatch",
+    "serverRootCauseConfirmed": false,
+    "limitation": "Runtime management access is unavailable; public upstream commit is not asserted to be deployed. Accepted override does not establish a working selector."
+  },
+  "paidRequests": 0,
+  "nextAction": "Otari operator provides supported isolated pre-response-failure policy with OVHcloud 20b recovery, preserving 120b review; no working settings changed."
+}

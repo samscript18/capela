@@ -150,7 +150,17 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
                   ?.filter((h) => h.claimId === d.candidate.id)
                   .map((h) => (
                     <p key={h.id} className="rounded-xl border border-[#f2d66b]/30 p-3 text-[#f2d66b]">
-                      Publication hold · {h.actor} · {h.recordedAt}: {h.reason}
+                      Publication hold ·{" "}
+                      {h.actor === "recorded_source_assessment"
+                        ? "Recorded source assessment applied automatically"
+                        : h.actor}{" "}
+                      · {h.recordedAt}: {h.reason}
+                      {h.assessmentId && (
+                        <>
+                          {" "}
+                          Recorded assessment {h.assessmentId} · {h.assessmentRecordedAt}.
+                        </>
+                      )}
                     </p>
                   ))}
                 {d.status === "revised" && (

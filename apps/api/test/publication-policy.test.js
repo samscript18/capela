@@ -4,6 +4,7 @@ const { test } = require("node:test"),
 const recorded = require("../../../evaluation/passage-live-verification.json").application;
 const { decide, referenceValid } = require("../dist/research/provenance");
 const { createPublicationHold, publicationDecisions } = require("../dist/research/publication-policy");
+const { applyRecordedSourceAssessments } = require("../dist/research/publication-policy");
 const { revisePublication } = require("../dist/research/publication-revision");
 const { parseStoredResearchRun } = require("@capela/shared");
 function original() {
@@ -29,6 +30,150 @@ function original() {
 const at = "2026-11-06T17:00:00.000Z";
 const reason =
   "The added clause ‘a key regulator of inflammation and cell survival’ is not stated by the selected passage; withhold the complete finding pending adequate support.";
+test("recorded source assessment automatically withholds an exact recurrence across runs and reviewer wording", () => {
+  const run = original().research;
+  run.runId = "new-run-exact-recurrence";
+  run.decisions[1].candidate.id = "new-claim-id";
+  run.decisions[1].review.claimId = "new-claim-id";
+  run.decisions[1].review.reason = "New independent reviewer still missed the extra clause.";
+  run.decisions[1].candidate.spans = run.decisions[1].candidate.spans.map((span) =>
+    Object.fromEntries(Object.entries(span).reverse()),
+  ); // Persistence field order cannot disable an otherwise identical assessment.
+  applyRecordedSourceAssessments(run, at);
+  applyRecordedSourceAssessments(run, at);
+  assert.equal(run.publicationHolds.length, 1);
+  assert.equal(run.publicationHolds[0].actor, "recorded_source_assessment");
+  assert.equal(run.publicationHolds[0].assessmentRecordedAt, "2026-11-06T16:17:22.789Z");
+  assert.equal(run.publicationHolds[0].originalRunId, run.runId);
+  const decisions = publicationDecisions(run);
+  assert.equal(decisions[0].status, "accepted");
+  assert.equal(decisions[1].status, "unresolved");
+  assert.equal(decisions[1].publishedFinding, undefined);
+  assert.equal(decisions[1].review.verdict, "supported");
+  assert.match(decisions[1].reason, /not detected by the model reviewer/);
+  assert.doesNotThrow(() => parseStoredResearchRun(run));
+  const repeated = original().research;
+  repeated.runId = "actual-second-output-offline-replay";
+  repeated.decisions = structuredClone(
+    require("../../../evaluation/isolated-routing-verification.json").originalModelAssistedDecisions,
+  );
+  applyRecordedSourceAssessments(repeated, at);
+  assert.equal(publicationDecisions(repeated)[1].status, "unresolved");
+  assert.equal(repeated.publicationHolds[0].actor, "recorded_source_assessment");
+});
+test("recorded assessment is source/finding/passage specific and does not pretend to grade novel claims", () => {
+  for (const change of [
+    (r) => (r.decisions[1].candidate.finding += " (different wording)"),
+    (r) => (r.snapshots[0].parserVersion = "different-parser"),
+    (r) => {
+      r.decisions[1].candidate.spans = [r.decisions[0].candidate.spans[0]];
+    },
+    (r) => (r.snapshots[0].hash = "0".repeat(64)),
+  ]) {
+    const run = original().research;
+    change(run);
+    applyRecordedSourceAssessments(run, at);
+    assert.equal(run.publicationHolds?.length ?? 0, 0);
+  }
+  const run = original().research;
+  applyRecordedSourceAssessments(run, at);
+  run.decisions[1].review.reason += " altered after binding";
+  assert.throws(() => publicationDecisions(run), { code: "STALE_PUBLICATION_HOLD" });
+});
+test("controlled recovery requires an actual output-limit refusal, never a budget or unrelated error", () => {
+  const { isOutputLimitRefusal } = require("../../../scripts/verify-controlled-recovery.cjs");
+  assert.equal(isOutputLimitRefusal(400, { error: { message: "max_tokens must be at most 16384" } }), true);
+  for (const [status, body] of [
+    [403, { error: { message: "max_tokens must be at most 16384" } }],
+    [400, { error: { message: "Invalid response_format" } }],
+    [400, { error: { message: "max_tokens must be at most 8192" } }],
+    [400, { error: { message: 16384 } }],
+    [200, {}],
+  ])
+    assert.equal(isOutputLimitRefusal(status, body), false);
+  const { spawnSync } = require("node:child_process");
+  const p = spawnSync(
+    process.execPath,
+    [require("node:path").resolve(__dirname, "../../../scripts/verify-credential-recovery.cjs")],
+    {
+      cwd: require("node:os").tmpdir(),
+      encoding: "utf8",
+      env: { ...process.env, OTARI_CEILING_TEST_API_KEY: "test-only-placeholder" },
+    },
+  );
+  assert.equal(p.status, 2);
+  assert.equal(JSON.parse(p.stdout).requestsSent, 0);
+});
+test("recovery identity uses exact catalogued provider/model spellings without collapsing scientific roles", () => {
+  const { canonicalRoleModel } = require("../../../scripts/verify-credential-recovery.cjs");
+  const event = { provider: "ovhcloud", model: "gpt-oss-20b" };
+  assert.equal(canonicalRoleModel("extraction", event), "openai/gpt-oss-20b");
+  assert.equal(event.model, "gpt-oss-20b");
+  assert.equal(canonicalRoleModel("review", event), undefined);
+  assert.equal(canonicalRoleModel("extraction", { provider: "other", model: "openai/gpt-oss-20b" }), undefined);
+  assert.equal(
+    canonicalRoleModel("review", { provider: "deepinfra", model: "openai/gpt-oss-120b" }),
+    "openai/gpt-oss-120b",
+  );
+});
+test("production publication gate withholds the recurrence before claim assembly and sandbox auditing", async () => {
+  const { OtariGatewayService } = require("../dist/research/otari-gateway.service");
+  const { OtariEvidenceService } = require("../dist/research/otari-evidence.service");
+  const { EvidenceClassifierService } = require("../dist/research/evidence-classifier.service");
+  const { localAudit } = require("../dist/research/evidence-audit");
+  const { selectionCandidate, selectionReview } = require("./passage-fixtures");
+  const g = new OtariGatewayService({ get: () => undefined });
+  const run = g.createRun("automatic-publication-fixture");
+  run.snapshots = structuredClone(recorded.snapshots);
+  const source = run.snapshots[0];
+  g.complete = async (role) => {
+    run.models[role] = role === "extraction" ? "fixture-20b" : "fixture-120b";
+    run.models.distinct = !!run.models.review;
+    run.events.push({
+      sequence: run.events.length + 1,
+      at,
+      operation: role,
+      status: "completed",
+      correlationId: `fixture-${role}`,
+      model: run.models[role],
+    });
+    return role === "extraction"
+      ? {
+          version: "passage-selection-v1",
+          papers: [
+            {
+              paperId: source.paperId,
+              limitations: [],
+              claims: recorded.decisions.map((d) => selectionCandidate(d.candidate, source)),
+            },
+          ],
+        }
+      : { version: "passage-selection-v1", reviews: recorded.decisions.map((d) => selectionReview(d.review, source)) };
+  };
+  g.request = async (path) => {
+    assert.equal(path, "/code/execute");
+    assert.equal(run.decisions[1].status, "unresolved");
+    assert.equal(run.publicationHolds[0].actor, "recorded_source_assessment");
+    return {
+      data: {
+        return_code: 0,
+        stderr: "",
+        stdout: JSON.stringify(localAudit([recorded.decisions[0].candidate], run.snapshots)),
+      },
+      event: {},
+    };
+  };
+  const result = await new OtariEvidenceService(g, new EvidenceClassifierService()).extract(
+    recorded.dossier.literature.items,
+    recorded.dossier.overview.molecule,
+    run,
+    async () => {},
+  );
+  assert.equal(result.claims.length, 1);
+  assert.equal(result.claims[0].id, recorded.decisions[0].candidate.id);
+  assert.equal(run.audit.accepted, 1);
+  assert.equal(run.decisions[1].review.verdict, "supported");
+});
 test("exact recorded finding/passage/review explains original acceptance without claiming failed model checks", () => {
   const o = original(),
     d = o.research.decisions[1];

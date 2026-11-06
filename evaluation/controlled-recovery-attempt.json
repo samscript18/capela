@@ -1,0 +1,73 @@
+{
+  "version": "controlled-recovery-attempt-v1",
+  "date": "2026-11-06",
+  "status": "failed_no_retry",
+  "allocation": {
+    "id": "022ebd6b-6969-4562-a415-cfe9d556e462",
+    "authorization": "Owner requested controlled recovery verification within retained $20 total; one primary probe and two role calls, no replay.",
+    "capMicrousd": 15000,
+    "maxCalls": 3,
+    "priorExposureMicrousd": 1819891
+  },
+  "code": {
+    "startingCommit": "2a6f8e498b54f86240ad50aab64ffeb5fdfc01ae",
+    "atDispatchSourceHashes": {
+      "scripts/verify-controlled-recovery.cjs": "c631bc97da228cdb57c06b125eaccf09f265779029ef42fc5060316c29b1636b",
+      "apps/api/src/research/publication-policy.ts": "5541dcd9b255a8a05d5a59f078a44f5a0d6a9943c64edbd7443ceee7411752de",
+      "apps/api/src/research/recorded-source-assessments.ts": "280fdfa897ff5dfa0a2f0afb7821ebdb746f40c06b0ec9279aaedb2b3aeac17c",
+      "apps/api/src/research/otari-gateway.service.ts": "5e1b039aff1fa1109927c62bda1c6804e2efe4812b3899c7037ce0e6ba601c3b",
+      "apps/api/src/research/otari-evidence.service.ts": "84c2ca795c03338f4d6632d2538fd821d359101190807e57581cd86629fb4f49",
+      "apps/api/src/research/passage-references.ts": "34e67bd682627ee0d39f82763a2126f8dbe9851fcf18945e8051c580a1070beb"
+    },
+    "privateAtDispatchScriptPreserved": true
+  },
+  "controlledCondition": {
+    "requestedMaxTokens": 20000,
+    "cataloguedPrimaryMaxTokens": 16384,
+    "source": "Earlier actual isolated-key model-offering read; not an enforcement guarantee",
+    "expectedPrimary": "deepinfra:openai/gpt-oss-20b",
+    "expectedBackup": "ovhcloud:gpt-oss-20b"
+  },
+  "observed": {
+    "events": [
+      {
+        "sequence": 1,
+        "at": "2026-11-06T17:25:26.804Z",
+        "operation": "controlled_primary_probe",
+        "status": "completed",
+        "correlationId": "a2c97149-bd7e-416c-bd58-42bbd04cf343",
+        "httpStatus": 200,
+        "requestId": "2718f9e3-8d68-42f4-ae55-666c173ac7f3",
+        "provider": "deepinfra",
+        "model": "openai/gpt-oss-20b",
+        "fallback": false,
+        "costMicrousd": 193,
+        "durationMs": 5777
+      }
+    ],
+    "budget": {
+      "currency": "USD",
+      "capMicrousd": 15000,
+      "reservedMicrousd": 0,
+      "reportedMicrousd": 193,
+      "unknownCostCalls": 0,
+      "calls": 1,
+      "maxCalls": 3,
+      "terminal": false
+    },
+    "actualHttpCalls": 1,
+    "primaryFailureConfirmed": false,
+    "fallbackRecoveryObserved": false,
+    "reviewExecuted": false,
+    "unexpectedCompletionBodyRetained": false,
+    "outputLimitation": "Unexpected success body was not persisted by the original probe script; do not reconstruct it or replay. Later offline fix retains such outputs."
+  },
+  "diagnosis": "DeepInfra returned HTTP200 with max_tokens20000; advertised 16384 output limit did not induce a failure. Experiment stopped after the direct probe, with no policy or review dispatch.",
+  "accounting": {
+    "reportedMicrousd": 193,
+    "reservedMicrousd": 0,
+    "conservativeExposureMicrousd": 1820084
+  },
+  "nextStep": "Owner/operator must configure a genuinely isolated pre-response provider fault; no further parameter guessing or replay.",
+  "publicationAllowed": false
+}

@@ -18,3 +18,6 @@
 - Owner explicitly authorizes any future push/deploy/email/submission. None performed in this follow-up.
 
 - Historical controlled routing and monetary-ceiling readiness commands sent zero requests because isolated test configuration was absent. The later ceiling check executed once: `evaluation/hosted-ceiling-verification.json`, request `0876a3bb-e3b9-4870-9269-7dc91cfa1234`, HTTP 403, scope workspace; next dispatch blocked before HTTP. See CONTROLLED_HOSTED_CHECKS for exact dashboard setup and guarded commands. Do not claim backup recovery from configuration or finite hosted enforcement from offline tests. Actual policy selection is evidence of routing use; optional controlled experiments strengthen recovery/denial evidence.
+
+- Current publication control automatically withholds exact recurrences using a recorded assistant source assessment; label its scope and provenance. No general entailment/automatic reviewer-detection claim. Historical sample remains a separately dated revision.
+- Controlled output-limit probe did not fail and therefore did not recover; preserve this failing case. Credential-fault setup needs the exact isolated owner/admin action in CONTROLLED_RECOVERY_SETUP. No fallback success claim.

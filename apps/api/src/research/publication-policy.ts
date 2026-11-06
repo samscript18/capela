@@ -2,11 +2,44 @@ import {
   CandidateClaimSchema,
   ReviewSchema,
   PublicationHoldSchema,
+  SupportSpanSchema,
   type PublicationHold,
   type ResearchRun,
   type ClaimDecision,
 } from "@capela/shared";
 import { decide, digest, ResearchError, referenceValid } from "./provenance";
+import { RECORDED_SOURCE_ASSESSMENTS } from "./recorded-source-assessments";
+
+export function applyRecordedSourceAssessments(run: ResearchRun, at = new Date().toISOString()) {
+  for (const d of run.decisions) {
+    const c = d.candidate;
+    const source = run.snapshots.find((s) => s.id === c.snapshotId);
+    if (!source || !referenceValid(c, run.snapshots)) continue;
+    for (const a of RECORDED_SOURCE_ASSESSMENTS) {
+      if (
+        c.paperId !== a.paperId ||
+        source.hash !== a.snapshotHash ||
+        source.normalization !== a.normalization ||
+        source.parserVersion !== a.parserVersion ||
+        digest(c.finding) !== a.findingHash ||
+        digest(JSON.stringify(c.spans.map((span) => SupportSpanSchema.parse(span)))) !== a.spanHash
+      )
+        continue;
+      const existing = run.publicationHolds?.find((h) => h.claimId === c.id && h.assessmentId === a.id);
+      if (existing) continue; // publicationDecisions still checks the exact run/review binding.
+      const hold = createPublicationHold(
+        run,
+        c.id,
+        `${a.reason} Origin: ${a.origin}.`,
+        "recorded_source_assessment",
+        at,
+      );
+      hold.assessmentId = a.id;
+      hold.assessmentRecordedAt = a.recordedAt;
+      (run.publicationHolds ??= []).push(hold);
+    }
+  }
+}
 
 export function reviewDigest(review: ClaimDecision["review"]) {
   // Canonical schema order avoids depending on BSON/JSON property ordering.
