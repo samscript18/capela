@@ -1,0 +1,256 @@
+{
+  "label": "Recorded investigation — read-only sample",
+  "recordedAt": "2026-11-06T15:51:19.690Z",
+  "molecule": {
+    "name": "Curcumin",
+    "pubchemCid": 969516
+  },
+  "codeCommit": "5d52208d63af74ac3942dd65e7035cc025dc7123",
+  "inferenceContract": "passage-selection-v1",
+  "models": {
+    "extraction": "openai/gpt-oss-20b",
+    "review": "openai/gpt-oss-120b",
+    "distinct": true
+  },
+  "scope": "One review abstract; no full-text or clinical validation.",
+  "decisions": [
+    {
+      "candidate": {
+        "id": "32141677-claim-1",
+        "paperId": "32141677",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "analyzedSource": "abstract",
+        "finding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+        "proposedClass": "literature_reported",
+        "kind": "activity",
+        "studyType": "review",
+        "model": null,
+        "measuredOutcome": "contribution to cancer cell death",
+        "label": "Curcumin regulates ROS in tumor cells",
+        "relationship": "indirect_association",
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+            "start": 382,
+            "end": 700,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"]
+        }
+      },
+      "review": {
+        "claimId": "32141677-claim-1",
+        "verdict": "supported",
+        "reason": "The abstract states that curcumin can regulate ROS and calcium levels in tumor cells, contributing to cancer cell death, matching the claim.",
+        "evidenceType": "literature_reported",
+        "revisedFinding": null,
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines] triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.",
+            "start": 382,
+            "end": 700,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9"],
+          "revisionPassageId": null
+        },
+        "checks": {
+          "molecule": true,
+          "negation": true,
+          "studyContext": true,
+          "directness": true,
+          "sourceLimitations": true
+        }
+      },
+      "status": "accepted",
+      "reason": "The abstract states that curcumin can regulate ROS and calcium levels in tumor cells, contributing to cancer cell death, matching the claim.",
+      "publishedFinding": "Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby contributing to cancer cell death",
+      "publishedClass": "literature_reported"
+    },
+    {
+      "candidate": {
+        "id": "32141677-claim-2",
+        "paperId": "32141677",
+        "snapshotId": "src_ccabb44a1e22077e16737b69efdca511",
+        "snapshotHash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+        "analyzedSource": "abstract",
+        "finding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+        "proposedClass": "literature_reported",
+        "kind": "activity",
+        "studyType": "review",
+        "model": null,
+        "measuredOutcome": "inhibition of NF‑κB activity",
+        "label": "Curcumin inhibition of NF‑κB",
+        "relationship": "inhibition",
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+            "start": 1146,
+            "end": 1307,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"]
+        }
+      },
+      "review": {
+        "claimId": "32141677-claim-2",
+        "verdict": "supported",
+        "reason": "The abstract reports inhibition of NF‑κB activity by curcumin, directly supporting the claim.",
+        "evidenceType": "literature_reported",
+        "revisedFinding": null,
+        "spans": [
+          {
+            "blockId": "abstract",
+            "quote": "Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation of oxidative stress and inhibition of NF-кB activity.",
+            "start": 1146,
+            "end": 1307,
+            "convention": "utf16-zero-based-end-exclusive"
+          }
+        ],
+        "passageSelection": {
+          "version": "passage-selection-v1",
+          "indexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338",
+          "passageIds": ["psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4"],
+          "revisionPassageId": null
+        },
+        "checks": {
+          "molecule": true,
+          "negation": true,
+          "studyContext": true,
+          "directness": true,
+          "sourceLimitations": true
+        }
+      },
+      "status": "accepted",
+      "reason": "The abstract reports inhibition of NF‑κB activity by curcumin, directly supporting the claim.",
+      "publishedFinding": "Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell survival",
+      "publishedClass": "literature_reported"
+    }
+  ],
+  "audit": {
+    "version": "span-audit-v1",
+    "programHash": "0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249",
+    "valid": true,
+    "accepted": 2,
+    "sources": 1,
+    "distribution": {
+      "literature_reported": 2
+    },
+    "invalidIds": [],
+    "remote": true,
+    "requestId": "75e1065c-5f13-436e-afa0-e4b0701163f6"
+  },
+  "sources": [
+    {
+      "id": "src_ccabb44a1e22077e16737b69efdca511",
+      "paperId": "32141677",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+      "hash": "55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c",
+      "retrievedAt": "2026-11-06T15:50:56.635Z",
+      "scope": "abstract",
+      "normalization": "NFC-LF-v1",
+      "passageIndexVersion": "passage-index-v1",
+      "passageIndexHash": "c5bd4ae350a7be03008cccb64672bf231b5f2d81927c3b81de59c673e8069338"
+    }
+  ],
+  "budget": {
+    "currency": "USD",
+    "capMicrousd": 200000,
+    "reservedMicrousd": 20000,
+    "reportedMicrousd": 57506,
+    "unknownCostCalls": 2,
+    "calls": 5,
+    "maxCalls": 5,
+    "terminal": false
+  },
+  "events": [
+    {
+      "operation": "scientific_search_tool",
+      "status": "completed",
+      "requestId": "bf18cbd2-ed1e-4ce7-b53c-813a5cc97b6a",
+      "toolCallId": "otari_ws_7718cd871ea649a786a6be84f0c6c652",
+      "model": "openai/gpt-oss-20b",
+      "fallback": false
+    },
+    {
+      "operation": "mcp_discovery",
+      "status": "completed",
+      "requestId": "req_ff3c0ee93e914bd5a384e07b8faad447"
+    },
+    {
+      "operation": "publication_metadata",
+      "status": "completed",
+      "requestId": "req_940a6928d3a04734813f64da8a989560"
+    },
+    {
+      "operation": "extraction",
+      "status": "completed",
+      "requestId": "9140a141-80e2-44d0-8282-d0a299a9a2a6",
+      "model": "openai/gpt-oss-20b",
+      "fallback": false
+    },
+    {
+      "operation": "review",
+      "status": "completed",
+      "requestId": "5c13cdfa-371a-4d80-958b-e987402656f3",
+      "model": "openai/gpt-oss-120b",
+      "fallback": false
+    },
+    {
+      "operation": "sandbox_audit",
+      "status": "completed",
+      "requestId": "75e1065c-5f13-436e-afa0-e4b0701163f6"
+    }
+  ],
+  "assessment": {
+    "overallStrength": "Limited",
+    "score": 15,
+    "biologicalActivityEvidence": "Limited",
+    "targetEvidence": "Insufficient",
+    "mechanisticEvidence": "Insufficient",
+    "consistency": "consistent",
+    "strongestEvidence": [],
+    "majorEvidenceGaps": [
+      "No direct experimental evidence was identified in the analyzed material.",
+      "No molecular target has direct experimental confirmation in the analyzed material.",
+      "The retrieved literature does not establish a sufficiently supported molecular mechanism.",
+      "Capela analyzed abstracts only; no full text was analyzed.",
+      "Abstract-only, bounded retrieval. Evidence score is a heuristic, not an efficacy probability."
+    ],
+    "conflicts": [],
+    "explanation": "Evidence strength is limited based on 0 direct experimental, 0 indirect experimental, and 0 computational source papers; mechanism status is insufficient evidence.",
+    "basis": {
+      "papersAnalyzed": 1,
+      "abstractOnlyPapers": 1,
+      "directExperimentalPapers": 0,
+      "indirectExperimentalPapers": 0,
+      "computationalPapers": 0,
+      "literatureReportedPapers": 1,
+      "directlyConfirmedTargets": 0,
+      "mechanismStatus": "insufficient_evidence"
+    },
+    "paperIds": ["32141677"],
+    "evidenceIds": ["32141677-claim-1", "32141677-claim-2"]
+  },
+  "inspectionNote": {
+    "author": "Assistant inspection, 2026-11-06; not expert annotation",
+    "claimId": "32141677-claim-2",
+    "concern": "The model-accepted claim adds ‘a key regulator of inflammation and cell survival’, which its selected passage does not state. Treat that added clause as unsupported by this passage. The original model verdict is retained rather than silently edited."
+  }
+}

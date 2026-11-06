@@ -1,14 +1,17 @@
 {
   "version": "pilot-mechanical-v2",
   "pipeline": {
-    "extractionPromptHash": "4b21350695ae67e78a6c52cd76ff884d091930c952b6a11c43a5392d9170aeb5",
-    "reviewPromptHash": "1a01e703b3bbfe2377f588b4e17ed5342bc25f2f8e20535c12446e53ecfad783",
+    "extractionPromptHash": "844fbfa2f7f8852a8eaa00ad59919ff62f46a73ace02117e54c7dd6d03d14044",
+    "reviewPromptHash": "1ffdf987cb7162bf6afd83a9ae81c0aa642ec8a072ec3b74a50b83690ffc2058",
     "offsets": "utf16-zero-based-end-exclusive",
     "sourceChecks": [
       {
         "id": "pubmed-42505335",
         "storedHashValid": true,
         "pipelineHash": "8ddb0b18a4f0ab294d8af5122ac6b6a5a0a2e944b9ffbc2b4b7315aff4d8a191",
+        "passageIndexHash": "1c7c6685edf8020c299fc5b6655fb6ee2439afddad56134f834dc2f03c6a14fc",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -16,6 +19,9 @@
         "id": "pubmed-42397814",
         "storedHashValid": true,
         "pipelineHash": "39a74bfdc828200a36dc0dd5de5b42b0b16c2a916ceb922e1830431057d370d9",
+        "passageIndexHash": "7f309b7d014230e2a7114fe6f259c135b6c3f5a9f69befa8125c4555fdb2224a",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -23,6 +29,9 @@
         "id": "pubmed-42347487",
         "storedHashValid": true,
         "pipelineHash": "5d5bb0ef5c79ce45e21800b243f4d78fe58b69691fd9f1b5b2579834ba893b7d",
+        "passageIndexHash": "dfffd242503dc8527c70c6952cce130fae23a07d69fec848233ce278749d8f48",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -30,6 +39,9 @@
         "id": "pubmed-42954735",
         "storedHashValid": true,
         "pipelineHash": "1dd2e327fb3712c632a4888f409e3e5b84e2f6336948fb991e86b3ee2670fb69",
+        "passageIndexHash": "13c303c19390cf00d1310cd3fb19e52e3240767d236a3b4abccfd0c6077dc83a",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -37,6 +49,9 @@
         "id": "pubmed-42654293",
         "storedHashValid": true,
         "pipelineHash": "9a57d1a11fe87eba35b98a94ac04bc1e06ce5f49f748ae17391774a2800d835f",
+        "passageIndexHash": "15dd4e5934df4fe807750ae2a1fd076b65a3d42ee6553083a4d3da48ca525a2d",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -44,6 +59,9 @@
         "id": "pubmed-42280140",
         "storedHashValid": true,
         "pipelineHash": "43a84d5158b2880b85514a44aa6ccbaed4fe229da5144547d1a4c3a14327a819",
+        "passageIndexHash": "81881aaafed731586ed5c84f1867e6b5eae257e12b6c767233c07a82edfe9c6b",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -51,6 +69,9 @@
         "id": "pubmed-42792674",
         "storedHashValid": true,
         "pipelineHash": "340db0937c983416d26fd00d1807c4960ad10f6dbb5bf2eeeb4e90341e5f0664",
+        "passageIndexHash": "87f26049df7f98bbe0137ed32eb909957403854de3bd7710a7f1f5dbc88c481a",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -58,6 +79,9 @@
         "id": "pubmed-42009901",
         "storedHashValid": true,
         "pipelineHash": "73d13e45daad310fb5c7399b5d4cb4749a73e175c06764b73c772f83db6fb022",
+        "passageIndexHash": "a168ddbee05b1e79d02c16a4b109425b2de911f1c729c24adbfc01f04bf40c23",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -65,6 +89,9 @@
         "id": "pubmed-41859571",
         "storedHashValid": true,
         "pipelineHash": "b0b12c276e0f40cc43eb0b99fc5fecba27f8323b97b1d425f4aaa33b7debccf3",
+        "passageIndexHash": "4145d3ca9545e81423e1b426b95c18b34a03a1ab2f7484416bb4b7a1c7378039",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       },
@@ -72,13 +99,16 @@
         "id": "pubmed-42756119",
         "storedHashValid": true,
         "pipelineHash": "de1dc00908e5fe7c3c73b379bd51376be7656c64e745893a3b84ce7f43d50089",
+        "passageIndexHash": "f46437d1a9717317021fffb0a81fcc87421c8adf7bf261800f9cdd47566283d3",
+        "passageIndexVersion": "passage-index-v1",
+        "selectedPassagesValid": true,
         "unchangedByNormalization": true,
         "passageIndexValid": true
       }
     ]
   },
-  "date": "2026-11-06T15:07:23.314Z",
-  "commit": "389e863fa8ac82081b952b463c74800a95ce94f3",
+  "date": "2026-11-06T15:48:22.654Z",
+  "commit": "5d52208d63af74ac3942dd65e7035cc025dc7123",
   "datasetHash": "98e7e7ac8b56a79c2da33fad2a446cf892d109fffa0625553409f25daf776500",
   "sourceCount": 10,
   "cases": 30,

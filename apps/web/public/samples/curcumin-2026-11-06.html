@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>
+    Capela · recorded Curcumin investigation</title
+  ><style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #10150f;
+      color: #edf1e4;
+      font:
+        17px/1.65 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 960px;
+      margin: auto;
+      padding: 32px 22px;
+    }
+    h1 {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      line-height: 1.15;
+    }
+    h2 {
+      font-size: 1.25rem;
+    }
+    a {
+      color: #d5e9ad;
+    }
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid #e9cd81;
+      outline-offset: 4px;
+    }
+    article,
+    aside,
+    section {
+      border: 1px solid #6d7d5e;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+    }
+    aside {
+      background: #332b16;
+      border-color: #dfbc6e;
+    }
+    blockquote {
+      margin: 16px 0;
+      border-left: 3px solid #afc68d;
+      padding: 8px 20px;
+    }
+    figcaption,
+    .technical {
+      font-size: 0.82rem;
+      color: #c5cfbb;
+    }
+    .technical {
+      overflow-wrap: anywhere;
+    }
+    summary {
+      cursor: pointer;
+      padding: 8px 0;
+    }
+    dt {
+      font-weight: 700;
+    }
+    dd {
+      margin: 0 0 12px;
+    }
+    li {
+      margin: 8px 0;
+    }
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      a,
+      .technical,
+      figcaption {
+        color: black;
+      }
+    }
+  </style>
+  <main>
+    <header>
+      <p>Capela · recorded investigation · November 6, 2026</p>
+      <h1>Curcumin</h1>
+      <p>
+        This read-only sample comes from an actual completed signed-in local application run. It contains recorded model
+        decisions, not a staged replay. No account identifiers or authenticated actions are included.
+      </p>
+    </header>
+    <aside>
+      <strong>Scope and limitations</strong>
+      <p>
+        One review abstract; no full-text or clinical validation. Findings are literature reported, not direct
+        experiments or demonstrated human outcomes. Model-assisted review and valid passages do not prove scientific
+        truth. The concrete support concern below remains visible.
+      </p>
+    </aside>
+    <section>
+      <h2>Recorded workflow</h2>
+      <dl>
+        <dt>Extraction</dt>
+        <dd>openai/gpt-oss-20b</dd>
+        <dt>Independent review</dt>
+        <dd>openai/gpt-oss-120b</dd>
+        <dt>Coverage</dt>
+        <dd>One canonical PubMed review abstract; 2 model-accepted findings. No correction or rejection was staged.</dd>
+        <dt>Sandbox audit</dt>
+        <dd>
+          2 exact reference/span records, 1 source; hosted result agreed with local validation. This audit checks
+          mechanics, not entailment.
+        </dd>
+        <dt>Reported / reserved cost</dt>
+        <dd>$0.057506 / $0.020000 USD. Reserved costs are unreported estimates.</dd>
+      </dl>
+    </section>
+    <article>
+      <h2>accepted · literature reported</h2>
+      <p>
+        Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in tumor cells, thereby
+        contributing to cancer cell death
+      </p>
+      <p>Study context: review. Study model unspecified in the candidate.</p>
+
+      <details open>
+        <summary>Exact supporting passage and original review</summary>
+        <figure>
+          <blockquote>
+            Research works have shown that curcumin in tumor can regulate reactive oxygen species (ROS) and cytosolic
+            calcium ion level as well as affect other signaling molecules [nuclear factor kappa B (NF-KB), cytokines]
+            triggering endoplasmic reticulum and mitochondrial stress, and thus contributing to death of cancer cells.
+          </blockquote>
+          <figcaption>Abstract · UTF-16 [382, 700)</figcaption>
+        </figure>
+        <p>
+          Reviewer: supported — The abstract states that curcumin can regulate ROS and calcium levels in tumor cells,
+          contributing to cancer cell death, matching the claim.
+        </p>
+        <p>
+          Original finding: Curcumin can regulate reactive oxygen species (ROS) and cytosolic calcium ion levels in
+          tumor cells, thereby contributing to cancer cell death
+        </p>
+        <p><a href="https://pubmed.ncbi.nlm.nih.gov/32141677/" rel="noreferrer">Canonical PubMed source 32141677</a></p>
+        <p class="technical">
+          Snapshot SHA-256: 55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c<br />Passage IDs:
+          psg_06e8e9bbe1dc59b6c994b8bbf191c4dea927febdfb2da16f4a7d3b9122adf8b9
+        </p>
+      </details>
+    </article>
+    <article>
+      <h2>accepted · literature reported</h2>
+      <p>
+        Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of inflammation and cell
+        survival
+      </p>
+      <p>Study context: review. Study model unspecified in the candidate.</p>
+      <aside aria-label="Observed support limitation">
+        <strong>Observed limitation</strong>
+        <p>
+          The model-accepted claim adds ‘a key regulator of inflammation and cell survival’, which its selected passage
+          does not state. Treat that added clause as unsupported by this passage. The original model verdict is retained
+          rather than silently edited.
+        </p>
+      </aside>
+      <details open>
+        <summary>Exact supporting passage and original review</summary>
+        <figure>
+          <blockquote>
+            Among signaling pathways regulated by curcumin, the most important seem to be those related with regulation
+            of oxidative stress and inhibition of NF-кB activity.
+          </blockquote>
+          <figcaption>Abstract · UTF-16 [1146, 1307)</figcaption>
+        </figure>
+        <p>
+          Reviewer: supported — The abstract reports inhibition of NF‑κB activity by curcumin, directly supporting the
+          claim.
+        </p>
+        <p>
+          Original finding: Curcumin inhibits nuclear factor kappa B (NF‑κB) activity, which is a key regulator of
+          inflammation and cell survival
+        </p>
+        <p><a href="https://pubmed.ncbi.nlm.nih.gov/32141677/" rel="noreferrer">Canonical PubMed source 32141677</a></p>
+        <p class="technical">
+          Snapshot SHA-256: 55ad5418d6f3f36bf5076b57736a93d2121b283ff0cfad67a5af0b086891ab0c<br />Passage IDs:
+          psg_04b58c9b7664e6014748a58eed43a9650026996e3b53a0cc3463f02885cc4ea4
+        </p>
+      </details>
+    </article>
+    <section>
+      <h2>Assessment and gaps</h2>
+      <p>
+        Evidence strength is limited based on 0 direct experimental, 0 indirect experimental, and 0 computational source
+        papers; mechanism status is insufficient evidence. Scores are heuristics, not efficacy probabilities.
+      </p>
+      <ul>
+        <li>No direct experimental evidence was identified in the analyzed material.</li>
+        <li>No molecular target has direct experimental confirmation in the analyzed material.</li>
+        <li>The retrieved literature does not establish a sufficiently supported molecular mechanism.</li>
+        <li>Capela analyzed abstracts only; no full text was analyzed.</li>
+        <li>Abstract-only, bounded retrieval. Evidence score is a heuristic, not an efficacy probability.</li>
+      </ul>
+    </section>
+    <details>
+      <summary>Technical provenance</summary>
+      <p class="technical">
+        Code commit: 5d52208d63af74ac3942dd65e7035cc025dc7123<br />Recorded completion: 2026-11-06T15:51:19.690Z<br />Contract:
+        passage-selection-v1<br />Audit program hash: 0cd0c55bff641c73f97aefdbbd1f6cd45c21429e9c79b342ff0981e9ae192249
+      </p>
+      <ul>
+        <li class="technical">scientific_search_tool · completed · bf18cbd2-ed1e-4ce7-b53c-813a5cc97b6a</li>
+        <li class="technical">mcp_discovery · completed · req_ff3c0ee93e914bd5a384e07b8faad447</li>
+        <li class="technical">publication_metadata · completed · req_940a6928d3a04734813f64da8a989560</li>
+        <li class="technical">extraction · completed · 9140a141-80e2-44d0-8282-d0a299a9a2a6</li>
+        <li class="technical">review · completed · 5c13cdfa-371a-4d80-958b-e987402656f3</li>
+        <li class="technical">sandbox_audit · completed · 75e1065c-5f13-436e-afa0-e4b0701163f6</li>
+      </ul>
+    </details>
+    <footer>
+      <p>
+        Static recorded sample. New research, private history and account actions require normal application
+        authentication.
+      </p>
+    </footer>
+  </main>
+</html>
