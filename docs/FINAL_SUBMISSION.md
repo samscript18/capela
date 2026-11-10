@@ -4,7 +4,7 @@ Draft for the participant to review and send as a reply to the original sign-up 
 
 ## Verified packaging status
 
-Local checkout is clean at `a124872cf5bcc8667ad2b10249f3c21120d61098` on `feat/otari-completion-verification`. GitHub repository is public. A read-only remote check on November 10 confirms `main` at the same commit and `dev` at `12c21a2`. The dedicated development branch was subsequently published with owner authorization and verified at the same commit. Its public link is https://github.com/samscript18/capela/tree/feat/otari-completion-verification.
+Preparation continued from clean `0c0396c` on the published `feat/otari-completion-verification` branch. The current metadata follow-up is local and has not been pushed or deployed. Its new result is bound to exact source hashes in evaluation/hosted-guardrail-metadata-verification.json; publish the reviewed follow-up with owner authorization before sending links that depend on it. Existing repository, branch and first integration links are verified.
 
 The first integration commit exists locally and on GitHub. No participant recording link, registered Otari email, or upstream contribution link was found in the inspected submission/evidence notes. Those fields cannot be invented. The feedback below is an experience-based draft for participant approval, especially the personal decision about continued use.
 
@@ -20,7 +20,7 @@ I'm submitting **Capela**, an evidence-first molecule investigation workspace th
 
 **Hackathon branch:** `feat/otari-completion-verification` — https://github.com/samscript18/capela/tree/feat/otari-completion-verification
 
-**Reviewed code version:** https://github.com/samscript18/capela/commit/a124872cf5bcc8667ad2b10249f3c21120d61098
+**Reviewed implementation:** the hackathon branch linked above, including the metadata follow-up. Its live verification started at `0c0396c` with exact working-source hashes recorded in `evaluation/hosted-guardrail-metadata-verification.json`. Publish the reviewed follow-up before sending this draft.
 
 **First Otari integration commit:** https://github.com/samscript18/capela/commit/9085c3f30003e5edab5e6dc05674052831f38c48
 
@@ -36,10 +36,11 @@ Capela resolves molecule identity, executes scientific search through hosted Ota
 - **Search:** actual hosted search used to select the investigation's source.
 - **MCP:** actual authenticated hosted invocation retrieved the canonical abstract used by both models.
 - **Code execution:** a nonempty hosted evidence audit agreed with local validation in the original completed run.
+- **Inference guardrails:** a new isolated production-adapter test returned HTTP 403, `guardrail_violation`, and a validated evaluated blocking result for the expected guardrail in the same response, directly associated with request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57`. This no longer depends on manually joining the earlier vendor log. Explanations, raw profile labels, vendor payloads and private text are omitted from retained metadata. No prompt-only cause or false-positive performance is claimed.
 - **Routing policies:** isolated extraction and review policies executed through Capela's production adapter with distinct resolved models. Both returned `fallback:false`; successful backup recovery remains unverified.
 - **Budgets and spending limits:** an isolated workspace's finite $0.01 ceiling produced a real HTTP 403 `budget_exceeded`. Capela recorded terminal denial and blocked another dispatch before HTTP. This is separate from the completed research run and does not establish the original runtime key's ceiling.
 
-These six categories have execution evidence across the completed investigation and isolated checks; they were not all exercised in one investigation. Judges determine credit. Detailed provenance: https://github.com/samscript18/capela/blob/a124872cf5bcc8667ad2b10249f3c21120d61098/docs/RUBRIC_EVIDENCE.md
+The six selected categories are distinct model roles, search, MCP, code execution, spending limits and guardrails. Routing selection is additional evidence with recovery still unverified. The six selected categories span the completed investigation and separate isolated checks; they were not all exercised in one investigation. Judges determine credit. Detailed provenance: https://github.com/samscript18/capela/blob/feat/otari-completion-verification/docs/RUBRIC_EVIDENCE.md
 
 ### Inspectable result and limitations
 
@@ -47,11 +48,11 @@ The November 6 curcumin investigation completed through hosted Otari with one ca
 
 The published finding concerns reported regulation of ROS and cytosolic calcium in tumor cells. The withheld finding adds an NF-κB background clause absent from its selected passage. The original reviewer did not detect that clause. Current code automatically applies the recorded assessment to exact recurrences; this is narrow case reuse, not general entailment detection.
 
-Sanitized sample source: https://github.com/samscript18/capela/blob/a124872cf5bcc8667ad2b10249f3c21120d61098/apps/web/public/samples/curcumin-2026-11-06.html
+Sanitized sample source: https://github.com/samscript18/capela/blob/feat/otari-completion-verification/apps/web/public/samples/curcumin-2026-11-06.html
 
 The sample opens at `/samples/curcumin-2026-11-06.html` in the running application; this GitHub link is the artifact source, not a verified hosted preview. Coverage is abstract-only and review is model-assisted. Mechanical hash, exact-passage and reference checks do not establish scientific accuracy or demonstrate that review improves correctness. The revised one-finding audit is local; the original two-record hosted audit remains separate historical provenance.
 
-Recorded release checks: 117 unit/adapter tests, four integration checks, seven browser fixtures, formatting, lint, typecheck and production build passed under Node 24.22.2. These are recorded verification results, not a new execution on submission day.
+Current Node 24.22.2 release verification passed 134 unit/adapter tests, four integration checks, seven browser fixtures, formatting, lint, typecheck and production build. Hash/reference/passage checks validate mechanics, not scientific accuracy.
 
 ### Otari PRs or issues
 
@@ -65,7 +66,7 @@ Hosted review timeouts and remote MCP discovery failures were the strongest pres
 
 **What did you end up building yourself that Otari should have done for you?**
 
-We built durable application reservations, unknown-cost accounting and checkpoints, plus a bounded verification harness that preserves requested policies, resolved models and denial metadata. Source snapshots and publication policy remain Capela-specific responsibilities. More accessible scoped configuration inspection and request-level attempted-route traces would have reduced the custom diagnostic work.
+We built durable application reservations, unknown-cost accounting and checkpoints, plus a bounded verification harness that preserves requested policies, resolved models and denial metadata. Source snapshots and publication policy remain Capela-specific responsibilities. More accessible scoped configuration inspection and request-level attempted-route traces would have reduced the custom diagnostic work. We also added safe parsing of the documented guardrail refusal envelope, directly tying its evaluated blocking verdict to the Otari request ID.
 
 **If the rules hadn't required Otari, would you have continued using Otari? Why or why not?**
 

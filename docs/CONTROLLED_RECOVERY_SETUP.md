@@ -1,5 +1,11 @@
 # Controlled recovery: hosted compatibility blocker
 
+## Current submission path — recovery is no longer needed for the six selected categories
+
+The newly allocated November 10 guardrail metadata check succeeded: request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57` directly returned HTTP 403, recognized `guardrail_violation` and validated evaluated blocking metadata for the expected profile in the same response. See [actual evidence](../evaluation/hosted-guardrail-metadata-verification.json). Search, MCP, sandbox, distinct roles, spending limits and guardrails now provide the six selected categories across a completed investigation and isolated checks. No credit is guaranteed. Do not pursue all eight categories or repeat a full investigation.
+
+The custom-prefix routing validator error still blocks optional recovery; no fallback success is claimed. The earlier inconclusive guardrail request and owner observation below remain historical and unchanged; the new request supplies its own direct association. No further paid attempt is active. Current exposure is $1.830084 including retained reservations. Do not change the mandate, defaults, credentials or ceiling for filming.
+
 ## November 10 recheck — supersedes the older schema blocker
 
 Later owner dashboard evidence: the endpoint explicitly displays request prefix `capela-fault-primary:` and **1 of 1 serving**, with the saved input/output rate. Nonetheless, creating the isolated policy with the complete selector rejects the prefix as “neither a configured provider instance nor a known provider implementation.” This rules out the missing-prefix-field hypothesis as an explanation of the current UI state. No further pricing changes or policy retries are indicated; the current validator/configuration discrepancy needs operator inspection. A routing preview and listed automatic order do not prove a saved or executed recovery policy.

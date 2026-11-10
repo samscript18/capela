@@ -1,6 +1,14 @@
 # Build status — November 6, 2026
 
-## November 10 follow-up
+## Current November 10 metadata verification
+
+Continued clean at `0c0396c` on `feat/otari-completion-verification`. Preserved original inconclusive request, owner-supplied Lakera observation, publication revision, sample and task/application accounting. Read current hosted OpenAPI 0.42.0+259b65d and official reference/helper at upstream 6782122. Confirmed blocking guardrails use structured FastAPI `detail.code`/`detail.guardrails`; non-blocking summaries use Otari-Guardrails. Added typed additive sanitized event metadata, bounded parsers and technical UI display. No raw profile/explanation/source text/vendor payload retained in metadata. Optional direct Vertex fallback is ineligible when guardrail metadata is present, even malformed/unavailable.
+
+New one-shot `verify-guardrail-metadata.cjs` records its own $0.005/one-call allocation under the existing $20 cap, retains old reservations and refuses replay. **Success:** `1c30c704-3335-4ee9-a68c-dbd60a4dfb57`, HTTP 403, recognized guardrail_violation, expected profile hash and evaluated blocking refusal from the same response. Earlier original records are not retroactively upgraded. Six selected categories now have direct execution evidence across the completed research investigation and isolated checks (search, MCP, sandbox, distinct roles, spending limits, guardrails). No awarded credit, prompt-only detector cause, benign pass-rate or scientific accuracy claim. Fallback recovery/per-user budgets remain unverified; no all-eight expansion or whole investigation rerun.
+
+New reported cost $0 with **$0.005 retained unknown reservation**, bringing conservative exposure to **$1.830084**. No further attempt. Current sources/results/contract are in evaluation/hosted-guardrail-metadata-verification.json and guardrail-metadata-contract.json. Release outcomes in TEST_EVIDENCE. Current README/capability matrix now use the same account; participant recording checklist uses factual cues only. No push, deployment, email, video or audio generation.
+
+## Historical November 10 follow-up
 
 Latest follow-up evidence (no new dispatch): owner supplied the Lakera result for the existing single failed request. `flagged:true`, `prompt_attack` detected and `pii/ip_address` detected, both `l1_confident`; vendor UUID `01a1c610-aeb0-78b2-a04d-d289dc5ace97`, model `lakera-guard-1`. Added a separate sanitized owner-observation artifact; original adapter `inconclusive_no_retry`, request ID and ledger are unchanged. Combined with the Active isolated block mandate and actual 403, this supports hosted guardrail demonstration with explicit **owner-reported correlation**, not an independent trace join. PII also fired; do not claim the prompt detector alone caused refusal, or assert false-positive performance. Six categories now have evidence including this qualified guardrail check; recovery/per-user budgets remain unverified. Exposure remains $1.825084. Earlier adapter-only observations below remain historical.
 

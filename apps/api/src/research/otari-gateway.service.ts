@@ -11,6 +11,7 @@ import {
 } from "@capela/shared";
 import { z } from "zod";
 import { ResearchError } from "./provenance";
+import { guardrailMetadata, guardrailRefusalMetadata } from "./guardrail-metadata";
 
 export type SaveRun = () => Promise<void>;
 export function usdMicros(value: unknown): number | undefined {
@@ -128,6 +129,7 @@ export class OtariGatewayService {
         ...(paid ? { body: JSON.stringify(body) } : {}),
       });
       event.httpStatus = response.status;
+      event.guardrails = guardrailMetadata(response.headers.get("Otari-Guardrails"));
       const requestId = safeHeader(response, "Otari-Request-ID");
       const provider = safeHeader(response, "Otari-Provider");
       const model = safeHeader(response, "Otari-Model");
@@ -140,14 +142,15 @@ export class OtariGatewayService {
       if (fallback === "true" || fallback === "false") event.fallback = fallback === "true";
       if (!response.ok) {
         let upstreamCode = knownErrorCode(response.headers.get("Otari-Error-Code"));
-        if (!upstreamCode) {
-          try {
-            const failure = await boundedJson(response, 8192);
-            upstreamCode =
-              knownErrorCode(failure.code) ?? knownErrorCode((failure.error as { code?: unknown } | undefined)?.code);
-          } catch {
-            /* Error bodies are untrusted; never retain raw provider messages. */
-          }
+        try {
+          const failure = await boundedJson(response, 8192);
+          event.guardrails ??= guardrailRefusalMetadata(failure, response.status);
+          upstreamCode ??=
+            knownErrorCode(failure.code) ??
+            knownErrorCode((failure.error as { code?: unknown } | undefined)?.code) ??
+            knownErrorCode((failure.detail as { code?: unknown } | undefined)?.code);
+        } catch {
+          /* Error bodies are untrusted; never retain raw provider messages. */
         }
         if (upstreamCode) event.upstreamCode = upstreamCode;
         if (response.status === 402 || upstreamCode === "budget_exceeded" || upstreamCode === "insufficient_funds")
@@ -161,13 +164,16 @@ export class OtariGatewayService {
                 ? "OTARI_BUDGET_DENIED"
                 : response.status === 402
                   ? "OTARI_SPENDING_DENIED"
-                  : upstreamCode === "guardrail_blocked" || upstreamCode === "guardrail_violation"
-                    ? "OTARI_GUARDRAIL_BLOCKED"
-                    : operation === "mcp_discovery" && [502, 503, 504].includes(response.status)
-                      ? "OTARI_MCP_UNAVAILABLE"
-                      : response.status === 504
-                        ? "OTARI_UPSTREAM_TIMEOUT"
-                        : "OTARI_PROVIDER_ERROR";
+                  : response.status === 401
+                    ? "OTARI_AUTH_DENIED"
+                    : response.status === 403 &&
+                        (upstreamCode === "guardrail_blocked" || upstreamCode === "guardrail_violation")
+                      ? "OTARI_GUARDRAIL_BLOCKED"
+                      : operation === "mcp_discovery" && [502, 503, 504].includes(response.status)
+                        ? "OTARI_MCP_UNAVAILABLE"
+                        : response.status === 504
+                          ? "OTARI_UPSTREAM_TIMEOUT"
+                          : "OTARI_PROVIDER_ERROR";
         throw new ResearchError(
           code,
           code === "OTARI_INSUFFICIENT_FUNDS"

@@ -1,5 +1,11 @@
 # Hosted routing and budget verification
 
+## Current guardrail verification — November 10
+
+`verify-guardrail-metadata.cjs` executed once under a new $0.005/one-call allocation after offline checks, preserving the original attempt. HTTP 403 request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57` carried recognized `guardrail_violation` and the expected profile's evaluated blocking refusal in the same official `detail.guardrails` envelope. [Actual evidence](../evaluation/hosted-guardrail-metadata-verification.json), [pinned primary contract](../evaluation/guardrail-metadata-contract.json). No source text/explanation/vendor payload is retained in metadata. Missing/unavailable/inconclusive results and budget/auth refusals cannot pass. No replay or whole-investigation rerun; $0 reported, $0.005 retained unknown, cumulative exposure $1.830084. The earlier owner-reported association is historical and unchanged. Six selected categories use guardrails instead of relying on recovered fallback; per-user budgets remain unclaimed.
+
+The older routing/budget notes below retain their original scopes. No successful fallback recovery has occurred, and no extra request is needed for recording.
+
 **Latest controlled recovery attempt did not recover:** the advertised output-limit condition did not fail; direct DeepInfra probe returned HTTP 200 and the one-shot check stopped after one call. No recovery was claimed or retried. [Actual evidence](../evaluation/controlled-recovery-attempt.json), $0.000193 reported. [Next isolated credential-fault configuration](CONTROLLED_RECOVERY_SETUP.md) requires an owner/admin action; no more parameter guesses.
 
 **Normal policy routing completed:** `node scripts/verify-isolated-routing.cjs` used both owner-created test-workspace policies with actual production role payloads, distinct 20b/120b and valid exact references. Both fallback headers were false. [Actual evidence](../evaluation/isolated-routing-verification.json). This is a separate one-shot $0.01/two-call allocation, reported $0.000440, no new uncertain cost. It refuses the working key/replay and publishes nothing. The old `controlled-hosted-checks.cjs routing` command remains a stronger optional fault-recovery experiment requiring actual fault configuration; it was not run.

@@ -1,4 +1,18 @@
-# Verification evidence — November 6, 2026
+# Verification evidence — current November 10, 2026
+
+## Current November 10 direct guardrail metadata verification
+
+Starting clean commit **0c0396c**, dedicated branch `feat/otari-completion-verification`. Hosted OpenAPI reread: **0.42.0+259b65d**. Official reference/helper pinned at **6782122df8f9db1e802afcb1c97fcb9379605fb9**. The non-blocking summary header and blocking FastAPI `detail.code`/`detail.guardrails` envelope are separate contracts; exact source hashes/URLs are in `evaluation/guardrail-metadata-contract.json`. The old adapter omitted this refusal-body location; the original raw response was not retained and is not reconstructed.
+
+Added transform-free additive shared metadata schema, bounded parsers (8,192-byte header/error body, eight results, strict enums/status/valid consistency), hashed profiles and allowlisted scalar retention. Explanations, source/matched text, credentials, personal profile labels, arbitrary fields and vendor payloads are dropped. Technical UI shows safe status/verdict only. Optional direct Vertex fallback is ineligible whenever guardrail metadata is present, including malformed/unavailable checks. Budget/authentication refusals and bare/malformed/inconclusive/missing guardrail verdicts cannot satisfy evaluated-refusal evidence.
+
+Offline verification: **134 unit/adapter tests**, **4 integration checks**, **7 browser fixtures** passed under Node 24.22.2. Focused cases exercise both official refusal-body/header shapes, header-present/body-present handling, missing/unavailable/inconclusive verdicts, profile mismatch, oversized/non-ASCII bytes, source/credential redaction, budget/auth distinction, legacy storage and no direct-provider bypass. Initial integration attempt failed because localhost MCP/Mongo listening sockets were sandbox-denied; the localhost-enabled rerun passed. Browser fixtures remain distinct from actual authenticated application checks.
+
+One newly recorded **$0.005 / one-call** allocation executed after offline parser checks, under the existing $20 total. Request **1c30c704-3335-4ee9-a68c-dbd60a4dfb57** returned **403 / guardrail_violation** and the expected hashed profile in the same validated `detail.guardrails` envelope. The official envelope includes only evaluated flagged blocking checks; retained mode/block, evaluated and valid=false are derived from that documented semantics. No manual vendor-log join is needed for this new result. No prompt-only detector cause, benign control or scientific accuracy claim. No replay of the complete investigation, direct-provider fallback or further attempt.
+
+New settled usage was absent: **$0 reported, $0.005 retained unknown reservation**, conservative cumulative exposure **$1.830084**. Original allocation is unchanged by hash; original inconclusive adapter artifact, owner-supplied vendor observation, investigation, publication revision and sample HTML/JSON are byte-identical to baseline. New source hashes match at-dispatch files. Evidence: `evaluation/hosted-guardrail-metadata-verification.json`. The previous outcomes below remain historical and are not retroactively upgraded. Final `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm run build` all passed under Node 24.22.2; typecheck/build were sequential. Existing viem/ox dynamic-import and optional Privy `@farcaster/mini-app-solana` warnings remain. `git diff --check`, baseline artifact/allocation hash checks and configured-secret scans passed. Generated web TypeScript build-info is restored to its original bytes. No new paid call or attempt followed the successful result.
+
+## Historical guardrail checkpoints
 
 ## November 10 guardrail compatibility and availability
 

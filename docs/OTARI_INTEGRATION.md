@@ -1,4 +1,21 @@
-# Otari integration — November 6, 2026
+# Otari integration — November 10, 2026
+
+## Verified guardrail response contract and execution
+
+Current hosted OpenAPI is **0.42.0+259b65d**. Official reference/helper source is pinned at `6782122df8f9db1e802afcb1c97fcb9379605fb9`; [contract evidence](../evaluation/guardrail-metadata-contract.json) records URLs/hashes and explicitly distinguishes upstream source from hosted execution.
+
+- Non-blocking results: documented `Otari-Guardrails` JSON array, with `profile`, `mode`, `valid`, `score`, `status` and optional unavailable `reason`.
+- Blocking result: official FastAPI HTTP 403 `detail.code: guardrail_violation`, with `detail.guardrails` listing only flagged blocking checks. Those entries supply profile/explanation/score; mode=block, evaluated, valid=false are derived from this explicit envelope's documented semantics.
+- Bounded capture: header/error body at most 8,192 UTF-8 bytes; at most eight results. Strict enums and status/valid consistency; only finite [0,1] scores are retained. Invalid/oversized metadata cannot prove evaluation. Raw profile labels become SHA-256 hashes; explanations, matched text, vendor payload, credentials and unknown fields are discarded. No free-text error matching.
+- Request ID, HTTP status and recognized refusal code are retained on the same event. A bare 403, unavailable/no-verdict check, authentication/budget denial, missing ID or mismatched profile cannot pass the verification predicate. Present guardrail metadata, including malformed or unavailable metadata, also prevents the optional direct Vertex compatibility fallback.
+
+One newly authorized **$0.005 / one-call** allocation executed after offline checks, retaining the original attempt and all exposure. Request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57` directly returned 403, `guardrail_violation`, and valid blocking result for the expected hashed profile from `error.detail.guardrails`. [Actual metadata evidence](../evaluation/hosted-guardrail-metadata-verification.json) captures tested working-source hashes. No scientific investigation replay, publication or provider bypass. No settled usage returned: $0 reported, $0.005 reservation retained, cumulative conservative exposure **$1.830084**. Lakera free quota/no paid overage is owner-confirmed; this is not a remaining-quota measurement.
+
+The original `hosted-guardrail-verification.json` and separate owner observation remain byte-identical. Their earlier correlation qualification is retained historically, not applied to the new same-response association. The new result does not identify prompt-only causation, measure benign false positives or establish scientific accuracy. Recovery remains blocked; per-user budgets are not pursued.
+
+## Historical compatibility/access checkpoints
+
+The following dated checks predate the new direct verification. “Inconclusive” and “no configured service” describe their original conditions, not current claim status.
 
 ## November 10 hosted compatibility update
 

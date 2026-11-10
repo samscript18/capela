@@ -51,6 +51,7 @@ export function parseStoredResearchRun(value: unknown): ResearchRun {
           "requestedPolicy",
           "upstreamCode",
           "budgetScope",
+          "guardrails",
           "toolCallId",
           "code",
         ])
@@ -240,6 +241,28 @@ export type ClaimDecision = {
   publishedFinding?: string;
   publishedClass?: z.infer<typeof EvidenceTypeSchema>;
 };
+export const GuardrailMetadataSchema = z
+  .object({
+    version: z.literal("otari-guardrails-v1"),
+    source: z.enum(["Otari-Guardrails", "error.detail.guardrails"]),
+    state: z.enum(["valid", "malformed", "oversized"]),
+    results: z
+      .array(
+        z
+          .object({
+            profileHash: z.string().regex(/^[a-f0-9]{64}$/),
+            mode: z.enum(["block", "monitor"]),
+            status: z.enum(["evaluated", "inconclusive", "unavailable"]),
+            valid: z.boolean().nullable(),
+            score: z.number().min(0).max(1).optional(),
+            reason: z.enum(["not_configured", "evaluation_failed"]).optional(),
+          })
+          .strict(),
+      )
+      .max(8),
+  })
+  .strict();
+export type GuardrailMetadata = z.infer<typeof GuardrailMetadataSchema>;
 export type RunEvent = {
   sequence: number;
   at: string;
@@ -256,6 +279,7 @@ export type RunEvent = {
   httpStatus?: number;
   upstreamCode?: string;
   budgetScope?: string;
+  guardrails?: GuardrailMetadata;
   toolCallId?: string;
   code?: string;
   finishReason?: string;
@@ -400,6 +424,7 @@ export const ResearchRunSchema = z
             httpStatus: z.number().int().min(100).max(599).optional(),
             upstreamCode: OptionalId,
             budgetScope: OptionalId,
+            guardrails: GuardrailMetadataSchema.optional(),
             toolCallId: OptionalId,
             code: OptionalId,
             finishReason: OptionalId,

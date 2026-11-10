@@ -1,23 +1,17 @@
-# Owner submission checklist
+# Owner submission checklist — November 10, 2026
 
-- Project: Capela — sourced molecule dossiers showing support, corrections and uncertainty.
-- Repository: https://github.com/samscript18/capela
-- Current local verification branch: `feat/otari-completion-verification`; not pushed in this follow-up. Earlier implementation was published to main at the owner’s request. Choose/publish a public hackathon branch before submission.
-- First Otari integration commit: `9085c3f30003e5edab5e6dc05674052831f38c48`. Previously published to main at the owner’s request; link the chosen public hackathon branch and this integration commit.
-- Owner sign-up email/thread, project sentence and Otari account email: owner supplies. No registration or email sent.
-- Confirm deadline timezone (page shows November 11, 11:59 PM without timezone); internal cutoff November 10, 18:00 Africa/Lagos.
-- Check [RUBRIC_EVIDENCE.md](RUBRIC_EVIDENCE.md): list only actually demonstrated hosted capabilities. Target remains six; search, remote MCP, nonempty sandbox and distinct-model roles have evidence in the completed `5d52208` local run. Both isolated routing policies now have actual production extraction/review evidence, and isolated hosted workspace-ceiling denial passes. Six category coverage spans the complete investigation and separate checks. Successful role-preserving fallback recovery remains unverified; original runtime key budget binding is unknown.
-- Direct/hosted MCP and the new passage-selection hosted-only nonempty run pass. Retain actual tool/model IDs, source/index hashes and the specific support limitation in claim 2. The shared safeguard fallback shown in the current dashboard does not preserve the two scientific roles. The owner created isolated role-preserving policies; both executed successfully with distinct models and fallback=false. The owner-created budget workspace has an actual 403 ceiling denial through the adapter, separately evidenced. Do not attach fixture tests as hosted proof.
-- Describe completed source-hash, exact-passage and reference checks, automated tests and actual hosted behavior with their recorded provenance. These checks are not scientific-accuracy evidence or proof that review improves correctness.
-- Answer organiser questions honestly from the recorded results; distinguish application behavior, offline tests and demonstrated hosted capabilities.
-- Sanitized dated read-only sample prepared: `apps/web/public/samples/curcumin-2026-11-06.html` and JSON. It preserves original model verdicts and separately records the publication revision (one published finding, claim 2 unresolved after source inspection), excludes owner IDs/tokens/mutation controls, and leaves private endpoints authenticated. It is available locally, not externally published.
-- Owner attests current GitHub main `d9cc2501f44f140097b13d62f037b5b2295ad2a2` is deployed; runtime commit metadata/logs remain unavailable. Authorize any deployment of the newer tested branch separately.
-- Supply participant-recorded 3–5 minute demo link and feedback link/written responses. No AI video or audio.
-- Upstream issues/PRs: none opened in this task; do not invent any.
-- Review public repository for secrets, legacy compatibility, current README and reproducible test instructions.
-- Owner explicitly authorizes any future push/deploy/email/submission. None performed in this follow-up.
-
-- Historical controlled routing and monetary-ceiling readiness commands sent zero requests because isolated test configuration was absent. The later ceiling check executed once: `evaluation/hosted-ceiling-verification.json`, request `0876a3bb-e3b9-4870-9269-7dc91cfa1234`, HTTP 403, scope workspace; next dispatch blocked before HTTP. See CONTROLLED_HOSTED_CHECKS for exact dashboard setup and guarded commands. Do not claim backup recovery from configuration or finite hosted enforcement from offline tests. Actual policy selection is evidence of routing use; optional controlled experiments strengthen recovery/denial evidence.
-
-- Current publication control automatically withholds exact recurrences using a recorded assistant source assessment; label its scope and provenance. No general entailment/automatic reviewer-detection claim. Historical sample remains a separately dated revision.
-- Controlled output-limit probe did not fail and therefore did not recover; preserve this failing case. Credential-fault setup needs the exact isolated owner/admin action in CONTROLLED_RECOVERY_SETUP. No fallback success claim.
+- Project: **Capela** — sourced molecule dossiers showing support, corrections and uncertainty.
+- Public repository: https://github.com/samscript18/capela
+- Public hackathon branch: https://github.com/samscript18/capela/tree/feat/otari-completion-verification (published through 0c0396c). Current metadata follow-up is local until an owner-authorized push; review/publish it before relying on its new public artifact links. No deployment is implied.
+- First Otari integration: https://github.com/samscript18/capela/commit/9085c3f30003e5edab5e6dc05674052831f38c48
+- Six selected categories: search, authenticated MCP, code execution, distinct models, hosted spending limits and inference guardrails. Four belong to the completed investigation; budget and guardrail checks are separate isolated production-adapter requests. Routing selection is additional evidence; successful fallback recovery and per-user budgets remain unverified. Judges determine credit.
+- New guardrail request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57` directly associates 403, recognized refusal code and evaluated blocking metadata in one response. Original inconclusive request and owner observation remain historical, unchanged. Do not claim prompt-only cause or benign false-positive performance.
+- Explain the sample's one published finding and one unresolved candidate. Original reviewer supported both; later source-inspection hold is separately attributed. The original hosted audit covered two records; revised one-record audit is local. Abstract-only, model-assisted limits remain visible.
+- Source-hash, exact passage, reference integrity and automated tests are mechanical/software verification, not scientific accuracy or reviewer-improvement evidence.
+- Current evidence: RUBRIC_EVIDENCE.md, TEST_EVIDENCE.md and evaluation/hosted-guardrail-metadata-verification.json. Exact source hashes distinguish the live working tree from starting commit 0c0396c. No new scientific investigation replay.
+- Participant supplies registered Otari email, own name and accessible **3–5 minute screen recording with own audio**. No generated video/audio or staged interaction. Use DEMO_RECORDING_CHECKLIST.md as factual cues, not a synthetic testimonial.
+- Participant approves written feedback in FINAL_SUBMISSION.md, including personal continued-use answer. Explicitly answer all organizer questions.
+- Upstream PRs/issues: none opened during this work. A local operator report is not a filed contribution. Add only real links if the participant later files one.
+- Submission route: reply to the original sign-up thread with marcus+wilding@mozilla.org. Supplied deadline November 11, 11:59 PM; confirm unspecified timezone. No email or submission has been sent.
+- Private endpoints remain authenticated. Sample HTML/JSON is sanitized repository content, not a verified deployed preview. Actual signed-in local application/export checks are recorded separately; runtime deployment versions are not inferred from GitHub.
+- No further paid request, configuration change, push/deploy/purchase/email is implicit in this checklist. Existing task ledger, prior unknown reservations and all original outputs remain intact.

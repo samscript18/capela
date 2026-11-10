@@ -247,6 +247,19 @@ export function ResearchRunView({ run, partial = false }: { run?: ResearchRun; p
               {e.budgetScope && <> · denying hosted budget scope {e.budgetScope}</>}
               {e.httpStatus && <> · HTTP {e.httpStatus}</>}
               {e.upstreamCode && <> · {e.upstreamCode}</>}
+              {e.guardrails && (
+                <>
+                  {" "}
+                  · guardrails: {e.guardrails.state}
+                  {e.guardrails.results.map((g, i) => (
+                    <span key={i}>
+                      {" "}
+                      · {g.mode}/{g.status}/{g.valid === null ? "no verdict" : g.valid ? "passed" : "flagged"}
+                      {g.reason ? ` (${g.reason})` : ""}
+                    </span>
+                  ))}
+                </>
+              )}
               {e.toolCallId && <> · tool {e.toolCallId}</>}
               {e.code && <> · {e.code}</>}
               {e.finishReason && <> · finish {e.finishReason}</>}

@@ -1,0 +1,30 @@
+{
+  "version": "guardrail-metadata-contract-v1",
+  "retrievedDate": "2026-11-10",
+  "hostedOpenapiVersion": "0.42.0+259b65d",
+  "upstreamCommit": "6782122df8f9db1e802afcb1c97fcb9379605fb9",
+  "sources": [
+    "https://otari.ai/api/v1/openapi.json",
+    "https://github.com/mozilla-ai/otari/blob/6782122df8f9db1e802afcb1c97fcb9379605fb9/docs/guardrails-reference.md",
+    "https://github.com/mozilla-ai/otari/blob/6782122df8f9db1e802afcb1c97fcb9379605fb9/src/gateway/api/routes/_helpers.py"
+  ],
+  "hashes": {
+    "current-openapi.json": "4c9f6b4a3580332418d04c51b10faffc9bac10dcb81028f4bab19767a0325c44",
+    "contract-guardrails-reference.md": "cb707aabd2f07e12680adcc6b159a7b51e7943aa2af3da92664115d2f1bd3627",
+    "contract-_helpers.py": "917e6da1547818437a77fc7034eb75a4b91fba81ed77674bac986592c94b24e5"
+  },
+  "transport": {
+    "nonblocking": "Otari-Guardrails JSON array: profile/mode/valid/score/status/reason",
+    "blocked": "HTTP 403; FastAPI detail.code guardrail_violation; detail.guardrails contains flagged blocking checks (profile/explanation/score)",
+    "unavailable": "Documented fail-closed HTTP 502 is not evaluated blocking evidence"
+  },
+  "retention": {
+    "maxHeaderUtf8Bytes": 8192,
+    "maxErrorBodyBytes": 8192,
+    "maxResults": 8,
+    "profile": "SHA-256 only, max 128 input characters",
+    "fields": ["mode", "status", "valid", "finite score in [0,1]", "allowlisted unavailable reason"],
+    "dropped": ["explanation", "source text", "vendor payload", "personal data", "credentials", "unknown properties"]
+  },
+  "qualification": "Pinned upstream source is not proof of hosted build equivalence. Only actually observed validated response metadata can establish the new test association."
+}

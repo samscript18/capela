@@ -1,4 +1,25 @@
-# Capability evidence — November 6, 2026
+# Capability evidence — November 10, 2026
+
+## Current submission evidence
+
+Six selected advanced categories now have actual evidence: **search, MCP, code execution, distinct model roles, hosted spending limits and inference guardrails**. Four are in the completed November 6 local authenticated investigation. Budget denial and guardrail refusal are separate isolated production-adapter checks; they are not a single full investigation and do not establish scientific accuracy. Routing selection is additional evidence; successful backup recovery and per-user budgets remain unverified. No awarded score is asserted.
+
+| Category             | Code / actual identifier                                                                                                       | Status and recording step                                                                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Search               | `otari-search.ts`; `bf18cbd2-ed1e-4ce7-b53c-813a5cc97b6a`                                                                      | Completed application: show actual search/source selection.                                                                                                                                                                  |
+| MCP                  | Authenticated publication server/retrieval; `req_940a6928d3a04734813f64da8a989560`                                             | Completed application: show retrieved canonical abstract and hash.                                                                                                                                                           |
+| Distinct roles       | `otari-evidence.service.ts`; extraction `9140a141-80e2-44d0-8282-d0a299a9a2a6` / review `5c13cdfa-371a-4d80-958b-e987402656f3` | Observed 20b extraction / 120b review; show original verdict and separate publication hold.                                                                                                                                  |
+| Sandbox              | `evidence-audit.ts`; `75e1065c-5f13-436e-afa0-e4b0701163f6`                                                                    | Original two-record hosted/local agreement. Later revised one-record audit is local.                                                                                                                                         |
+| Spending limits      | Gateway/runner; `0876a3bb-e3b9-4870-9269-7dc91cfa1234`                                                                         | Isolated finite workspace 403 budget_exceeded; no second dispatch.                                                                                                                                                           |
+| Inference guardrails | Gateway / `guardrail-metadata.ts`; `1c30c704-3335-4ee9-a68c-dbd60a4dfb57`                                                      | **Direct same-response association:** HTTP 403, recognized guardrail_violation, expected profile hash, evaluated/block/valid=false from the validated official refusal envelope. Show sanitized artifact or technical event. |
+
+[New guardrail verification](../evaluation/hosted-guardrail-metadata-verification.json) records starting commit 0c0396c plus exact working-source hashes, the new $0.005/one-call allocation, real response identity and verdict. All free text, raw profile labels and vendor payloads are excluded from metadata; profile identity is a SHA-256 hash matched to the configured expected profile. Evaluated/block/valid=false is derived from the documented semantics of the flagged blocking-check list in `detail.guardrails`, not a fabricated raw vendor field. No benign control or prompt-only/PII-specific cause is inferred. No retry or scientific investigation replay. $0 reported with $0.005 retained uncertainty, cumulative conservative exposure $1.830084.
+
+The original adapter-only inconclusive request and separate owner-provided vendor result are byte-preserved. They are not retroactively upgraded; this new request closes the correlation gap for the new demonstration only. [Contract provenance](../evaluation/guardrail-metadata-contract.json) pins the primary sources; hosted availability was established by the actual response, not upstream documentation alone. Current public sample remains one published literature-reported finding and one unresolved candidate; source hashes and publication provenance are unchanged.
+
+## Historical checkpoints — superseded status statements retained for provenance
+
+The following entries describe earlier evidence availability. Statements such as “guardrails remain unclaimed” or “inconclusive” refer to those checkpoints, not the new direct verification above.
 
 ## November 10 evidence update
 

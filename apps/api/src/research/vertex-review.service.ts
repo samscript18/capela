@@ -24,6 +24,9 @@ export class VertexReviewService {
   }
   canFallback(error: unknown, run: ResearchRun) {
     if (!this.enabled() || run.budget.terminal || !(error instanceof ResearchError)) return false;
+    // A direct-provider path cannot carry Otari's evaluated or unavailable protection.
+    // Malformed metadata is not permission to remove a guardrail either.
+    if (run.events.at(-1)?.guardrails !== undefined) return false;
     return (
       ["OTARI_UPSTREAM_TIMEOUT", "OTARI_TRANSPORT_UNCERTAIN"].includes(error.code) ||
       (error.code === "OTARI_PROVIDER_ERROR" && [502, 503, 504].includes(run.events.at(-1)?.httpStatus ?? 0))
