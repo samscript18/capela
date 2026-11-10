@@ -2,155 +2,472 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Capela · demonstration evidence</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Capela · research you can trace</title>
     <meta
       name="description"
-      content="Six recorded Otari capabilities, with real outcomes and original verification artifacts."
+      content="A plain-language tour of six recorded Otari capabilities in Capela, with links to the real evidence."
     />
     <style>
       :root {
-        color-scheme: dark;
+        color-scheme: light;
+        --ink: #20332b;
+        --muted: #56645c;
+        --green: #356348;
+        --paper: #f5f5ef;
+        --line: #d9dfd3;
       }
       * {
         box-sizing: border-box;
       }
       body {
         margin: 0;
-        background: #10150f;
-        color: #edf1e4;
+        background: var(--paper);
+        color: var(--ink);
         font:
-          18px/1.6 system-ui,
+          18px/1.65 system-ui,
+          -apple-system,
           sans-serif;
       }
-      main {
-        max-width: 1120px;
-        margin: auto;
-        padding: 32px 24px 64px;
-      }
-      h1 {
-        font-size: clamp(2rem, 5vw, 3rem);
-        line-height: 1.15;
-        letter-spacing: -0.035em;
-        margin: 12px 0;
-      }
-      h2 {
-        font-size: 1.3rem;
-        line-height: 1.3;
-        margin: 12px 0;
-      }
-      p {
-        margin: 12px 0;
-      }
       a {
-        color: #d9edb4;
+        color: inherit;
         text-underline-offset: 4px;
       }
       a:focus-visible,
       summary:focus-visible {
-        outline: 3px solid #f5d77e;
+        outline: 3px solid #b78025;
         outline-offset: 5px;
       }
-      nav {
+      a:hover {
+        text-decoration-thickness: 2px;
+      }
+      .wrap {
+        width: min(1120px, 100% - 48px);
+        margin: auto;
+      }
+      .masthead {
         display: flex;
-        gap: 10px 20px;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 22px 0;
+      }
+      .brand {
+        font-weight: 750;
+        font-size: 25px;
+        letter-spacing: -1px;
+        text-decoration: none;
+      }
+      .brand span {
+        color: #7b965b;
+      }
+      .recorded {
+        font-size: 13px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .recorded:before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border: 2px solid #6d815d;
+        border-radius: 50%;
+      }
+      .hero {
+        background: #1c3328;
+        color: #f4f4e9;
+        border-radius: 28px;
+        padding: 48px;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 48px;
+        align-items: center;
+        background-image: radial-gradient(ellipse at 80% 0%, #455c3b70, transparent 65%);
+      }
+      .eyebrow,
+      .feature {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin: 0 0 14px;
+      }
+      .hero .eyebrow {
+        color: #c5d7b0;
+      }
+      h1 {
+        font-size: clamp(38px, 5.4vw, 62px);
+        line-height: 1.04;
+        letter-spacing: -0.055em;
+        margin: 0 0 22px;
+        font-weight: 650;
+      }
+      .hero .lede {
+        color: #d3ded0;
+        max-width: 40ch;
+        margin: 0;
+        font-size: 18px;
+      }
+      .case {
+        border: 1px solid #a4bc8b50;
+        background: #ffffff06;
+        border-radius: 18px;
+        padding: 25px;
+      }
+      .case .eyebrow {
+        font-size: 11px;
+      }
+      .case h2 {
+        font-size: 32px;
+        letter-spacing: -0.04em;
+        margin: 0 0 4px;
+      }
+      .case p {
+        font-size: 15px;
+        color: #d3ded0;
+        margin: 0 0 20px;
+      }
+      .case-numbers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-top: 1px solid #ffffff20;
+        padding-top: 18px;
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+      .case-numbers strong {
+        font-size: 35px;
+        line-height: 1.15;
+        display: block;
+        font-weight: 550;
+      }
+      .case-numbers span {
+        font-size: 13px;
+        color: #d3ded0;
+      }
+      .case-numbers .held strong {
+        color: #e3c58b;
+      }
+      .primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 11px 16px;
+        background: #d9e7bc;
+        color: #1c3328;
+        border-radius: 9px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+        width: 100%;
+      }
+      .orientation {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        padding: 26px 4px;
+        border-bottom: 1px solid var(--line);
+      }
+      .orientation p {
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 4px 0;
+      }
+      .orientation strong {
+        font-size: 16px;
+      }
+      .pill {
+        display: inline-block;
+        border: 1px solid #cdd9c3;
+        border-radius: 30px;
+        padding: 3px 9px;
+        color: #3f5c40;
+        font-size: 12px;
+        font-weight: 650;
+        margin-right: 7px;
+      }
+      .pill.test {
+        border-color: #ddd0b5;
+        color: #765d30;
+      }
+      .quicklinks {
+        display: flex;
         flex-wrap: wrap;
-        margin: 20px 0;
+        gap: 10px 22px;
+        padding: 20px 0;
+        font-size: 14px;
+        color: var(--muted);
       }
-      nav a {
-        padding: 6px 0;
+      .group-heading {
+        display: flex;
+        gap: 18px;
+        align-items: baseline;
+        margin: 28px 0 20px;
       }
-      .notice {
-        padding: 16px 20px;
-        border: 1px solid #bda66c;
-        background: #292516;
-        border-radius: 12px;
-        margin: 22px 0;
+      .group-number {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: #6a7d5c;
+      }
+      .group-heading h2 {
+        font-size: 28px;
+        line-height: 1.2;
+        letter-spacing: -0.035em;
+        margin: 0;
+      }
+      .group-intro {
+        margin: -10px 0 24px;
+        font-size: 16px;
+        color: var(--muted);
+        max-width: 76ch;
       }
       .grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr 1fr;
         gap: 20px;
       }
       .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 5px 18px #26372404;
         min-width: 0;
-        padding: 24px;
-        border: 1px solid #53614a;
-        border-radius: 16px;
-        background: #171d15;
-        scroll-margin-top: 20px;
+        scroll-margin-top: 22px;
+        display: flex;
+        flex-direction: column;
       }
-      .badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 6px;
-        background: #263223;
-        color: #d4e6c2;
-        font-size: 0.85rem;
+      .card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 23px;
       }
-      .isolated {
-        background: #332c1b;
-        color: #f3dca6;
+      .icon {
+        display: grid;
+        place-items: center;
+        height: 42px;
+        width: 42px;
+        border-radius: 12px;
+        background: #edf2e7;
+        color: #41623d;
+        font-size: 28px;
+        line-height: 1;
       }
-      .date {
-        display: block;
-        color: #bbc7b2;
-        font-size: 0.9rem;
-        margin-top: 8px;
+      .step {
+        font-size: 12px;
+        color: #798777;
+        font-family: ui-monospace, monospace;
+      }
+      .feature {
+        font-size: 12px;
+        color: #617258;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
+      h3 {
+        font-size: 25px;
+        letter-spacing: -0.035em;
+        line-height: 1.2;
+        margin: 0 0 16px;
       }
       .result {
-        font-size: 1.12rem;
+        color: #356348;
+        background: #f0f5eb;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
         font-weight: 650;
-        color: #e2efca;
+        line-height: 1.5;
+        margin: 0 0 16px;
+      }
+      .result span {
+        margin-right: 5px;
+      }
+      .description {
+        font-size: 17px;
+        line-height: 1.65;
+        margin: 0 0 14px;
       }
       .note {
-        color: #c0caba;
-        font-size: 0.94rem;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0 0 22px;
+        overflow-wrap: anywhere;
+      }
+      .card-bottom {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: #65735f;
       }
       .artifact {
-        display: inline-block;
-        margin: 8px 0;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 650;
+        color: #345b3d;
+        text-decoration: none;
+      }
+      .artifact:hover {
+        text-decoration: underline;
       }
       details {
-        margin-top: 14px;
-        border-top: 1px solid #3c4937;
+        border-top: 1px solid #e7ebe1;
+        margin-top: 18px;
         padding-top: 12px;
       }
       summary {
         cursor: pointer;
-        font-size: 0.92rem;
+        font-size: 12px;
+        font-weight: 600;
+        color: #64715d;
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 32px;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary span {
+        font-size: 20px;
+        font-weight: 400;
+      }
+      details[open] summary span {
+        transform: rotate(45deg);
       }
       dl {
-        font-size: 0.82rem;
+        font-size: 12px;
+        margin: 12px 0 0;
       }
       dt {
-        color: #bbc7b2;
+        font-weight: 650;
         margin-top: 12px;
       }
       dd {
-        margin: 3px 0;
+        margin: 4px 0;
+        color: var(--muted);
         font-family: ui-monospace, monospace;
         overflow-wrap: anywhere;
       }
+      .tests .icon {
+        background: #f7f0e2;
+        color: #8b6a2b;
+      }
+      .tests .feature {
+        color: #806b45;
+      }
+      .tests .result {
+        background: #f8f4eb;
+        color: #735b2b;
+      }
+      .honesty {
+        margin: 34px 0 28px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 28px;
+        padding: 26px 28px;
+        border-radius: 16px;
+        background: #e9eee2;
+        border: 1px solid #d5deca;
+      }
+      .honesty h2 {
+        font-size: 21px;
+        line-height: 1.3;
+        letter-spacing: -0.025em;
+        margin: 0;
+      }
+      .honesty p {
+        font-size: 15px;
+        margin: 0;
+        color: #4b5c49;
+      }
+      .honesty a {
+        font-weight: 600;
+      }
       footer {
-        margin-top: 28px;
-        font-size: 0.92rem;
-        color: #c0caba;
+        padding: 20px 0 40px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: flex-start;
+      }
+      footer p {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0;
+        max-width: 65ch;
       }
       footer a {
-        display: inline-block;
-        margin-right: 18px;
+        font-size: 13px;
+        white-space: nowrap;
       }
-      @media (max-width: 720px) {
-        main {
-          padding: 24px 16px;
+      @media (max-width: 760px) {
+        .wrap {
+          width: calc(100% - 32px);
+        }
+        .masthead {
+          padding: 18px 0;
+        }
+        .recorded {
+          font-size: 10px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 28px;
+          gap: 28px;
+          border-radius: 20px;
+        }
+        .hero .lede {
+          font-size: 17px;
+        }
+        .case h2 {
+          font-size: 28px;
+        }
+        .orientation {
+          grid-template-columns: 1fr;
+          gap: 15px;
+          padding: 22px 0;
         }
         .grid {
           grid-template-columns: 1fr;
         }
         .card {
-          padding: 20px;
+          padding: 24px;
+        }
+        .group-heading h2 {
+          font-size: 25px;
+        }
+        .honesty {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 24px;
+        }
+        .quicklinks {
+          font-size: 13px;
+          gap: 10px 18px;
+        }
+        footer {
+          flex-direction: column;
+        }
+        .card-bottom {
+          font-size: 12px;
+        }
+        .group-heading {
+          margin-top: 24px;
         }
       }
       @media (prefers-reduced-motion: reduce) {
@@ -159,74 +476,105 @@
         }
       }
       @media print {
-        body {
-          background: white;
-          color: black;
+        .hero {
+          background: #1c3328 !important;
+          print-color-adjust: exact;
         }
         .card {
-          background: white;
           break-inside: avoid;
-        }
-        .result,
-        .note,
-        .date,
-        a {
-          color: black;
+          box-shadow: none;
         }
         .grid {
           display: block;
         }
         .card {
-          margin: 16px 0;
+          margin-bottom: 16px;
+        }
+        .masthead,
+        .quicklinks {
+          display: none;
         }
       }
     </style>
   </head>
   <body>
-    <main>
-      <header>
-        <p>Capela · read-only recorded evidence</p>
-        <h1>Six Otari capabilities, with inspectable results</h1>
-        <p>
-          Four capabilities come from the completed 6 November investigation. Spending limits and guardrails were
-          verified in separate isolated application-adapter checks. This page presents saved results; it does not
-          execute research.
-        </p>
-        <nav aria-label="Demonstration pages">
-          <a href="/samples/curcumin-2026-11-06.html">Open recorded curcumin findings</a
-          ><a href="/dashboard/investigations">Open authenticated investigation history</a>
-        </nav>
+    <main class="wrap">
+      <div class="masthead">
+        <a class="brand" href="/">Capela<span>°</span></a
+        ><span class="recorded">Recorded demonstration · no live research</span>
+      </div>
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Built with hosted Otari</p>
+          <h1>Research you<br />can trace.</h1>
+          <p class="lede">
+            Follow a finding from a scientific source to a saved dossier. Then see the separate tests that checked
+            spending and safety.
+          </p>
+        </div>
+        <aside class="case" aria-label="Recorded curcumin result">
+          <p class="eyebrow">The real case · 6 November 2026</p>
+          <h2>Curcumin</h2>
+          <p>One published review abstract.<br />Model-assisted analysis, with uncertainty visible.</p>
+          <div class="case-numbers">
+            <div><strong>1</strong><span>published finding</span></div>
+            <div class="held"><strong>1</strong><span>candidate withheld</span></div>
+          </div>
+          <a class="primary" href="/samples/curcumin-2026-11-06.html"
+            >Explore the recorded findings <span aria-hidden="true">↗</span></a
+          >
+        </aside>
       </header>
-      <aside class="notice">
-        <strong>Publication state: one published finding, one unresolved candidate.</strong>
-        <p>
-          The original models supported two candidates. Later source inspection withheld unsupported wording with
-          separate provenance. Abstract-only coverage and model-assisted review remain limitations. No scientific
-          accuracy or awarded-score claim.
-        </p>
-      </aside>
-      <nav aria-label="Evidence sections">
+      <div class="orientation">
+        <div>
+          <strong><span class="pill">The investigation</span> Four connected steps</strong>
+          <p>
+            Search, source retrieval, two model roles and an evidence audit were used in the completed curcumin
+            investigation.
+          </p>
+        </div>
+        <div>
+          <strong><span class="pill test">Separate tests</span> Two protective limits</strong>
+          <p>
+            Spending and guardrails were checked separately through Capela’s Otari adapter. All six were not exercised
+            in one run.
+          </p>
+        </div>
+      </div>
+      <nav class="quicklinks" aria-label="Evidence sections">
         <a href="#search">Hosted search</a><a href="#mcp">MCP retrieval</a
         ><a href="#models">Distinct extraction / review models</a><a href="#sandbox">Sandbox execution</a
         ><a href="#budget">Hosted spending-limit refusal</a><a href="#guardrail">Directly verified guardrail refusal</a>
       </nav>
+      <div class="group-heading">
+        <span class="group-number">01 / RESEARCH</span>
+        <h2>Follow the evidence.</h2>
+      </div>
+      <p class="group-intro">Recorded on 6 November 2026. Every step below has an original record you can inspect.</p>
       <div class="grid">
         <section class="card" id="search" aria-labelledby="search-title">
-          <span class="badge">Recorded investigation</span
-          ><time class="date" datetime="2026-11-06T15:50:37.866Z">Recorded 6 November 2026 · UTC</time>
-          <h2 id="search-title">Hosted search</h2>
-          <p class="result">Canonical publication discovered</p>
-          <p>Hosted Otari search selected scientific source material for the completed curcumin investigation.</p>
-          <p class="note">The selected PubMed review abstract was then retrieved and used by both models.</p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original investigation artifact ↗</a
-          >
+          <div class="card-top"><span class="icon" aria-hidden="true">⌕</span><span class="step">01</span></div>
+          <p class="feature">Hosted search</p>
+          <h3 id="search-title">Find the research</h3>
+          <p class="result"><span aria-hidden="true">✓</span> A research source was found</p>
+          <p class="description">
+            Otari searched for scientific literature about curcumin. A selected publication became the source for this
+            investigation.
+          </p>
+          <p class="note">This source was used in the next steps—not added as a decorative citation.</p>
+          <div class="card-bottom">
+            <time datetime="2026-11-06T15:50:37.866Z">6 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
+              aria-label="See original record for Hosted search"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-06T15:50:37.866Z</dd>
@@ -244,24 +592,30 @@
           </details>
         </section>
         <section class="card" id="mcp" aria-labelledby="mcp-title">
-          <span class="badge">Recorded investigation</span
-          ><time class="date" datetime="2026-11-06T15:50:41.370Z">Recorded 6 November 2026 · UTC</time>
-          <h2 id="mcp-title">MCP retrieval</h2>
-          <p class="result">One immutable abstract retrieved</p>
-          <p>
-            Hosted Otari invoked the authenticated, read-only publication MCP tool. The canonical abstract and its hash
-            were stored before inference.
+          <div class="card-top"><span class="icon" aria-hidden="true">↙</span><span class="step">02</span></div>
+          <p class="feature">MCP retrieval</p>
+          <h3 id="mcp-title">Bring in the source</h3>
+          <p class="result"><span aria-hidden="true">✓</span> The source was saved before AI analysis</p>
+          <p class="description">
+            Otari used a protected research tool to retrieve the publication’s abstract. Capela saved an unchanged copy
+            before either model read it.
           </p>
-          <p class="note">Abstract-only coverage; this is not full-text retrieval.</p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original investigation artifact ↗</a
-          >
+          <p class="note">
+            MCP connects Otari to this research tool. Only the abstract was analyzed, not the full paper.
+          </p>
+          <div class="card-bottom">
+            <time datetime="2026-11-06T15:50:41.370Z">6 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
+              aria-label="See original record for MCP retrieval"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-06T15:50:41.370Z</dd>
@@ -277,27 +631,31 @@
           </details>
         </section>
         <section class="card" id="models" aria-labelledby="models-title">
-          <span class="badge">Recorded investigation</span
-          ><time class="date" datetime="2026-11-06T15:51:00.780Z">Recorded 6 November 2026 · UTC</time>
-          <h2 id="models-title">Distinct extraction / review models</h2>
-          <p class="result">20B extraction · 120B independent review</p>
-          <p>
-            Observed extraction: openai/gpt-oss-20b. Observed review: openai/gpt-oss-120b. Both roles executed through
-            hosted Otari; direct Vertex was excluded.
+          <div class="card-top"><span class="icon" aria-hidden="true">⇄</span><span class="step">03</span></div>
+          <p class="feature">Distinct extraction / review models</p>
+          <h3 id="models-title">Read it, then review it</h3>
+          <p class="result"><span aria-hidden="true">✓</span> One model extracts. Another reviews.</p>
+          <p class="description">
+            One open-weight model turned the abstract into structured findings. A different model reviewed those
+            findings against the same source. Both ran through hosted Otari.
           </p>
           <p class="note">
-            The original reviewer supported both candidates. A later, separately attributed source-inspection hold
-            withheld one; model agreement is not proof of support.
+            Extraction: openai/gpt-oss-20b. Review: openai/gpt-oss-120b. The reviewer missed an unsupported clause; the
+            later publication hold is shown separately.
           </p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original investigation artifact ↗</a
-          >
+          <div class="card-bottom">
+            <time datetime="2026-11-06T15:51:00.780Z">6 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
+              aria-label="See original record for Distinct extraction / review models"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-06T15:50:56.650Z</dd>
@@ -321,26 +679,31 @@
           </details>
         </section>
         <section class="card" id="sandbox" aria-labelledby="sandbox-title">
-          <span class="badge">Recorded investigation</span
-          ><time class="date" datetime="2026-11-06T15:51:18.642Z">Recorded 6 November 2026 · UTC</time>
-          <h2 id="sandbox-title">Sandbox execution</h2>
-          <p class="result">2 original records · 1 source · 0 invalid references</p>
-          <p>
-            Otari executed a fixed evidence-audit program. Its original nonempty result agreed with local validation.
+          <div class="card-top"><span class="icon" aria-hidden="true">✓</span><span class="step">04</span></div>
+          <p class="feature">Sandbox execution</p>
+          <h3 id="sandbox-title">Check the evidence trail</h3>
+          <p class="result"><span aria-hidden="true">✓</span> 2 original records checked against 1 source</p>
+          <p class="description">
+            Otari ran a small audit program to check that the original findings pointed to real stored passages. Its
+            result matched Capela’s own checks.
           </p>
           <p class="note">
-            The later publication revision retains one finding and has a local one-record audit. The original hosted
-            audit is preserved separately; it does not verify scientific accuracy.
+            These checks verify references, not scientific truth. The later one-finding revision was checked locally;
+            the original hosted audit remains unchanged.
           </p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original investigation artifact ↗</a
-          >
+          <div class="card-bottom">
+            <time datetime="2026-11-06T15:51:18.642Z">6 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/passage-live-verification.json"
+              aria-label="See original record for Sandbox execution"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-06T15:51:18.642Z</dd>
@@ -355,28 +718,41 @@
             </dl>
           </details>
         </section>
+      </div>
+      <div class="group-heading">
+        <span class="group-number">02 / PROTECTION</span>
+        <h2>Make the limits real.</h2>
+      </div>
+      <p class="group-intro">
+        Separate, bounded tests—not simulated actions or settings enabled only for a screenshot.
+      </p>
+      <div class="grid tests">
         <section class="card" id="budget" aria-labelledby="budget-title">
-          <span class="badge isolated">Separate isolated check</span
-          ><time class="date" datetime="2026-11-06T16:59:45.809Z">Recorded 6 November 2026 · UTC</time>
-          <h2 id="budget-title">Hosted spending-limit refusal</h2>
-          <p class="result">Finite $0.01 ceiling enforced</p>
-          <p>
-            Otari refused a priced request with budget_exceeded at workspace scope. Capela recorded terminal denial and
-            blocked a subsequent dispatch before HTTP.
+          <div class="card-top"><span class="icon" aria-hidden="true">$</span><span class="step">05</span></div>
+          <p class="feature">Hosted spending-limit refusal</p>
+          <h3 id="budget-title">Respect the spending limit</h3>
+          <p class="result"><span aria-hidden="true">✓</span> A one-cent spending limit stopped the request</p>
+          <p class="description">
+            In a separate test workspace, Otari refused a request that exceeded its $0.01 limit. Capela then prevented
+            another request from being sent.
           </p>
           <p class="note">
-            One actual request, no provider bypass. This check is separate from the scientific investigation; an
-            unknown-cost reservation remains retained.
+            No account balance was drained and no alternate provider was used to get around the refusal. Uncertain costs
+            remain reserved.
           </p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/hosted-ceiling-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original spending-limit artifact ↗</a
-          >
+          <div class="card-bottom">
+            <time datetime="2026-11-06T16:59:45.809Z">6 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/hosted-ceiling-verification.json"
+              aria-label="See original record for Hosted spending-limit refusal"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-06T16:59:45.809Z</dd>
@@ -396,27 +772,31 @@
           </details>
         </section>
         <section class="card" id="guardrail" aria-labelledby="guardrail-title">
-          <span class="badge isolated">Separate isolated check</span
-          ><time class="date" datetime="2026-11-10T16:07:39.180Z">Recorded 10 November 2026 · UTC</time>
-          <h2 id="guardrail-title">Directly verified guardrail refusal</h2>
-          <p class="result">Evaluated blocking verdict · same response</p>
-          <p>
-            A synthetic injection test through Capela’s production adapter returned HTTP 403, guardrail_violation and an
-            evaluated blocking result for the expected guardrail, tied to the same Otari request ID.
+          <div class="card-top"><span class="icon" aria-hidden="true">◇</span><span class="step">06</span></div>
+          <p class="feature">Directly verified guardrail refusal</p>
+          <h3 id="guardrail-title">Stop unwanted instructions</h3>
+          <p class="result"><span aria-hidden="true">✓</span> The guardrail evaluated and blocked the test</p>
+          <p class="description">
+            A deliberately planted instruction tried to override the research task. Otari returned a blocking guardrail
+            verdict and the matching request identifier together.
           </p>
           <p class="note">
-            No manual vendor-log join is needed for this new result. No benign-input pass rate or prompt-only detector
-            cause is claimed. The older inconclusive request remains unchanged.
+            This was a separate synthetic safety test, not a research finding. It does not measure how often safe inputs
+            are blocked, or isolate which detector caused the refusal.
           </p>
-          <a
-            class="artifact"
-            href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/hosted-guardrail-metadata-verification.json"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Open original guardrail artifact ↗</a
-          >
+          <div class="card-bottom">
+            <time datetime="2026-11-10T16:07:39.180Z">10 November 2026 · UTC</time
+            ><a
+              class="artifact"
+              href="https://github.com/samscript18/capela/blob/d81c03e7cd94b5210d1094818ec9e4e0b479376b/evaluation/hosted-guardrail-metadata-verification.json"
+              aria-label="See original record for Directly verified guardrail refusal"
+              target="_blank"
+              rel="noopener noreferrer"
+              >See original record <span aria-hidden="true">↗</span></a
+            >
+          </div>
           <details>
-            <summary>Request details and provenance</summary>
+            <summary>Technical details <span aria-hidden="true">+</span></summary>
             <dl>
               <dt>Recorded at (UTC)</dt>
               <dd>2026-11-10T16:07:39.180Z</dd>
@@ -440,21 +820,27 @@
           </details>
         </section>
       </div>
+      <aside class="honesty">
+        <h2>A useful result includes<br />what was withheld.</h2>
+        <p>
+          The original reviewer supported two candidates. Later source inspection found unsupported wording in one, so a
+          separately recorded publication hold withheld it. The original model output is preserved.
+          <a href="/samples/curcumin-2026-11-06.html">See the finding and the unresolved candidate.</a>
+        </p>
+      </aside>
       <footer>
         <p>
-          All dates and request results are taken from the original artifacts. Identifiers are expandable; keys, account
-          identifiers, raw vendor payloads and personal data are excluded. No live execution is simulated.
-        </p>
-        <p>
-          Routing policy selection also executed, but successful fallback recovery and per-user budgets remain
-          unverified. The six selected categories above do not depend on those claims.
+          Read-only records, not live execution. Only abstracts were analyzed; model review and reference checks do not
+          establish scientific accuracy. Successful fallback recovery and per-user budgets remain unverified. No awarded
+          score is claimed. Dates use UTC; request identifiers are under Technical details. No credentials or account
+          information are included.
         </p>
         <a
           href="https://github.com/samscript18/capela/tree/feat/otari-completion-verification"
           target="_blank"
           rel="noopener noreferrer"
-          >Hackathon branch</a
-        ><a href="/samples/curcumin-2026-11-06.html">Recorded findings and source passages</a>
+          >View the hackathon branch ↗</a
+        >
       </footer>
     </main>
   </body>

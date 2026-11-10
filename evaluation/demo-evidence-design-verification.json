@@ -1,0 +1,28 @@
+{
+  "version": "demo-evidence-design-verification-v1",
+  "date": "2026-11-10",
+  "startingCommit": "94609f7dc6b328c092f609949d0e965042d04ece",
+  "pagePath": "/samples/demonstration-evidence.html",
+  "pageSha256": "1d5c940f682383a623c21f994df8f473b2edabd4104493ded02b0bc0ff58fe18",
+  "presentation": "Light paper background, dark green case introduction, plain-language numbered cards, investigation/protection grouping",
+  "desktop": {
+    "viewport": [1440, 1000],
+    "bodyFontPixels": 18,
+    "sections": 6,
+    "technicalDetailsInitiallyClosed": true,
+    "visualInspection": "passed"
+  },
+  "mobile": {
+    "viewport": [390, 844],
+    "horizontalOverflow": false,
+    "visualInspection": "passed"
+  },
+  "sourceArtifactsUnchanged": true,
+  "deterministicGenerator": true,
+  "configuredSecretAndPersonalMarkerScan": "passed",
+  "paidRequests": 0,
+  "newResearchRuns": 0,
+  "videoOrAudioGenerated": false,
+  "deployment": false,
+  "notes": "Original UI/export verification remains in demo-ui-verification.json; this is a presentation revision, not new scientific or hosted capability evidence."
+}
