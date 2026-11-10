@@ -4,7 +4,7 @@ Draft for the participant to review and send as a reply to the original sign-up 
 
 ## Verified packaging status
 
-Preparation continued from clean `0c0396c` on the published `feat/otari-completion-verification` branch. The current metadata follow-up is local and has not been pushed or deployed. Its new result is bound to exact source hashes in evaluation/hosted-guardrail-metadata-verification.json; publish the reviewed follow-up with owner authorization before sending links that depend on it. Existing repository, branch and first integration links are verified.
+Preparation continued from clean `0c0396c` on the published `feat/otari-completion-verification` branch. The metadata follow-up was pushed with owner authorization and the remote branch tip was verified at `d81c03e` on November 10. Its actual live request remains bound to the source hashes in evaluation/hosted-guardrail-metadata-verification.json; publication does not imply deployment. Existing repository, branch and first integration links are verified.
 
 The first integration commit exists locally and on GitHub. No participant recording link, registered Otari email, or upstream contribution link was found in the inspected submission/evidence notes. Those fields cannot be invented. The feedback below is an experience-based draft for participant approval, especially the personal decision about continued use.
 
@@ -16,11 +16,11 @@ I'm submitting **Capela**, an evidence-first molecule investigation workspace th
 
 **Otari sign-up email:** [INSERT YOUR REGISTERED EMAIL]
 
-**Public GitHub repository:** https://github.com/samscript18/capela
+**Public GitHub repository (hackathon implementation):** https://github.com/samscript18/capela/tree/feat/otari-completion-verification
 
 **Hackathon branch:** `feat/otari-completion-verification` — https://github.com/samscript18/capela/tree/feat/otari-completion-verification
 
-**Reviewed implementation:** the hackathon branch linked above, including the metadata follow-up. Its live verification started at `0c0396c` with exact working-source hashes recorded in `evaluation/hosted-guardrail-metadata-verification.json`. Publish the reviewed follow-up before sending this draft.
+**Reviewed implementation:** https://github.com/samscript18/capela/commit/d81c03e7cd94b5210d1094818ec9e4e0b479376b — the published metadata follow-up. Its live verification started at `0c0396c` with exact working-source hashes recorded in `evaluation/hosted-guardrail-metadata-verification.json`.
 
 **First Otari integration commit:** https://github.com/samscript18/capela/commit/9085c3f30003e5edab5e6dc05674052831f38c48
 

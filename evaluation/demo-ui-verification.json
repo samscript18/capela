@@ -1,0 +1,48 @@
+{
+  "version": "demonstration-ui-verification-v1",
+  "date": "2026-11-10",
+  "startingCommit": "d81c03e7cd94b5210d1094818ec9e4e0b479376b",
+  "environment": {
+    "node": "24.22.2",
+    "web": "http://localhost:3016",
+    "api": "http://localhost:4016",
+    "scope": "Existing isolated local database; ordinary participant Privy login; new research disabled"
+  },
+  "evidencePage": {
+    "path": "/samples/demonstration-evidence.html",
+    "sections": 6,
+    "desktopViewport": [1440, 1000],
+    "bodyFontPixels": 18,
+    "mobileViewport": [390, 844],
+    "horizontalOverflow": false,
+    "technicalMetadataInitiallyCollapsed": true,
+    "actualGuardrailIdExpanded": true,
+    "originalArtifactLinks": "Pinned published d81c03e",
+    "generatedSha256": "f2a401ca07327773e9c8211206a7af4b5426d5f5a3414b6b27d5451b9eb55e54",
+    "originalsUnchanged": true,
+    "configuredSecretScan": "passed"
+  },
+  "actualApplication": {
+    "privateResultPath": "Omitted from public artifact; supplied directly to participant",
+    "completedPublicationRevisionOpened": true,
+    "publishedFindings": 1,
+    "unresolvedCandidates": 1,
+    "viewEvidencePanelOpened": true,
+    "exactPassageVisible": true,
+    "canonicalPublicationLink": "https://pubmed.ncbi.nlm.nih.gov/32141677/",
+    "unresolvedDisclosureExpandedBy": "participant; native disclosure role not handled by temporary browser controller",
+    "openedDisclosureInspected": true,
+    "originalReviewerVerdict": "supported",
+    "separatePublicationHoldVisible": true,
+    "exportButton": "Download dossier card",
+    "actualExportCaptured": true,
+    "exportDimensions": [1200, 1762],
+    "exportSha256": "5577a8ccb6ced6ce46e4687316aeb71f8318173fa327b786812e19a5ba5cf8ec",
+    "exportPrivate": true,
+    "exportContains": "Publication revision; one study/one claim; one withheld; abstract-only/model-assisted limits; local revised audit"
+  },
+  "paidRequests": 0,
+  "newInvestigations": 0,
+  "deployment": false,
+  "generatedVideoOrAudio": false
+}

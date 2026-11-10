@@ -1,0 +1,53 @@
+{
+  "version": "demo-evidence-page-v1",
+  "artifactCommit": "d81c03e7cd94b5210d1094818ec9e4e0b479376b",
+  "sources": {
+    "evaluation/passage-live-verification.json": "0b77965b310efa7925947f23e4a8d537bf07888bbc4d61aca4db96d17291431f",
+    "evaluation/hosted-ceiling-verification.json": "7dc3e6471d77d04d0d8aa1d30e05fb050cf854790409beadeaba09eda5d48352",
+    "evaluation/hosted-guardrail-metadata-verification.json": "074eac547bf51d8ba9d7e80554f335346947a4439f493fa12314e75d9038db04"
+  },
+  "sections": [
+    {
+      "id": "search",
+      "date": "2026-11-06T15:50:37.866Z",
+      "scope": "Recorded investigation",
+      "artifact": "evaluation/passage-live-verification.json",
+      "requestId": "bf18cbd2-ed1e-4ce7-b53c-813a5cc97b6a"
+    },
+    {
+      "id": "mcp",
+      "date": "2026-11-06T15:50:41.370Z",
+      "scope": "Recorded investigation",
+      "artifact": "evaluation/passage-live-verification.json",
+      "requestId": "req_940a6928d3a04734813f64da8a989560"
+    },
+    {
+      "id": "models",
+      "date": "2026-11-06T15:51:00.780Z",
+      "scope": "Recorded investigation",
+      "artifact": "evaluation/passage-live-verification.json",
+      "requestId": "5c13cdfa-371a-4d80-958b-e987402656f3"
+    },
+    {
+      "id": "sandbox",
+      "date": "2026-11-06T15:51:18.642Z",
+      "scope": "Recorded investigation",
+      "artifact": "evaluation/passage-live-verification.json",
+      "requestId": "75e1065c-5f13-436e-afa0-e4b0701163f6"
+    },
+    {
+      "id": "budget",
+      "date": "2026-11-06T16:59:45.809Z",
+      "scope": "Separate isolated check",
+      "artifact": "evaluation/hosted-ceiling-verification.json",
+      "requestId": "0876a3bb-e3b9-4870-9269-7dc91cfa1234"
+    },
+    {
+      "id": "guardrail",
+      "date": "2026-11-10T16:07:39.180Z",
+      "scope": "Separate isolated check",
+      "artifact": "evaluation/hosted-guardrail-metadata-verification.json",
+      "requestId": "1c30c704-3335-4ee9-a68c-dbd60a4dfb57"
+    }
+  ]
+}

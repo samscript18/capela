@@ -1,8 +1,8 @@
 # Owner submission checklist — November 10, 2026
 
 - Project: **Capela** — sourced molecule dossiers showing support, corrections and uncertainty.
-- Public repository: https://github.com/samscript18/capela
-- Public hackathon branch: https://github.com/samscript18/capela/tree/feat/otari-completion-verification (published through 0c0396c). Current metadata follow-up is local until an owner-authorized push; review/publish it before relying on its new public artifact links. No deployment is implied.
+- Public repository (opens the hackathon implementation): https://github.com/samscript18/capela/tree/feat/otari-completion-verification
+- Public hackathon branch: https://github.com/samscript18/capela/tree/feat/otari-completion-verification (metadata follow-up published at d81c03e, verified November 10). No deployment is implied.
 - First Otari integration: https://github.com/samscript18/capela/commit/9085c3f30003e5edab5e6dc05674052831f38c48
 - Six selected categories: search, authenticated MCP, code execution, distinct models, hosted spending limits and inference guardrails. Four belong to the completed investigation; budget and guardrail checks are separate isolated production-adapter requests. Routing selection is additional evidence; successful fallback recovery and per-user budgets remain unverified. Judges determine credit.
 - New guardrail request `1c30c704-3335-4ee9-a68c-dbd60a4dfb57` directly associates 403, recognized refusal code and evaluated blocking metadata in one response. Original inconclusive request and owner observation remain historical, unchanged. Do not claim prompt-only cause or benign false-positive performance.

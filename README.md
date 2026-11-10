@@ -2,6 +2,10 @@
 
 An evidence-first molecule investigation workspace: inspect source passages, model-assisted review, deterministic corrections and uncertainty before accepting a claim.
 
+Hackathon implementation: [feat/otari-completion-verification](https://github.com/samscript18/capela/tree/feat/otari-completion-verification).
+
+For participant recording, open the [six-section recorded evidence page](apps/web/public/samples/demonstration-evidence.html) at `/samples/demonstration-evidence.html` in the running application. It links to the original artifacts and distinguishes investigation events from isolated checks. See the [verified click guide](docs/DEMO_CLICK_GUIDE.md).
+
 Built for [Mozilla Developers Wilding Online](https://otari.ai/devs-wilding). The [official judging rubric](https://docs.google.com/document/d/1-spnCZ3f2SSki8cb6FnochjchdyttUsjjxfoE6aBnF4/edit) defines the competition; no awarded score or submission status is claimed.
 
 ## Current architecture
@@ -85,4 +89,4 @@ Unit/integration/browser fixtures spend no paid credits. `npm run evaluate` chec
 
 Nest Swagger is at `/docs`, its OpenAPI JSON at `/docs/openapi.json`. Shared Zod contracts live in `packages/shared`; research services in `apps/api/src/research`; the responsive dossier and inspection UI in `apps/web/src`.
 
-See the [participant recording checklist](docs/DEMO_RECORDING_CHECKLIST.md), [submission checklist](docs/SUBMISSION_CHECKLIST.md), [current rules](docs/MOZILLA_RULES.md) and [implementation plan](docs/IMPLEMENTATION_PLAN.md). The participant records actual application screens with their own audio; no generated demo video or narration is supplied. The verified submission route is the event's email thread, not an invented DoraHacks link. The hackathon branch has been published with owner authorization. The current metadata follow-up has not been pushed or deployed; no submission email or recording was generated.
+See the [participant recording checklist](docs/DEMO_RECORDING_CHECKLIST.md), [submission checklist](docs/SUBMISSION_CHECKLIST.md), [current rules](docs/MOZILLA_RULES.md) and [implementation plan](docs/IMPLEMENTATION_PLAN.md). The participant records actual application screens with their own audio; no generated demo video or narration is supplied. The verified submission route is the event's email thread, not an invented DoraHacks link. The hackathon branch has been published with owner authorization. The metadata follow-up is published on the hackathon branch at `d81c03e`; this does not establish a deployed application version. No submission email or recording was generated.

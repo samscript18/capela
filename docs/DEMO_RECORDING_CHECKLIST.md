@@ -1,5 +1,7 @@
 # Participant recording checklist — November 10, 2026
 
+Start with [DEMO_CLICK_GUIDE](DEMO_CLICK_GUIDE.md) for verified local URLs and exact current UI labels. The six-section evidence page is **http://localhost:3016/samples/demonstration-evidence.html** in the running local app; use it instead of reading raw JSON on screen. Record the content pane if needed to exclude account information in the application sidebar. Private saved-result URL is supplied directly to the participant, not copied into this public checklist.
+
 Record your actual screen interactions and your own audio. The supplied rubric prohibits AI demo/feedback videos. No generated video, narration, simulated interaction or read-aloud testimonial is prepared. These are factual cues to explain in your own words. Ask the organizer before relying on separate voiceover/editing as an exception.
 
 ## Before recording
@@ -25,7 +27,7 @@ Record your actual screen interactions and your own audio. The supplied rubric p
 
 Feedback can be written or a separate participant screen/audio recording under the supplied requirements. Cover what you built, what worked, friction/reproduction and missing features; explicitly answer temptation to call a provider directly, work you built yourself, and whether you would continue using Otari. Use your own experience and judgment.
 
-Add your accessible 3–5 minute demo link and registered Otari email to FINAL_SUBMISSION.md. Branch is public at https://github.com/samscript18/capela/tree/feat/otari-completion-verification. First integration commit is 9085c3f30003e5edab5e6dc05674052831f38c48. Current metadata follow-up still needs owner-authorized publication before treating its artifact links as public. No external deployment/version is inferred. Deadline supplied: November 11, 11:59 PM; timezone unspecified. Reply in the original sign-up thread; no email/submission is sent by the assistant.
+Add your accessible 3–5 minute demo link and registered Otari email to FINAL_SUBMISSION.md. Branch is public at https://github.com/samscript18/capela/tree/feat/otari-completion-verification. First integration commit is 9085c3f30003e5edab5e6dc05674052831f38c48. Metadata follow-up and original artifacts are published at d81c03e on that branch. The newly prepared demonstration-evidence page is a later local change until separately published. No external deployment/version is inferred. Deadline supplied: November 11, 11:59 PM; timezone unspecified. Reply in the original sign-up thread; no email/submission is sent by the assistant.
 
 ## Historical guardrail evidence
 
