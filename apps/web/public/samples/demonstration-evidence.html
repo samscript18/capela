@@ -53,13 +53,48 @@
         padding: 22px 0;
       }
       .brand {
-        font-weight: 750;
-        font-size: 25px;
-        letter-spacing: -1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
         text-decoration: none;
       }
-      .brand span {
-        color: #7b965b;
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        border: 1px solid #9fad7c33;
+        background: linear-gradient(135deg, #293323, #14241c);
+        color: #9fad7c;
+        box-shadow: 0 10px 32px #8ec5401f;
+      }
+      .brand-symbol {
+        width: 24px;
+        height: 24px;
+      }
+      .brand-copy {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+      }
+      .brand-wordmark {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+      }
+      .brand-degree {
+        color: #a7b587;
+      }
+      .brand-tagline {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0;
+        color: var(--muted);
+        margin-top: 6px;
       }
       .recorded {
         font-size: 13px;
@@ -500,7 +535,24 @@
   <body>
     <main class="wrap">
       <div class="masthead">
-        <a class="brand" href="/">Capela<span>°</span></a
+        <a class="brand" href="/" aria-label="Capela home"
+          ><span class="brand-mark"
+            ><svg viewBox="0 0 36 36" aria-hidden="true" class="brand-symbol" fill="none">
+              <path d="M8 24.5 15.2 8l12.5 5.2-4.1 14.6L8 24.5Z" stroke="currentColor" stroke-width="1.15" />
+              <path
+                d="m15.2 8 8.4 19.8M27.7 13.2 8 24.5"
+                stroke="currentColor"
+                stroke-opacity=".42"
+                stroke-width=".8"
+              />
+              <circle cx="15.2" cy="8" r="2.2" fill="currentColor" />
+              <circle cx="27.7" cy="13.2" r="1.8" fill="#63E6A1" />
+              <circle cx="23.6" cy="27.8" r="2" fill="currentColor" />
+              <circle cx="8" cy="24.5" r="1.5" fill="#F7F9EF" /></svg></span
+          ><span class="brand-copy"
+            ><span class="brand-wordmark">Capela<span class="brand-degree">°</span></span
+            ><span class="brand-tagline">Scientific intelligence</span></span
+          ></a
         ><span class="recorded">Recorded demonstration · no live research</span>
       </div>
       <header class="hero">
