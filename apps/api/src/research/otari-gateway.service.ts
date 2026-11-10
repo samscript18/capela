@@ -161,7 +161,7 @@ export class OtariGatewayService {
                 ? "OTARI_BUDGET_DENIED"
                 : response.status === 402
                   ? "OTARI_SPENDING_DENIED"
-                  : upstreamCode === "guardrail_blocked"
+                  : upstreamCode === "guardrail_blocked" || upstreamCode === "guardrail_violation"
                     ? "OTARI_GUARDRAIL_BLOCKED"
                     : operation === "mcp_discovery" && [502, 503, 504].includes(response.status)
                       ? "OTARI_MCP_UNAVAILABLE"
@@ -176,11 +176,13 @@ export class OtariGatewayService {
               ? "Otari requires configured pricing before this request can run."
               : run.budget.terminal
                 ? "Otari refused spending. No provider bypass or automatic retry is allowed."
-                : code === "OTARI_MCP_UNAVAILABLE"
-                  ? `Otari could not discover the publication MCP server (HTTP ${response.status}). Check the registered remote URL, authentication header and server availability in Otari. Saved search remains partial; no automatic replay was attempted.`
-                  : code === "OTARI_UPSTREAM_TIMEOUT"
-                    ? `Otari ${operation} timed out upstream (HTTP 504). The request may have been charged; its reservation is retained and automatic replay is disabled. Saved sources and completed work remain available.`
-                    : `Otari ${operation} failed (HTTP ${response.status}).`,
+                : code === "OTARI_GUARDRAIL_BLOCKED"
+                  ? "Otari blocked this request under an inference guardrail. No automatic retry or provider bypass is allowed."
+                  : code === "OTARI_MCP_UNAVAILABLE"
+                    ? `Otari could not discover the publication MCP server (HTTP ${response.status}). Check the registered remote URL, authentication header and server availability in Otari. Saved search remains partial; no automatic replay was attempted.`
+                    : code === "OTARI_UPSTREAM_TIMEOUT"
+                      ? `Otari ${operation} timed out upstream (HTTP 504). The request may have been charged; its reservation is retained and automatic replay is disabled. Saved sources and completed work remain available.`
+                      : `Otari ${operation} failed (HTTP ${response.status}).`,
         );
       }
 
@@ -320,6 +322,7 @@ function knownErrorCode(value: unknown): string | undefined {
       "insufficient_funds",
       "pricing_required",
       "guardrail_blocked",
+      "guardrail_violation",
       "invalid_request",
       "provider_not_configured",
       "provider_credential_rejected",

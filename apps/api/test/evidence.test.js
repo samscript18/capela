@@ -1172,6 +1172,43 @@ test("hosted insufficient funds and missing pricing remain distinct terminal ref
     assert.equal(calls, 1);
   }
 });
+test("documented guardrail violations preserve protection provenance without provider fallback", async (t) => {
+  for (const transport of ["header", "body"]) {
+    await t.test(transport, async (t) => {
+      let calls = 0;
+      t.mock.method(global, "fetch", async () => {
+        calls++;
+        return Response.json(
+          { error: { code: "guardrail_violation", message: "untrusted text must not be retained" } },
+          {
+            status: 403,
+            headers: transport === "header" ? { "Otari-Error-Code": "guardrail_violation" } : {},
+          },
+        );
+      });
+      const g = gateway(),
+        run = g.createRun("guardrail-fixture");
+      await assert.rejects(
+        g.request("/chat/completions", { model: "fixture-review-policy" }, "review", run, async () => {}),
+        { code: "OTARI_GUARDRAIL_BLOCKED" },
+      );
+      assert.equal(calls, 1);
+      assert.equal(run.events[0].upstreamCode, "guardrail_violation");
+      assert.equal(run.events[0].requestedPolicy, "fixture-review-policy");
+      assert.equal(run.budget.calls, 1);
+      assert.ok(run.budget.reservedMicrousd > 0);
+      assert.equal(run.budget.unknownCostCalls, 1);
+      assert.equal(run.models.review, undefined);
+      assert.equal(JSON.stringify(run).includes("untrusted text"), false);
+      assert.equal(
+        vertexReviewer(async () => {
+          throw Error("Must not dispatch");
+        }).canFallback(new ResearchError(run.events[0].code, "Fixture"), run),
+        false,
+      );
+    });
+  }
+});
 test("MCP discovery outages are actionable, preserve saved search and do not replay spending", async (t) => {
   let calls = 0;
   t.mock.method(global, "fetch", async () => {

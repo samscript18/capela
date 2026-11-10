@@ -1,5 +1,19 @@
 # Controlled recovery: hosted compatibility blocker
 
+## November 10 recheck — supersedes the older schema blocker
+
+Later owner dashboard evidence: the endpoint explicitly displays request prefix `capela-fault-primary:` and **1 of 1 serving**, with the saved input/output rate. Nonetheless, creating the isolated policy with the complete selector rejects the prefix as “neither a configured provider instance nor a known provider implementation.” This rules out the missing-prefix-field hypothesis as an explanation of the current UI state. No further pricing changes or policy retries are indicated; the current validator/configuration discrepancy needs operator inspection. A routing preview and listed automatic order do not prove a saved or executed recovery policy.
+
+The owner also configured an Active Lakera definition and a blocking/fail-closed mandate scoped only to `capela-verification`, and confirmed free quota with no paid overage. One production-adapter injection test was dispatched under a new $0.005/one-call allocation. It returned HTTP 403 without a recognized reason; this remains **inconclusive**, not demonstrated guardrail detection. No retry. See `evaluation/hosted-guardrail-verification.json`; dashboard request detail is needed to distinguish actual violation from an unavailable check or other refusal. The earlier “no configured guardrail” reads below precede this owner configuration.
+
+Read-only hosted inspection now reports **0.42.0+259b65d**, and `OrgProviderKeyCreateRequest` now exposes `slug`. The historical absence of that field is no longer a current advertised-contract blocker. This does not prove the existing endpoint has a slug, pricing or serving enabled: the runtime keys still cannot read organization configuration (401), and the isolated model catalog still exposes only the two previously verified normal policies, not `capela-extraction-recovery-v1`.
+
+The next concrete action is an authenticated owner/admin inspection of the existing isolated endpoint on the updated hosted build: verify its actual prefix, model price/serving state and create the isolated recovery policy once its target is available. Do not repeat rate creation blindly or change working providers/defaults. Operator support is needed if the endpoint still cannot be made available. No recovery allocation or paid request was started on November 10.
+
+The alternative guardrail check returns HTTP 200 with `available:false`, no profiles and reason **“No guardrails service is configured, so its profiles cannot be listed.”** The built-in catalog lists classes, not configured runnable checks; using one requires authorized organization definition/mandate configuration. Those management reads are 401. Per-user-budget reads remain 403 for both available keys; a service key is required. One authenticated Otari owner/admin session is the common access prerequisite for these paths; do not paste credentials into chat.
+
+Sanitized current evidence: [November 10 recheck](../evaluation/hosted-capability-recheck-2026-11-10.json). All requests were read-only; paid requests and configuration changes were zero. The sections below preserve the November 6 observations and operator report as history.
+
 **Stop the custom-prefix setup on the current hosted build.** The upstream instructions used for it are not established by the advertised hosted contract. No further rates, guessed identifiers, default changes or paid requests should be made to force it through.
 
 ## Observed hosted mismatch

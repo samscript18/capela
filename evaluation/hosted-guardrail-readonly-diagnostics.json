@@ -1,0 +1,14 @@
+{
+  "version": "guardrail-readonly-diagnostics-v1",
+  "requestId": "9287e25f-61e6-46ba-8bda-423baad308eb",
+  "checks": [
+    {
+      "path": "/usage/requests/9287e25f-61e6-46ba-8bda-423baad308eb",
+      "status": 404
+    },
+    {
+      "path": "/traces/requests/9287e25f-61e6-46ba-8bda-423baad308eb",
+      "status": 401
+    }
+  ]
+}

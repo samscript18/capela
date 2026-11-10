@@ -1,5 +1,11 @@
 # Participant recording checklist
 
+November 10 clarification: the participant should capture their own actual screen interactions and own audio. The assistant must not create the submission screen recording, generated narration or a read-aloud testimonial. The time-coded sequence below is a factual checklist to explain in the participant's own words, not an AI video script. Do not assume that adding participant audio to an AI-created recording satisfies the prohibition. Ask the organizer before relying on separately recorded voiceover/editing.
+
+The Active Lakera mandate and single adapter 403 initially lacked a recognized reason. The owner subsequently supplied the vendor result with `prompt_attack` and `pii/ip_address` detected. Show these together with separate vendor/Otari IDs and **owner-reported association**, not a machine-joined trace or prompt-only cause. The original adapter outcome remains unchanged. This is an isolated synthetic security check, not scientific-quality validation or a benign-input control. Do not trigger another request for recording.
+
+Record the revised saved investigation rather than starting another paid run for filming. Show the published finding's passage, the unresolved candidate and original supported verdict, then the separately attributed source-inspection hold. Show real routing metadata with `fallback:false` and the separately labeled isolated ceiling refusal. Do not show an unavailable guardrail, per-user budget or recovery as completed. End with abstract-only/model-assisted limits. Feedback should reflect the participant's actual experience and judgment.
+
 Rechecked 2026-11-06: [rubric](https://docs.google.com/document/d/1-spnCZ3f2SSki8cb6FnochjchdyttUsjjxfoE6aBnF4/edit) prohibits AI in demo/feedback videos. Participant records actual screen and own audio. No synthetic narration, avatar, generated sequence or simulated results.
 
 Before recording: obtain real hosted traces; review privacy and scientific claims; hide credentials, account balances and unrelated tabs. Do not use the isolated browser fixtures as scientific or hosted evidence. A rejection is useful when real; never invent a dramatic correction.

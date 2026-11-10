@@ -1,0 +1,109 @@
+{
+  "version": "hosted-capability-recheck-v1",
+  "checkedAt": "2026-11-10T14:31:14.631Z",
+  "commit": "a124872cf5bcc8667ad2b10249f3c21120d61098",
+  "readOnly": true,
+  "paidRequests": 0,
+  "configurationChanges": 0,
+  "checks": [
+    {
+      "scope": "public",
+      "path": "/openapi.json",
+      "status": 200
+    },
+    {
+      "scope": "isolated",
+      "path": "/models",
+      "status": 200
+    },
+    {
+      "scope": "isolated",
+      "path": "/organizations/me/routing-policies?limit=1",
+      "status": 401
+    },
+    {
+      "scope": "isolated",
+      "path": "/organizations/me/guardrails?limit=1",
+      "status": 401
+    },
+    {
+      "scope": "isolated",
+      "path": "/end-user-budgets",
+      "status": 403
+    },
+    {
+      "scope": "runtime",
+      "path": "/organizations/me/guardrails?limit=1",
+      "status": 401
+    },
+    {
+      "scope": "runtime",
+      "path": "/end-user-budgets",
+      "status": 403
+    },
+    {
+      "scope": "isolated",
+      "path": "/tool-settings/guardrails/profiles",
+      "status": 200
+    },
+    {
+      "scope": "isolated",
+      "path": "/tool-settings/guardrails/catalog",
+      "status": 200
+    }
+  ],
+  "contract": {
+    "version": "0.42.0+259b65d",
+    "sha256": "4c9f6b4a3580332418d04c51b10faffc9bac10dcb81028f4bab19767a0325c44"
+  },
+  "availablePaths": [
+    "/api/v1/hooks/guardrails",
+    "/api/v1/end-user-budgets",
+    "/api/v1/organizations/me/guardrail-definitions",
+    "/api/v1/organizations/me/guardrail-definitions/{definition_id}",
+    "/api/v1/organizations/me/guardrail-definitions/{definition_id}/test",
+    "/api/v1/organizations/me/guardrails",
+    "/api/v1/organizations/me/guardrails/{guardrail_id}",
+    "/api/v1/organizations/me/guardrails/{guardrail_id}/test",
+    "/api/v1/organizations/me/routing-policies",
+    "/api/v1/organizations/me/routing-policies/{name}",
+    "/api/v1/organizations/me/routing-policies/explain",
+    "/api/v1/organizations/me/provider-keys",
+    "/api/v1/organizations/me/provider-keys/{key_id}",
+    "/api/v1/organizations/me/provider-keys/{key_id}/archive",
+    "/api/v1/organizations/me/provider-keys/{key_id}/restore",
+    "/api/v1/organizations/me/provider-keys/{key_id}/default",
+    "/api/v1/organizations/me/provider-keys/{key_id}/models",
+    "/api/v1/organizations/me/provider-keys/{key_id}/models/{model_id}",
+    "/api/v1/organizations/me/provider-keys/{key_id}/models/refresh",
+    "/api/v1/organizations/me/provider-keys/{key_id}/pricing/refresh",
+    "/api/v1/organizations/me/provider-keys/{key_id}/available-models",
+    "/api/v1/workspaces/{workspace_id}/provider-keys",
+    "/api/v1/workspaces/{workspace_id}/provider-keys/{key_id}",
+    "/api/v1/workspaces/{workspace_id}/provider-keys/{key_id}/models",
+    "/api/v1/workspaces/{workspace_id}/provider-keys/{key_id}/models/{model}",
+    "/api/v1/routing/policies",
+    "/api/v1/routing/policies/{name}",
+    "/api/v1/routing/policies/explain",
+    "/api/v1/tool-settings/guardrails/profiles",
+    "/api/v1/tool-settings/guardrails/catalog"
+  ],
+  "providerCreateFields": ["provider", "name", "slug", "api_key", "api_base", "client_args", "zero_data_retention"],
+  "testPolicies": ["capela-extraction-isolated-v1", "capela-review-isolated-v1"],
+  "guardrailProfiles": {
+    "available": false,
+    "reason": "No guardrails service is configured, so its profiles cannot be listed.",
+    "profiles": []
+  },
+  "builtinGuardrailNames": [
+    "alinia",
+    "any_llm",
+    "azure_content_safety",
+    "azure_prompt_shields",
+    "bedrock_guardrails",
+    "lakera_guard",
+    "openai_moderation",
+    "patronus",
+    "watsonx_guardian"
+  ]
+}
